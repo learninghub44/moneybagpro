@@ -718,11 +718,11 @@ export const DOMAIN_CONFIG: Record<string, DomainConfig> = {
         }),
     }),
     ...createHostedDomainEntries({
-        primaryDomain: 'moneybagpro.site',
-        aliases: ['www.moneybagpro.site'],
+        primaryDomain: 'www.moneybagpro.site',
+        aliases: ['moneybagpro.site'],
         clientId: '33Wma6o4zwO73MPQ4GK5U',
         appId: '',
-        redirectUri: 'https://moneybagpro.site/',
+        redirectUri: 'https://www.moneybagpro.site/',
         botsFolder: 'dollarmaster.site',
         includeLegacyAppIdInOAuth: false,
         features: {
