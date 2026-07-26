@@ -723,7 +723,7 @@ export const DOMAIN_CONFIG: Record<string, DomainConfig> = {
         clientId: '33Wma6o4zwO73MPQ4GK5U',
         appId: '',
         redirectUri: 'https://www.moneybagpro.site/callback',
-        botsFolder: 'dollarmaster.site',
+        botsFolder: 'riskmanagers.site',
         includeLegacyAppIdInOAuth: false,
         features: {
             autoTrades: true,
