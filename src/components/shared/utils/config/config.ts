@@ -722,7 +722,7 @@ export const DOMAIN_CONFIG: Record<string, DomainConfig> = {
         aliases: ['moneybagpro.site'],
         clientId: '33Wma6o4zwO73MPQ4GK5U',
         appId: '',
-        redirectUri: 'https://www.moneybagpro.site/',
+        redirectUri: 'https://www.moneybagpro.site/callback',
         botsFolder: 'dollarmaster.site',
         includeLegacyAppIdInOAuth: false,
         features: {
