@@ -147,6 +147,18 @@ export const domainLoaderConfig: Record<string, DomainLoaderConfig> = {
         accentColor: '#fefce8',
         backgroundColor: '#0f1204',
     }),
+    'moneybagpro.site': createLoaderConfig('moneybagpro.site', 'Money Bag Pro', {
+        primaryColor: '#facc15',
+        secondaryColor: '#15803d',
+        accentColor: '#fde047',
+        backgroundColor: '#0a0f05',
+    }),
+    'www.moneybagpro.site': createLoaderConfig('www.moneybagpro.site', 'Money Bag Pro', {
+        primaryColor: '#facc15',
+        secondaryColor: '#15803d',
+        accentColor: '#fde047',
+        backgroundColor: '#0a0f05',
+    }),
     'mrduke.site': createLoaderConfig('mrduke.site', 'Mr Duke', {
         primaryColor: '#00ff88',
         secondaryColor: '#00aaff',
