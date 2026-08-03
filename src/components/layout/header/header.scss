@@ -5,7 +5,7 @@
     height: var(--app-header-height, 4rem);
     min-height: var(--app-header-height, 4rem);
     background: var(--rm-shell-top) !important;
-    box-shadow: none !important;
+    box-shadow: var(--shadow-sm) !important;
     border: 0 !important;
     border-bottom: 0 !important;
     color: var(--rm-shell-header-text);
@@ -13,6 +13,9 @@
     position: sticky;
     top: 0;
     z-index: 30000;
+    transition:
+        background-color 0.2s ease,
+        box-shadow 0.2s ease;
 
     &--mobile {
         display: flex;

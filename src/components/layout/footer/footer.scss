@@ -5,19 +5,19 @@
     height: 3.6rem;
     display: flex;
     flex-direction: row-reverse;
-    padding: 0 1rem;
+    padding: 0 var(--space-3);
     align-items: center;
     position: fixed;
     bottom: 0;
     right: 0;
     left: 0;
     border-top: 1px solid var(--general-section-1);
-    box-shadow: 0 1px 0 0 var(--general-section-1) inset;
+    box-shadow: var(--shadow-sm);
     background: var(--rm-shell-run-panel);
     z-index: 2;
 
     &__icon {
-        padding: 0.8rem;
+        padding: var(--space-2);
 
         svg > g > path,
         svg > path {

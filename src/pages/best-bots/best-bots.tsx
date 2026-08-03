@@ -486,6 +486,7 @@ const BOTS_BY_FOLDER: Record<string, TBot[]> = {
     'mkulimamdogo.site': [],
     'kicktrade.site': [],
     'dollarsigns.site': DOLLARSIGNS_BOTS,
+    'moneypool.site': [],
 };
 
 const buildHardcodedStatsMap = (bots: TBot[]) =>
