@@ -445,6 +445,11 @@
         border-bottom: 1px solid var(--border-divider);
         user-select: none;
         position: relative;
+        transition: background-color 0.15s ease;
+
+        &:hover {
+            background-color: var(--general-hover);
+        }
 
         &__label {
             padding: 0.8rem 1.6rem;
