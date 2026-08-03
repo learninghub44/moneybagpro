@@ -3,4 +3,5 @@
     min-height: 0;
     overflow: hidden;
     background: var(--rm-shell-run-panel);
+    transition: background-color 0.2s ease;
 }
