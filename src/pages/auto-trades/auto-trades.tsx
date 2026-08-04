@@ -1,6 +1,7 @@
 import { type ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
+import { AI_STRATEGY_OPEN_FLAG } from '@/components/ai-strategy-floating';
 import Input from '@/components/shared_ui/input';
 import ThemedScrollbars from '@/components/shared_ui/themed-scrollbars';
 import { DBOT_TABS } from '@/constants/bot-contents';
@@ -1151,6 +1152,16 @@ const AutoTrades = observer(() => {
     const modeTransitionLockRef = useRef(false);
     const isRecoveringDataRef = useRef(false);
     const [showAiStrategy, setShowAiStrategy] = useState(false);
+    useEffect(() => {
+        try {
+            if (sessionStorage.getItem(AI_STRATEGY_OPEN_FLAG) === '1') {
+                sessionStorage.removeItem(AI_STRATEGY_OPEN_FLAG);
+                setShowAiStrategy(true);
+            }
+        } catch {
+            // Ignore storage access failures (private browsing, etc.).
+        }
+    }, []);
     const [aiStrategyText, setAiStrategyText] = useState('');
     const [aiStrategyResult, setAiStrategyResult] = useState<AiAutoTradeParseResult | null>(null);
     const [aiStrategyLoading, setAiStrategyLoading] = useState(false);
