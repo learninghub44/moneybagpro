@@ -119,12 +119,18 @@
             &__block {
                 border: 1px solid var(--border-normal);
                 background: var(--general-main-1);
-                box-shadow: 0 1.2rem 3rem rgba(15, 23, 42, 0.08);
+                border-radius: var(--radius-md);
+                box-shadow: var(--shadow-lg);
+                transition: box-shadow 0.2s ease;
+
+                &:hover {
+                    box-shadow: var(--shadow-lg), 0 0 0 1px var(--border-normal);
+                }
             }
 
             &__images {
                 background: linear-gradient(135deg, rgba(249, 115, 22, 0.12), rgba(14, 165, 233, 0.1));
-                border-radius: 0.8rem;
+                border-radius: var(--radius-md);
             }
 
             &__icon {

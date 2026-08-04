@@ -6,6 +6,9 @@ body {
     // Updated to use brand font variable from brand.config.json
     font-family: var(--brand-font-primary);
     background: var(--rm-shell-run-panel);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
 }
 
 html,
@@ -140,6 +143,34 @@ html,
 .icon-general-fill-path {
     path {
         fill: var(--text-general);
+    }
+}
+
+// Premium button feel — applies across every white-labeled site since it
+// targets the shared dc-btn classes, not domain-specific color variables.
+.dc-btn--primary,
+.dc-btn--primary__light,
+.dc-btn--secondary,
+.dc-btn--tertiary {
+    border-radius: var(--radius-sm) !important;
+    box-shadow: var(--shadow-sm);
+    transition:
+        transform 0.15s ease,
+        box-shadow 0.15s ease,
+        filter 0.15s ease;
+
+    &:hover:not(:disabled) {
+        box-shadow: var(--shadow-md);
+        filter: brightness(1.06);
+    }
+
+    &:active:not(:disabled) {
+        transform: translateY(1px);
+        box-shadow: var(--shadow-sm);
+    }
+
+    &:disabled {
+        box-shadow: none;
     }
 }
 

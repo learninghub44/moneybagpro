@@ -26,27 +26,22 @@
     }
 }
 
-.powered-by-text {
-    font-size: 1.25rem;
-    letter-spacing: 0.4px;
-    color: var(--text-prominent);
-    font-style: italic;
-    font-weight: 900;
+.brand-name-text {
+    font-size: 1.5rem;
+    letter-spacing: 0.6px;
+    color: var(--domain-primary, var(--text-prominent));
+    font-weight: 800;
     white-space: nowrap;
     padding: 0.4rem 1.2rem;
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
     background: transparent;
     border: 0;
-    box-shadow: none;
     display: inline-block;
-    transition: all 0.3s ease;
-    text-transform: none;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
 
     &:hover {
-        background: transparent;
-        border-color: transparent;
-        color: var(--text-prominent);
+        filter: brightness(1.15);
         transform: translateY(-1px);
-        box-shadow: none;
     }
 }
