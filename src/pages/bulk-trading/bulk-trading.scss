@@ -1,0 +1,160 @@
+.bulk-trading-page {
+    display: flex;
+    flex-direction: column;
+    gap: 1.6rem;
+    padding: 1.6rem;
+    max-width: 72rem;
+    margin: 0 auto;
+}
+
+.bulk-trading__mode-toggle {
+    display: flex;
+    gap: 0.8rem;
+}
+
+.bulk-trading__mode-btn {
+    flex: 1;
+    padding: 1rem 1.2rem;
+    border: 1px solid var(--general-section-1, #d6dadb);
+    border-radius: 0.8rem;
+    background: transparent;
+    font-weight: 600;
+    cursor: pointer;
+
+    &--active {
+        border-color: var(--brand-red-coral, #ff444f);
+        background: var(--brand-red-coral, #ff444f);
+        color: #fff;
+    }
+}
+
+.bulk-trading__panel {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+}
+
+.bulk-trading__hint {
+    margin: 0;
+    font-size: 1.2rem;
+    opacity: 0.75;
+}
+
+.bulk-trading__empty {
+    font-size: 1.2rem;
+    opacity: 0.75;
+}
+
+.bulk-trading__account-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    padding: 1rem;
+    border: 1px solid var(--general-section-1, #d6dadb);
+    border-radius: 0.8rem;
+}
+
+.bulk-trading__account {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    font-size: 1.3rem;
+    cursor: pointer;
+}
+
+.bulk-trading__fields {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+    gap: 1rem;
+}
+
+.bulk-trading__field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    font-size: 1.2rem;
+
+    select,
+    input {
+        padding: 0.8rem;
+        border: 1px solid var(--general-section-1, #d6dadb);
+        border-radius: 0.6rem;
+        font-size: 1.3rem;
+    }
+}
+
+.bulk-trading__run-btn {
+    padding: 1.1rem;
+    border: 0;
+    border-radius: 0.8rem;
+    background: var(--status-success, #4bb4b3);
+    color: #fff;
+    font-weight: 700;
+    cursor: pointer;
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+}
+
+.bulk-trading__results {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.bulk-trading__result {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.8rem 1rem;
+    border-radius: 0.6rem;
+    font-size: 1.2rem;
+
+    &--ok {
+        background: rgba(75, 180, 179, 0.12);
+        color: #2c8b8a;
+    }
+
+    &--error {
+        background: rgba(236, 63, 63, 0.1);
+        color: #ec3f3f;
+    }
+}
+
+.bulk-trading__batch-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    padding: 1.2rem;
+    border: 1px solid var(--general-section-1, #d6dadb);
+    border-radius: 0.8rem;
+}
+
+.bulk-trading__batch-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 600;
+    font-size: 1.3rem;
+}
+
+.bulk-trading__remove-btn,
+.bulk-trading__add-btn {
+    border: 1px dashed var(--general-section-1, #d6dadb);
+    background: transparent;
+    border-radius: 0.6rem;
+    padding: 0.6rem 1rem;
+    cursor: pointer;
+    font-size: 1.2rem;
+}
+
+.bulk-trading__batch-result {
+    margin: 0;
+    padding: 0.6rem 1rem;
+    border-radius: 0.6rem;
+    font-size: 1.2rem;
+}
