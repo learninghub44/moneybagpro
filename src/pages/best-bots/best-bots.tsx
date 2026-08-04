@@ -469,24 +469,28 @@ const DOLLARSIGNS_BOTS: TBot[] = [
     },
 ];
 
+const ALL_CURATED_BOTS: TBot[] = Array.from(
+    new Map([...RISK_MANAGERS_BOTS, ...OPTIMUM_BOTS, ...DOLLARSIGNS_BOTS].map(bot => [bot.id, bot])).values()
+);
+
 const BOTS_BY_FOLDER: Record<string, TBot[]> = {
     'riskmanagers.site': RISK_MANAGERS_BOTS,
     'derivhhub.com': TERMICA_BOTS,
     'optimumtraders.site': OPTIMUM_BOTS,
-    'mrzetuzetu.site': [],
-    'masterhunter.site': [],
-    'husseinfx.site': [],
-    'levynetrading.site': [],
-    'tradinghubs.site': [],
-    'mafiahub.site': [],
-    'easytraders.site': [],
-    'dollarmaster.site': [],
-    'profitempire.site': [],
-    'primempire.site': [],
-    'mkulimamdogo.site': [],
-    'kicktrade.site': [],
+    'mrzetuzetu.site': ALL_CURATED_BOTS,
+    'masterhunter.site': ALL_CURATED_BOTS,
+    'husseinfx.site': ALL_CURATED_BOTS,
+    'levynetrading.site': ALL_CURATED_BOTS,
+    'tradinghubs.site': ALL_CURATED_BOTS,
+    'mafiahub.site': ALL_CURATED_BOTS,
+    'easytraders.site': ALL_CURATED_BOTS,
+    'dollarmaster.site': ALL_CURATED_BOTS,
+    'profitempire.site': ALL_CURATED_BOTS,
+    'primempire.site': ALL_CURATED_BOTS,
+    'mkulimamdogo.site': ALL_CURATED_BOTS,
+    'kicktrade.site': ALL_CURATED_BOTS,
     'dollarsigns.site': DOLLARSIGNS_BOTS,
-    'moneypool.site': [],
+    'moneypool.site': ALL_CURATED_BOTS,
 };
 
 const buildHardcodedStatsMap = (bots: TBot[]) =>
