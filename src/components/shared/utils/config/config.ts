@@ -946,6 +946,15 @@ export const applyDomainUI = (): void => {
     });
     if (ui.brandName) {
         document.title = ui.brandName;
+        const description = `${ui.brandName} — automated Deriv trading bot platform.`;
+        const setMeta = (selector: string, content: string) => {
+            const el = document.querySelector(selector);
+            if (el) el.setAttribute('content', content);
+        };
+        setMeta('meta[name="title"]', ui.brandName);
+        setMeta('meta[name="description"]', description);
+        setMeta('meta[property="og:title"]', ui.brandName);
+        setMeta('meta[property="og:description"]', description);
     }
 };
 
