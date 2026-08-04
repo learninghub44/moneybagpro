@@ -1,0 +1,43 @@
+.trigger {
+    position: fixed;
+    right: 1.6rem;
+    bottom: 8.8rem;
+    z-index: 25000;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.9rem 1.4rem;
+    border: 0;
+    border-radius: var(--radius-pill, 999px);
+    background: linear-gradient(135deg, rgba(132, 91, 205, 0.95), rgba(99, 60, 179, 0.95));
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.3rem;
+    letter-spacing: 0.4px;
+    cursor: pointer;
+    box-shadow:
+        0 0 0 0.6rem rgba(132, 91, 205, 0.12),
+        var(--shadow-lg, 0 12px 32px rgba(0, 0, 0, 0.4));
+    transition:
+        transform 0.15s ease,
+        box-shadow 0.15s ease;
+
+    &:hover {
+        transform: translateY(-2px) scale(1.03);
+        box-shadow:
+            0 0 0 0.8rem rgba(132, 91, 205, 0.16),
+            var(--shadow-lg, 0 12px 32px rgba(0, 0, 0, 0.4));
+    }
+
+    &:active {
+        transform: translateY(0) scale(0.98);
+    }
+}
+
+.dot {
+    width: 0.7rem;
+    height: 0.7rem;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 0 0.6rem rgba(255, 255, 255, 0.8);
+}
