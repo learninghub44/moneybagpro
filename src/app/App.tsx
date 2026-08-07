@@ -17,6 +17,7 @@ import './app-root.scss';
 
 const Layout = lazy(() => import('../components/layout'));
 const AppRoot = lazy(() => import('./app-root'));
+const Landing = lazy(() => import('../pages/landing'));
 
 // Translations CDN is optional — requires TRANSLATIONS_CDN_URL, R2_PROJECT_NAME, and CROWDIN_BRANCH_NAME env vars.
 // Without these, the app defaults to English. See user-guide/03-white-labeling.md#translations for setup instructions.
@@ -33,32 +34,48 @@ const LanguageHandler = ({ children }: { children: React.ReactNode }) => {
 
 const router = createBrowserRouter(
     createRoutesFromElements(
-        <Route
-            path='/'
-            element={
-                <Suspense
-                    fallback={<ChunkLoader message={localize('Please wait while we connect to the server...')} />}
-                >
-                    <TranslationProvider defaultLang='EN' i18nInstance={i18nInstance}>
-                        <LanguageHandler>
-                            <StoreProvider>
-                                <LocalStorageSyncWrapper>
-                                    <RoutePromptDialog />
-                                    <CoreStoreProvider>
-                                        <Layout />
-                                    </CoreStoreProvider>
-                                </LocalStorageSyncWrapper>
-                            </StoreProvider>
-                        </LanguageHandler>
-                    </TranslationProvider>
-                </Suspense>
-            }
-        >
-            {/* All child routes will be passed as children to Layout */}
-            <Route index element={<AppRoot />} />
-            {/* Catch-all: redirect any unknown path back to root (hash-based tab navigation handles the rest) */}
-            <Route path='*' element={<Navigate to='/' replace />} />
-        </Route>
+        <>
+            {/* Standalone marketing/affiliate landing page — deliberately outside the
+                Store/CoreStoreProvider tree so it doesn't pull in the trading app shell. */}
+            <Route
+                path='/welcome'
+                element={
+                    <Suspense fallback={<ChunkLoader message={localize('Loading...')} />}>
+                        <TranslationProvider defaultLang='EN' i18nInstance={i18nInstance}>
+                            <LanguageHandler>
+                                <Landing />
+                            </LanguageHandler>
+                        </TranslationProvider>
+                    </Suspense>
+                }
+            />
+            <Route
+                path='/'
+                element={
+                    <Suspense
+                        fallback={<ChunkLoader message={localize('Please wait while we connect to the server...')} />}
+                    >
+                        <TranslationProvider defaultLang='EN' i18nInstance={i18nInstance}>
+                            <LanguageHandler>
+                                <StoreProvider>
+                                    <LocalStorageSyncWrapper>
+                                        <RoutePromptDialog />
+                                        <CoreStoreProvider>
+                                            <Layout />
+                                        </CoreStoreProvider>
+                                    </LocalStorageSyncWrapper>
+                                </StoreProvider>
+                            </LanguageHandler>
+                        </TranslationProvider>
+                    </Suspense>
+                }
+            >
+                {/* All child routes will be passed as children to Layout */}
+                <Route index element={<AppRoot />} />
+                {/* Catch-all: redirect any unknown path back to root (hash-based tab navigation handles the rest) */}
+                <Route path='*' element={<Navigate to='/' replace />} />
+            </Route>
+        </>
     )
 );
 

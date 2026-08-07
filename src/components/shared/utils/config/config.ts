@@ -81,6 +81,7 @@ interface DomainConfig {
     useLegacyOAuthLogin: boolean;
     features: DomainFeatureFlags;
     ui: DomainUIConfig;
+    derivSignupUrl: string; // Affiliate/IB link used on the landing page's "Create free account" CTA
 }
 
 interface HostedDomainDefinition {
@@ -94,6 +95,7 @@ interface HostedDomainDefinition {
     features?: Partial<DomainFeatureFlags>;
     redirectUri?: string;
     ui?: Partial<DomainUIConfig>;
+    derivSignupUrl?: string;
 }
 
 type DomainShellPalette = {
@@ -125,6 +127,10 @@ type DomainShellPalette = {
 };
 
 const DEFAULT_BOTS_FOLDER = 'optimumtraders.site';
+// Placeholder Deriv affiliate/IB signup link. Replace per-domain via the
+// `derivSignupUrl` option on createHostedDomainEntries() once each site's
+// real affiliate tracking link is available.
+const DEFAULT_DERIV_SIGNUP_URL = 'https://track.deriv.com/_YOUR_AFFILIATE_ID_/1/';
 const DEFAULT_DOMAIN_FEATURES: DomainFeatureFlags = {
     botIdeas: false,
     printPopups: true,
@@ -272,6 +278,7 @@ const createHostedDomainEntries = ({
     features = {},
     redirectUri = `https://${primaryDomain}/`,
     ui = {},
+    derivSignupUrl = DEFAULT_DERIV_SIGNUP_URL,
 }: HostedDomainDefinition): Record<string, DomainConfig> => {
     const config: DomainConfig = {
         clientId,
@@ -289,6 +296,7 @@ const createHostedDomainEntries = ({
             ...DEFAULT_DOMAIN_UI,
             ...ui,
         },
+        derivSignupUrl,
     };
 
     return [primaryDomain, ...aliases].reduce<Record<string, DomainConfig>>((accumulator, hostname) => {
@@ -868,8 +876,11 @@ export const getDomainConfig = (activeHostname = window.location.hostname): Doma
         useLegacyOAuthLogin: false,
         features: DEFAULT_DOMAIN_FEATURES,
         ui: DEFAULT_DOMAIN_UI,
+        derivSignupUrl: DEFAULT_DERIV_SIGNUP_URL,
     };
 };
+
+export const getDerivSignupUrl = () => getDomainConfig().derivSignupUrl;
 
 /**
  * Returns the registered production hostname for the current domain.
