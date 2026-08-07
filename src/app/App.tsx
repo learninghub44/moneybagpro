@@ -17,6 +17,8 @@ import './app-root.scss';
 
 const Layout = lazy(() => import('../components/layout'));
 const AppRoot = lazy(() => import('./app-root'));
+const RootGate = lazy(() => import('./RootGate'));
+const Landing = lazy(() => import('../pages/landing'));
 
 // Translations CDN is optional — requires TRANSLATIONS_CDN_URL, R2_PROJECT_NAME, and CROWDIN_BRANCH_NAME env vars.
 // Without these, the app defaults to English. See user-guide/03-white-labeling.md#translations for setup instructions.
@@ -33,32 +35,77 @@ const LanguageHandler = ({ children }: { children: React.ReactNode }) => {
 
 const router = createBrowserRouter(
     createRoutesFromElements(
-        <Route
-            path='/'
-            element={
-                <Suspense
-                    fallback={<ChunkLoader message={localize('Please wait while we connect to the server...')} />}
-                >
-                    <TranslationProvider defaultLang='EN' i18nInstance={i18nInstance}>
-                        <LanguageHandler>
-                            <StoreProvider>
-                                <LocalStorageSyncWrapper>
-                                    <RoutePromptDialog />
-                                    <CoreStoreProvider>
-                                        <Layout />
-                                    </CoreStoreProvider>
-                                </LocalStorageSyncWrapper>
-                            </StoreProvider>
-                        </LanguageHandler>
-                    </TranslationProvider>
-                </Suspense>
-            }
-        >
-            {/* All child routes will be passed as children to Layout */}
-            <Route index element={<AppRoot />} />
-            {/* Catch-all: redirect any unknown path back to root (hash-based tab navigation handles the rest) */}
-            <Route path='*' element={<Navigate to='/' replace />} />
-        </Route>
+        <>
+            {/* Root: landing page for new/logged-out visitors. Deriv's OAuth
+                redirect_uri is registered as the bare domain root for every
+                white-label site, so this must keep resolving OAuth callbacks
+                through to /app — see RootGate. */}
+            <Route
+                path='/'
+                element={
+                    <Suspense fallback={<ChunkLoader message={localize('Loading...')} />}>
+                        <TranslationProvider defaultLang='EN' i18nInstance={i18nInstance}>
+                            <LanguageHandler>
+                                <RootGate />
+                            </LanguageHandler>
+                        </TranslationProvider>
+                    </Suspense>
+                }
+            />
+            {/* Some domains (e.g. moneypool.site) have their OAuth redirect_uri registered
+                as /callback rather than the bare root — route it through the same gate. */}
+            <Route
+                path='/callback'
+                element={
+                    <Suspense fallback={<ChunkLoader message={localize('Loading...')} />}>
+                        <TranslationProvider defaultLang='EN' i18nInstance={i18nInstance}>
+                            <LanguageHandler>
+                                <RootGate />
+                            </LanguageHandler>
+                        </TranslationProvider>
+                    </Suspense>
+                }
+            />
+            {/* Direct link to the landing page (no session/OAuth gating), for marketing use. */}
+            <Route
+                path='/welcome'
+                element={
+                    <Suspense fallback={<ChunkLoader message={localize('Loading...')} />}>
+                        <TranslationProvider defaultLang='EN' i18nInstance={i18nInstance}>
+                            <LanguageHandler>
+                                <Landing />
+                            </LanguageHandler>
+                        </TranslationProvider>
+                    </Suspense>
+                }
+            />
+            <Route
+                path='/app'
+                element={
+                    <Suspense
+                        fallback={<ChunkLoader message={localize('Please wait while we connect to the server...')} />}
+                    >
+                        <TranslationProvider defaultLang='EN' i18nInstance={i18nInstance}>
+                            <LanguageHandler>
+                                <StoreProvider>
+                                    <LocalStorageSyncWrapper>
+                                        <RoutePromptDialog />
+                                        <CoreStoreProvider>
+                                            <Layout />
+                                        </CoreStoreProvider>
+                                    </LocalStorageSyncWrapper>
+                                </StoreProvider>
+                            </LanguageHandler>
+                        </TranslationProvider>
+                    </Suspense>
+                }
+            >
+                {/* All child routes will be passed as children to Layout */}
+                <Route index element={<AppRoot />} />
+                {/* Catch-all: redirect any unknown path back to the app root (hash-based tab navigation handles the rest) */}
+                <Route path='*' element={<Navigate to='/app' replace />} />
+            </Route>
+        </>
     )
 );
 
