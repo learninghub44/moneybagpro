@@ -8,6 +8,30 @@ import { useStore } from '@/hooks/useStore';
 import { isPremiumProtectedBot, setActiveBot } from '@/utils/bot-tracker';
 import './best-bots.scss';
 
+// The Blockly workspace only initialises once the Bot Builder tab has been mounted
+// (see WorkspaceWrapper). Users who click "Load" from Best Bots without ever having
+// visited Bot Builder previously would hit an instant "Workspace not ready" failure.
+// Switch to Bot Builder first, then poll briefly for the workspace to come up.
+const waitForBlocklyWorkspace = (timeout_ms = 8000, interval_ms = 100) =>
+    new Promise<typeof window.Blockly.derivWorkspace>((resolve, reject) => {
+        const existing = window.Blockly?.derivWorkspace;
+        if (existing) {
+            resolve(existing);
+            return;
+        }
+        const started_at = Date.now();
+        const timer = setInterval(() => {
+            const workspace = window.Blockly?.derivWorkspace;
+            if (workspace) {
+                clearInterval(timer);
+                resolve(workspace);
+            } else if (Date.now() - started_at > timeout_ms) {
+                clearInterval(timer);
+                reject(new Error('Workspace not ready'));
+            }
+        }, interval_ms);
+    });
+
 type TBot = {
     id: string;
     name: string;
@@ -718,8 +742,12 @@ const BotCard = observer(({ bot, stats }: { bot: TBot; stats: TBotStats | undefi
             const res = await fetch(url);
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
             const xml_text = await res.text();
-            const workspace = window.Blockly?.derivWorkspace;
-            if (!workspace) throw new Error('Workspace not ready');
+            let workspace = window.Blockly?.derivWorkspace;
+            if (!workspace) {
+                // Mount Bot Builder so its Blockly workspace initialises, then wait for it.
+                setActiveTab(DBOT_TABS.BOT_BUILDER);
+                workspace = await waitForBlocklyWorkspace();
+            }
             const load_result = await load({
                 block_string: xml_text,
                 file_name: bot.name,
