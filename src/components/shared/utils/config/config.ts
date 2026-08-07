@@ -833,6 +833,19 @@ export const DOMAIN_CONFIG: Record<string, DomainConfig> = {
             gold: '#fbbf24',
         }),
     }),
+    ...createHostedDomainEntries({
+        primaryDomain: 'dtraders.site',
+        aliases: ['www.dtraders.site'],
+        clientId: '342ZptAalH6mEqAfiqXE9',
+        appId: '',
+        redirectUri: 'https://dtraders.site/callback',
+        botsFolder: 'dtraders.site',
+        includeLegacyAppIdInOAuth: false,
+        // Default styling, just the brand name overridden per request.
+        ui: { brandName: 'DTraders' },
+        // derivSignupUrl intentionally omitted — uses DEFAULT_DERIV_SIGNUP_URL placeholder
+        // until the real affiliate link for this site is provided.
+    }),
 };
 
 const normalizeHostname = (hostname: string) => hostname.split(':')[0].toLowerCase();
