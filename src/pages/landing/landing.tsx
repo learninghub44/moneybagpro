@@ -42,7 +42,7 @@ const Landing = () => {
                     )}
                 </div>
                 <div className='landing__header-actions'>
-                    <a className='landing__link' href='/'>
+                    <a className='landing__link' href='/app'>
                         Launch platform
                     </a>
                 </div>
@@ -63,7 +63,7 @@ const Landing = () => {
                     >
                         Create your free Deriv account
                     </a>
-                    <a className='landing__cta landing__cta--secondary' href='/'>
+                    <a className='landing__cta landing__cta--secondary' href='/app'>
                         Explore the platform
                     </a>
                 </div>
