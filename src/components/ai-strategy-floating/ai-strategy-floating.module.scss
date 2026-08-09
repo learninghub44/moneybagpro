@@ -5,14 +5,14 @@
     z-index: 400;
     display: flex;
     align-items: center;
-    gap: 0.6rem;
-    padding: 0.9rem 1.4rem;
+    gap: 0.8rem;
+    padding: 1.3rem 2rem;
     border: 0;
     border-radius: var(--radius-pill, 999px);
     background: linear-gradient(135deg, rgba(132, 91, 205, 0.95), rgba(99, 60, 179, 0.95));
     color: #fff;
     font-weight: 700;
-    font-size: 1.3rem;
+    font-size: 1.6rem;
     letter-spacing: 0.4px;
     cursor: pointer;
     pointer-events: auto;
@@ -36,9 +36,9 @@
 }
 
 .dot {
-    width: 0.7rem;
-    height: 0.7rem;
+    width: 0.9rem;
+    height: 0.9rem;
     border-radius: 50%;
     background: #fff;
-    box-shadow: 0 0 0.6rem rgba(255, 255, 255, 0.8);
+    box-shadow: 0 0 0.8rem rgba(255, 255, 255, 0.8);
 }

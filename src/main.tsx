@@ -1,7 +1,6 @@
 import { configure } from 'mobx';
 import ReactDOM from 'react-dom/client';
 import { getCanonicalHostForHost } from '@/components/shared';
-import StartupLoader from '@/components/startup-loader';
 import { AuthWrapper } from './app/AuthWrapper';
 import { setupChunkLoadErrorRecovery } from './utils/chunk-error-recovery';
 import { setupDiagnostics } from './utils/diagnostics';
@@ -41,9 +40,5 @@ if (shouldRedirectToCanonicalHost) {
     // Stop bootstrapping on the alias host while the browser navigates.
 } else {
     // Removed AnalyticsInitializer() call - analytics dependency removed
-    ReactDOM.createRoot(document.getElementById('root')!).render(
-        <StartupLoader>
-            <AuthWrapper />
-        </StartupLoader>
-    );
+    ReactDOM.createRoot(document.getElementById('root')!).render(<AuthWrapper />);
 }

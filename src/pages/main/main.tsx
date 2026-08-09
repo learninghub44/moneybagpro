@@ -606,23 +606,6 @@ const AppWrapper = observer(() => {
                                     <ManualTrading />
                                 </div>
                             )}
-                            {show_bulk_trading && (
-                                <div
-                                    label={
-                                        <>
-                                            <LabelPairedObjectsColumnCaptionRegularIcon
-                                                height='24px'
-                                                width='24px'
-                                                fill='#c8a45d'
-                                            />
-                                            <Localize i18n_default_text='Bulk Trading' />
-                                        </>
-                                    }
-                                    id='id-bulk-trading'
-                                >
-                                    <BulkTrading />
-                                </div>
-                            )}
                             {show_scanner ? (
                                 <div
                                     label={
@@ -706,6 +689,23 @@ const AppWrapper = observer(() => {
                                     id='id-tradingview'
                                 >
                                     <TradingView />
+                                </div>
+                            )}
+                            {show_bulk_trading && (
+                                <div
+                                    label={
+                                        <>
+                                            <LabelPairedObjectsColumnCaptionRegularIcon
+                                                height='24px'
+                                                width='24px'
+                                                fill='#c8a45d'
+                                            />
+                                            <Localize i18n_default_text='Bulk Trading' />
+                                        </>
+                                    }
+                                    id='id-bulk-trading'
+                                >
+                                    <BulkTrading />
                                 </div>
                             )}
                         </Tabs>
