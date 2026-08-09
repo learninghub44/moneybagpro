@@ -49,8 +49,8 @@ const AiStrategyFloatingButton = observer(() => {
 
     return (
         <button className={styles.trigger} onClick={handleClick} type='button' title='AI strategy setup'>
-            <span className={styles.dot} />
             <span>AI</span>
+            <span className={styles.dot} />
         </button>
     );
 });
