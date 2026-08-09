@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
 import { useLocation, useNavigate } from 'react-router-dom';
+import AiStrategyFloating from '@/components/ai-strategy-floating';
 import RiskDisclaimerFloating from '@/components/risk-disclaimer-floating';
 import { generateOAuthURL, getDomainRedirectUrl, isDomainFeatureEnabled } from '@/components/shared';
 import DesktopWrapper from '@/components/shared_ui/desktop-wrapper';
@@ -48,6 +49,7 @@ import Analysistool from '../analysistool';
 import AutoTrades from '../auto-trades/auto-trades';
 import BestBots from '../best-bots';
 import BotIdeas from '../bot-ideas';
+import BulkTrading from '../bulk-trading';
 import ChartModal from '../chart/chart-modal';
 import ChartWrapper from '../chart/chart-wrapper';
 import Dashboard from '../dashboard';
@@ -102,6 +104,7 @@ const AppWrapper = observer(() => {
         CHART,
         TRADING_VIEW,
         UP_AND_DOWN,
+        BULK_TRADING,
     } = DBOT_TABS;
     const init_render = React.useRef(true);
     const hash = [
@@ -117,6 +120,7 @@ const AppWrapper = observer(() => {
         'analysistool',
         'chart',
         'tradingview',
+        'bulk_trading',
     ];
     const show_bot_ideas = isDomainFeatureEnabled('botIdeas');
     const show_auto_trades = isDomainFeatureEnabled('autoTrades');
@@ -125,11 +129,13 @@ const AppWrapper = observer(() => {
     const show_accumilatoirs = isDomainFeatureEnabled('accumilatoirs');
     const show_chart = isDomainFeatureEnabled('chart');
     const show_trading_view = isDomainFeatureEnabled('tradingView');
+    const show_bulk_trading = isDomainFeatureEnabled('bulkTrading');
     const isMainTabVisible = (tab_index: number) => {
         if (tab_index === BOT_IDEAS) return show_bot_ideas;
         if (tab_index === AUTO_TRADES) return show_auto_trades;
         if (tab_index === MANUAL_TRADING) return show_manual_trading;
         if (tab_index === SCANNER) return show_scanner;
+        if (tab_index === BULK_TRADING) return show_bulk_trading;
         if (tab_index === DBOT_TABS.ACCUMILATOIRS) return show_accumilatoirs;
         if (tab_index === CHART) return show_chart;
         if (tab_index === TRADING_VIEW) return show_trading_view;
@@ -600,6 +606,23 @@ const AppWrapper = observer(() => {
                                     <ManualTrading />
                                 </div>
                             )}
+                            {show_bulk_trading && (
+                                <div
+                                    label={
+                                        <>
+                                            <LabelPairedObjectsColumnCaptionRegularIcon
+                                                height='24px'
+                                                width='24px'
+                                                fill='#c8a45d'
+                                            />
+                                            <Localize i18n_default_text='Bulk Trading' />
+                                        </>
+                                    }
+                                    id='id-bulk-trading'
+                                >
+                                    <BulkTrading />
+                                </div>
+                            )}
                             {show_scanner ? (
                                 <div
                                     label={
@@ -691,6 +714,7 @@ const AppWrapper = observer(() => {
                 </div>
             </div>
             <RiskDisclaimerFloating />
+            <AiStrategyFloating />
             <DesktopWrapper>
                 {should_show_run_panel && (
                     <div className='main__run-strategy-wrapper'>

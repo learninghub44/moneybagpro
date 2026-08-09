@@ -32,6 +32,7 @@ type DomainFeatureFlags = {
     accumilatoirs: boolean;
     chart: boolean;
     tradingView: boolean;
+    bulkTrading: boolean;
 };
 
 type MartingaleConfig = {
@@ -140,6 +141,7 @@ const DEFAULT_DOMAIN_FEATURES: DomainFeatureFlags = {
     accumilatoirs: false,
     chart: true,
     tradingView: true,
+    bulkTrading: true,
 };
 
 const DEFAULT_MARTINGALE_CONFIG: MartingaleConfig = {
