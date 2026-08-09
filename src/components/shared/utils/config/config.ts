@@ -326,6 +326,26 @@ const createHostedDomainEntries = ({
 };
 
 export const DOMAIN_CONFIG: Record<string, DomainConfig> = {
+    // ── Template for adding a new domain ─────────────────────────────────────
+    // Copy one of the blocks below and adjust. Standard fields to fill in for
+    // every new site:
+    //   ...createHostedDomainEntries({
+    //       primaryDomain: 'newsite.site',
+    //       aliases: ['www.newsite.site'],
+    //       clientId: '...',                 // OAuth2 CLIENT_ID registered for this domain
+    //       appId: '...',                    // Legacy Deriv APP_ID
+    //       redirectUri: 'https://newsite.site/',
+    //       ui: {
+    //           brandName: 'New Site',
+    //           socialLinks: {                // WhatsApp/Telegram community links
+    //               whatsapp: 'https://wa.me/xxxxxxxxxx',
+    //               telegram: 'https://t.me/xxxxxxxxxx',
+    //           },
+    //       },
+    //   }),
+    // socialLinks isn't required — it falls back to the DEFAULT_DOMAIN_UI
+    // placeholder links if omitted, so the banner still renders — but set it
+    // explicitly per domain as soon as that site's real invite links exist.
     // ── Primary production domain ────────────────────────────────────────────
     // New OAuth app registered redirect: https://riskmanagers.site/ (trailing slash)
     ...createHostedDomainEntries({
