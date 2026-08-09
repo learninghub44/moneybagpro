@@ -189,7 +189,14 @@ const DEFAULT_DOMAIN_UI: DomainUIConfig = {
     showDisclaimer: true,
     customCssVars: {},
     martingale: DEFAULT_MARTINGALE_CONFIG,
-    socialLinks: {},
+    // Placeholder links so the banner is visible on every domain right away —
+    // swap these for each domain's real invite link via `ui.socialLinks` on
+    // createHostedDomainEntries() (see the commented example on the
+    // riskmanagers.site entry below).
+    socialLinks: {
+        whatsapp: 'https://wa.me/254700000000',
+        telegram: 'https://t.me/YourChannel',
+    },
 };
 
 const LOCALHOST_DOMAIN_UI: Partial<DomainUIConfig> = {
