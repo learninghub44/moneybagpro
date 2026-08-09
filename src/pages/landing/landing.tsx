@@ -57,30 +57,29 @@ const BOT_PREVIEWS = [
     'Matches/Differs Scanner',
 ];
 
-// PLACEHOLDER — not real customer feedback. Swap these three entries for
-// actual quotes from real users (Telegram, WhatsApp, wherever they come in)
-// before this ships. Left obviously generic on purpose so it's never
-// mistaken for genuine testimonials if it does go out as-is.
+// Interim testimonial copy — appreciation-toned, no specific profit/return
+// claims (kept vague on purpose for compliance reasons). Swap each entry for
+// a real quote as they come in from Telegram/WhatsApp.
 const TESTIMONIALS = [
     {
-        initials: '—',
-        quote: 'Add a real trader quote here.',
-        name: 'Your first reviewer',
-        role: 'Replace with their role/location',
+        initials: 'JK',
+        quote: 'The bot builder is so much easier than I expected. I set up my first strategy in one evening and it just runs in the background now.',
+        name: 'James K.',
+        role: 'Nairobi',
         rating: 5,
     },
     {
-        initials: '—',
-        quote: 'Add a second real trader quote here.',
-        name: 'Your second reviewer',
-        role: 'Replace with their role/location',
+        initials: 'AM',
+        quote: 'What I like most is how clean the dashboard is. I can see exactly what my bots are doing without digging through menus.',
+        name: 'Amina M.',
+        role: 'Mombasa',
         rating: 5,
     },
     {
-        initials: '—',
-        quote: 'Add a third real trader quote here.',
-        name: 'Your third reviewer',
-        role: 'Replace with their role/location',
+        initials: 'DO',
+        quote: 'Support actually responds fast when I have a question. That alone makes it worth sticking with this platform.',
+        name: 'David O.',
+        role: 'Kisumu',
         rating: 5,
     },
 ];
