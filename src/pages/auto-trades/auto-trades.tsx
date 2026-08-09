@@ -88,7 +88,7 @@ type AiAutoTradeParseResult = {
     unsupportedCapabilities?: string[];
     customStrategy?: AiCustomStrategy;
     confidence?: number;
-    source?: 'openai' | 'local' | 'preset';
+    source?: 'groq' | 'local' | 'preset';
 };
 
 const DATA_SILENCE_RESTART_MS = 15000;
@@ -460,7 +460,7 @@ export const normalizeAiAutoTradePlan = (plan: Partial<AiAutoTradeParseResult>):
         },
         confidence: Number.isFinite(Number(plan.confidence)) ? Number(plan.confidence) : undefined,
         source:
-            plan.source === 'openai' || plan.source === 'local' || plan.source === 'preset' ? plan.source : undefined,
+            plan.source === 'groq' || plan.source === 'local' || plan.source === 'preset' ? plan.source : undefined,
     };
 };
 
@@ -1773,7 +1773,7 @@ const AutoTrades = observer(() => {
                 throw new Error(error?.error || 'AI strategy service is unavailable.');
             }
 
-            const aiResult = normalizeAiAutoTradePlan({ ...(await response.json()), source: 'openai' });
+            const aiResult = normalizeAiAutoTradePlan({ ...(await response.json()), source: 'groq' });
             setAiStrategyResult(aiResult);
             if (aiResult.warnings.length === 0 || aiResult.summary.length > 0) applyAiSettings(aiResult);
         } catch (error) {
@@ -1782,8 +1782,8 @@ const AutoTrades = observer(() => {
                 warnings: [
                     ...localResult.warnings,
                     error instanceof Error
-                        ? `OpenAI unavailable, applied local understanding instead: ${error.message}`
-                        : 'OpenAI unavailable, applied local understanding instead.',
+                        ? `Groq unavailable, applied local understanding instead: ${error.message}`
+                        : 'Groq unavailable, applied local understanding instead.',
                 ],
                 source: 'local',
             });
@@ -3709,8 +3709,8 @@ const AutoTrades = observer(() => {
                         {aiStrategyResult && (
                             <div className='auto-trades-ai-modal__result'>
                                 <div className='auto-trades-ai-modal__source'>
-                                    {aiStrategyResult.source === 'openai'
-                                        ? 'OpenAI reasoning'
+                                    {aiStrategyResult.source === 'groq'
+                                        ? 'Groq reasoning'
                                         : aiStrategyResult.source === 'preset'
                                           ? 'Preset library'
                                           : 'Local fallback'}
