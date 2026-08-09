@@ -1,6 +1,10 @@
+databases:
+    - name: moneybagpro-db
+      plan: free
+
 services:
     - type: web
-      name: deriv-bot-backend
+      name: moneybagpro-backend
       runtime: node
       runtimeVersion: 20
       plan: free
@@ -9,7 +13,9 @@ services:
       startCommand: npm run server
       envVars:
           - key: DATABASE_URL
-            sync: false
+            fromDatabase:
+                name: moneybagpro-db
+                property: connectionString
           - key: NODE_ENV
             value: production
           - key: PORT
@@ -18,5 +24,9 @@ services:
             sync: false
           - key: GROQ_MODEL
             value: llama-3.3-70b-versatile
+          - key: SUPABASE_URL
+            sync: false
+          - key: SUPABASE_SERVICE_ROLE_KEY
+            sync: false
           - key: CORS_ORIGIN
-            value: https://riskmanagers.site,https://www.riskmanagers.site,https://derivhhub.com,https://derivhhub.site,https://www.derivhhub.site,https://mrzetuzetu.site,https://www.mrzetuzetu.site,https://masterhunter.site,https://www.masterhunter.site,https://tradinghubs.site,https://www.tradinghubs.site,https://mafiahub.site,https://www.mafiahub.site,https://kicktrade.site,https://www.kicktrade.site,https://moneybagpro.site,https://www.moneybagpro.site,http://localhost:5000
+            value: https://moneybagpro.site,https://www.moneybagpro.site,http://localhost:5000
