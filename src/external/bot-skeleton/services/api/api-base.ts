@@ -77,6 +77,7 @@ class APIBase {
     active_symbols_promise: Promise<any[] | undefined> | null = null;
     common_store: CommonStore | undefined;
     reconnection_attempts: number = 0;
+    reconnect_timer_id: ReturnType<typeof setTimeout> | null = null;
     execution_config: IExecutionConfig = getExecutionConfig('fast');
     execution_mode: TExecutionMode = 'fast';
 
@@ -84,6 +85,8 @@ class APIBase {
     private readonly ACTIVE_SYMBOLS_TIMEOUT_MS = 10000; // 10 seconds
     private readonly ENRICHMENT_TIMEOUT_MS = 10000; // 10 seconds
     private readonly MAX_RECONNECTION_ATTEMPTS = 5; // Maximum number of reconnection attempts before session reset
+    private readonly BASE_RECONNECT_DELAY_MS = 1000; // Starting backoff delay
+    private readonly MAX_RECONNECT_DELAY_MS = 15000; // Backoff ceiling
 
     is_initializing = false;
 
@@ -322,6 +325,10 @@ class APIBase {
 
     terminate() {
         this.is_stopping = true;
+        if (this.reconnect_timer_id) {
+            clearTimeout(this.reconnect_timer_id);
+            this.reconnect_timer_id = null;
+        }
         if (this.api) this.api.disconnect();
     }
 
@@ -340,6 +347,9 @@ class APIBase {
 
     reconnectIfNotConnected = () => {
         if (this.is_initializing || this.is_stopping) return;
+        // Already have a reconnect scheduled — don't stack another one on top
+        // (close/online/focus can all fire within the same tick).
+        if (this.reconnect_timer_id) return;
         if (this.api?.connection?.readyState && this.api?.connection?.readyState > 1) {
             this.reconnection_attempts += 1;
 
@@ -356,7 +366,20 @@ class APIBase {
                 // should not force the user to log in again; explicit logout handles clearing.
             }
 
-            this.init(true);
+            // Exponential backoff with jitter — retrying instantly on every dropped
+            // connection just hammers the server and produces a burst of
+            // "failed to connect" errors instead of giving the network a chance
+            // to recover.
+            const backoff_delay = Math.min(
+                this.BASE_RECONNECT_DELAY_MS * 2 ** (this.reconnection_attempts - 1),
+                this.MAX_RECONNECT_DELAY_MS
+            );
+            const jitter = Math.random() * 300;
+
+            this.reconnect_timer_id = setTimeout(() => {
+                this.reconnect_timer_id = null;
+                this.init(true);
+            }, backoff_delay + jitter);
         }
     };
 

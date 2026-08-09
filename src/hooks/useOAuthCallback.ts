@@ -188,6 +188,14 @@ export const useOAuthCallback = (): OAuthCallbackResult => {
                 legacyAccounts: [],
                 error: 'CSRF token validation failed',
             });
+            // IMPORTANT: strip code/state from the URL and send the user back to a
+            // clean landing page. Without this, the stray `code` param stays in the
+            // address bar, RootGate sees `code` present and treats it as "returning
+            // from OAuth", and silently forwards the user into /app while logged
+            // out — no error is ever shown to them, it just looks like "login
+            // doesn't work". This mirrors the missing-state branch above so both
+            // failure paths behave the same way.
+            window.location.replace(window.location.origin);
             return;
         }
 

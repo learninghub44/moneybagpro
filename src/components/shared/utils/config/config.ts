@@ -1261,9 +1261,13 @@ export const validateCSRFToken = (token: string): boolean => {
         return false;
     }
 
-    // Check if token is expired (10 minutes = 600000ms)
+    // Check if token is expired (30 minutes = 1_800_000ms). Was 10 minutes,
+    // which is easy to blow past on Deriv's real login flow (email/SMS OTP,
+    // slow connections, 2FA apps) — a user who takes 11 minutes to log in
+    // got silently bounced with no visible error. 30 min keeps CSRF
+    // protection meaningful while giving login enough room to complete.
     const tokenAge = Date.now() - parseInt(timestamp, 10);
-    if (tokenAge > 600000) {
+    if (tokenAge > 1_800_000) {
         // Clean up expired token
         sessionStorage.removeItem('oauth_csrf_token');
         sessionStorage.removeItem('oauth_csrf_token_timestamp');
