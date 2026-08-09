@@ -57,6 +57,34 @@ const BOT_PREVIEWS = [
     'Matches/Differs Scanner',
 ];
 
+// PLACEHOLDER — not real customer feedback. Swap these three entries for
+// actual quotes from real users (Telegram, WhatsApp, wherever they come in)
+// before this ships. Left obviously generic on purpose so it's never
+// mistaken for genuine testimonials if it does go out as-is.
+const TESTIMONIALS = [
+    {
+        initials: '—',
+        quote: 'Add a real trader quote here.',
+        name: 'Your first reviewer',
+        role: 'Replace with their role/location',
+        rating: 5,
+    },
+    {
+        initials: '—',
+        quote: 'Add a second real trader quote here.',
+        name: 'Your second reviewer',
+        role: 'Replace with their role/location',
+        rating: 5,
+    },
+    {
+        initials: '—',
+        quote: 'Add a third real trader quote here.',
+        name: 'Your third reviewer',
+        role: 'Replace with their role/location',
+        rating: 5,
+    },
+];
+
 const Landing = () => {
     const domain_config = getDomainConfig();
     const signup_url = getDerivSignupUrl();
@@ -142,6 +170,28 @@ const Landing = () => {
                             <span className='landing__feature-tag'>{feature.tag}</span>
                             <h3 className='landing__feature-title'>{feature.title}</h3>
                             <p className='landing__feature-description'>{feature.description}</p>
+                        </div>
+                    ))}
+                </div>
+            </section>
+
+            <section className='landing__testimonials'>
+                <span className='landing__eyebrow'>Reviews</span>
+                <h2 className='landing__section-title'>What traders are saying</h2>
+                <div className='landing__testimonial-track'>
+                    {TESTIMONIALS.map(t => (
+                        <div className='landing__testimonial-card' key={t.name}>
+                            <span className='landing__testimonial-avatar'>{t.initials}</span>
+                            <p className='landing__testimonial-quote'>&ldquo;{t.quote}&rdquo;</p>
+                            <p className='landing__testimonial-name'>{t.name}</p>
+                            <p className='landing__testimonial-role'>{t.role}</p>
+                            <div className='landing__testimonial-stars' aria-label={`${t.rating} out of 5 stars`}>
+                                {Array.from({ length: 5 }).map((_, i) => (
+                                    <span key={i} className={i < t.rating ? 'is-filled' : ''}>
+                                        ★
+                                    </span>
+                                ))}
+                            </div>
                         </div>
                     ))}
                 </div>

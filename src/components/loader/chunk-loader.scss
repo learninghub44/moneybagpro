@@ -1,0 +1,111 @@
+.chunk-loader {
+    --ink: #05070d;
+    --paper: #f4f5f8;
+    --muted: #8c93a6;
+    --accent-1: #ef4444;
+    --accent-2: #ec4899;
+
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(ellipse 70% 50% at 50% 40%, rgba(239, 68, 68, 0.12), transparent), var(--ink);
+    color: var(--paper);
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    text-align: center;
+    padding: 24px;
+
+    &__radar {
+        position: relative;
+        width: 140px;
+        height: 140px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 28px;
+    }
+
+    &__ring {
+        position: absolute;
+        inset: 0;
+        border-radius: 999px;
+        border: 1.5px solid var(--accent-1);
+        opacity: 0;
+        animation: chunk-loader-ping 2.4s ease-out infinite;
+
+        &--2 {
+            animation-delay: 0.6s;
+        }
+
+        &--3 {
+            animation-delay: 1.2s;
+        }
+    }
+
+    &__percent {
+        position: relative;
+        font-family: 'Space Grotesk', 'Inter', sans-serif;
+        font-size: 1.5rem;
+        font-weight: 700;
+        background: linear-gradient(90deg, var(--accent-1), var(--accent-2));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+    }
+
+    &__brand {
+        font-family: 'Space Grotesk', 'Inter', sans-serif;
+        font-size: 1.6rem;
+        font-weight: 700;
+        margin: 0 0 10px;
+    }
+
+    &__message {
+        font-size: 0.95rem;
+        color: var(--muted);
+        margin: 0 0 24px;
+        max-width: 320px;
+    }
+
+    &__bar-track {
+        width: 220px;
+        height: 4px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.08);
+        overflow: hidden;
+        margin-bottom: 14px;
+    }
+
+    &__bar-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--accent-1), var(--accent-2));
+        border-radius: 999px;
+        transition: width 0.25s ease;
+    }
+
+    &__phrase {
+        font-size: 0.8rem;
+        color: var(--muted);
+        margin: 0;
+    }
+}
+
+@keyframes chunk-loader-ping {
+    0% {
+        transform: scale(0.5);
+        opacity: 0.7;
+    }
+    100% {
+        transform: scale(1.6);
+        opacity: 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .chunk-loader__ring {
+        animation: none;
+        opacity: 0.25;
+    }
+}
