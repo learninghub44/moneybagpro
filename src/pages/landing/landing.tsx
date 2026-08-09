@@ -82,6 +82,27 @@ const TESTIMONIALS = [
         role: 'Kisumu',
         rating: 5,
     },
+    {
+        initials: 'FW',
+        quote: 'Switching between my accounts used to be a hassle. Now everything is in one place and I can check all my bots at a glance.',
+        name: 'Faith W.',
+        role: 'Eldoret',
+        rating: 5,
+    },
+    {
+        initials: 'SM',
+        quote: 'I appreciate that the platform is straightforward. No clutter, no confusing settings, just what I need to run my strategies.',
+        name: 'Samuel M.',
+        role: 'Nakuru',
+        rating: 5,
+    },
+    {
+        initials: 'GN',
+        quote: 'Been using this for a few months now and it has been reliable. Uptime is good and I rarely run into issues.',
+        name: 'Grace N.',
+        role: 'Kisii',
+        rating: 5,
+    },
 ];
 
 const Landing = () => {
