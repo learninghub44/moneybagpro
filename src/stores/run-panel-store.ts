@@ -186,7 +186,7 @@ export default class RunPanelStore {
     is_sell_requested = false;
     show_bot_stop_message = false;
     is_contract_buying_in_progress = false;
-    execution_mode: TExecutionMode = 'slow';
+    execution_mode: TExecutionMode = 'fast';
 
     run_id = '';
     onOkButtonClick: (() => void) | null = null;

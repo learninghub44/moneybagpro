@@ -77,8 +77,8 @@ class APIBase {
     active_symbols_promise: Promise<any[] | undefined> | null = null;
     common_store: CommonStore | undefined;
     reconnection_attempts: number = 0;
-    execution_config: IExecutionConfig = getExecutionConfig('slow');
-    execution_mode: TExecutionMode = 'slow';
+    execution_config: IExecutionConfig = getExecutionConfig('fast');
+    execution_mode: TExecutionMode = 'fast';
 
     // Constants for timeouts - extracted magic numbers for better maintainability
     private readonly ACTIVE_SYMBOLS_TIMEOUT_MS = 10000; // 10 seconds
