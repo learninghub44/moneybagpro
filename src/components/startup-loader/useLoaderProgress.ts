@@ -20,6 +20,11 @@ export function useLoaderProgress({
     const startTimeRef = useRef<number>(Date.now());
     const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
     const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const appReadyRef = useRef(appReady);
+
+    useEffect(() => {
+        appReadyRef.current = appReady;
+    }, [appReady]);
 
     const calculateNextProgress = useCallback((currentProgress: number): number => {
         // 0-25%: fast (up to 5% per update)
@@ -53,7 +58,7 @@ export function useLoaderProgress({
             setProgress(currentProgress => {
                 const simulatedProgress = calculateNextProgress(currentProgress);
                 // Use the maximum of time-based and simulated progress to ensure progress moves
-                const nextProgress = Math.min(Math.max(simulatedProgress, timeProgress * 0.8), appReady ? 100 : 99);
+                const nextProgress = Math.min(Math.max(simulatedProgress, timeProgress * 0.8), appReadyRef.current ? 100 : 99);
 
                 onProgress?.(nextProgress);
                 return nextProgress;
@@ -80,7 +85,9 @@ export function useLoaderProgress({
                 clearTimeout(timeoutRef.current);
             }
         };
-    }, [maximumDuration, calculateNextProgress, onProgress, appReady]);
+        // NOTE: appReady intentionally excluded here — it's read via appReadyRef so
+        // this timer (and startTimeRef) isn't reset when appReady flips mid-load.
+    }, [maximumDuration, calculateNextProgress, onProgress]);
 
     // Handle app ready state
     useEffect(() => {

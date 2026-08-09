@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { WelcomeLoader } from './welcome-loader';
 
 type TStartupLoaderProps = {
@@ -19,6 +19,8 @@ const StartupLoader = ({ children }: TStartupLoaderProps) => {
         return () => window.clearTimeout(timer);
     }, []);
 
+    const handleComplete = useCallback(() => setIsComplete(true), []);
+
     return (
         <>
             {!is_complete && (
@@ -26,7 +28,7 @@ const StartupLoader = ({ children }: TStartupLoaderProps) => {
                     appReady={is_ready}
                     minimumDuration={STARTUP_LOADER_DURATION}
                     maximumDuration={STARTUP_LOADER_DURATION}
-                    onComplete={() => setIsComplete(true)}
+                    onComplete={handleComplete}
                 />
             )}
             {is_complete ? children : null}

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useDomainLoaderConfig } from '../useDomainLoaderConfig';
 import { useLoaderProgress } from '../useLoaderProgress';
 import { useTypingEffect } from './useTypingEffect';
@@ -68,13 +68,18 @@ export const WelcomeLoader: React.FC<WelcomeLoaderProps> = ({
         };
     }, []);
 
+    const hasExitedRef = useRef(false);
+    const onCompleteRef = useRef(onComplete);
+    onCompleteRef.current = onComplete;
+
     useEffect(() => {
-        if (progress >= 100 && !isExiting) {
+        if (progress >= 100 && !hasExitedRef.current) {
+            hasExitedRef.current = true;
             setIsExiting(true);
-            const exitTimer = window.setTimeout(onComplete, 550);
+            const exitTimer = window.setTimeout(() => onCompleteRef.current(), 550);
             return () => window.clearTimeout(exitTimer);
         }
-    }, [progress, isExiting, onComplete]);
+    }, [progress]);
 
     const statusIndex = Math.min(STATUS_MESSAGES.length - 1, Math.floor((progress / 100) * STATUS_MESSAGES.length));
 
