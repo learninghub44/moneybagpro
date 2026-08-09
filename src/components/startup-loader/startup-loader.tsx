@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { DomainPreloader } from './domain-preloader';
+import { WelcomeLoader } from './welcome-loader';
 
 type TStartupLoaderProps = {
     children: React.ReactNode;
 };
 
-const STARTUP_LOADER_DURATION = 6000;
+const STARTUP_LOADER_DURATION = 4200;
 
 const StartupLoader = ({ children }: TStartupLoaderProps) => {
     const [is_ready, setIsReady] = useState(false);
@@ -14,7 +14,6 @@ const StartupLoader = ({ children }: TStartupLoaderProps) => {
     useEffect(() => {
         const timer = window.setTimeout(() => {
             setIsReady(true);
-            setIsComplete(true);
         }, STARTUP_LOADER_DURATION);
 
         return () => window.clearTimeout(timer);
@@ -23,9 +22,8 @@ const StartupLoader = ({ children }: TStartupLoaderProps) => {
     return (
         <>
             {!is_complete && (
-                <DomainPreloader
+                <WelcomeLoader
                     appReady={is_ready}
-                    disableSessionReduction
                     minimumDuration={STARTUP_LOADER_DURATION}
                     maximumDuration={STARTUP_LOADER_DURATION}
                     onComplete={() => setIsComplete(true)}
