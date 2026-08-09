@@ -29,4 +29,4 @@ services:
           - key: SUPABASE_SERVICE_ROLE_KEY
             sync: false
           - key: CORS_ORIGIN
-            value: https://moneybagpro.site,https://www.moneybagpro.site,http://localhost:5000
+            value: https://moneybagpro.site,https://www.moneybagpro.site,https://moneypool.site,https://www.moneypool.site,http://localhost:5000
