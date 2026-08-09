@@ -3,26 +3,85 @@ import { getDerivSignupUrl, getDomainConfig } from '@/components/shared';
 import RiskDisclaimerFloating from '@/components/risk-disclaimer-floating';
 import './landing.scss';
 
+const TRUST_BADGES = ['Free to use', 'Your own Deriv account', 'No card required'];
+
 const FEATURES = [
     {
-        emoji: '\u{1F916}',
+        tag: 'BUILD',
         title: 'Drag-and-drop bot builder',
-        description: 'Build automated trading strategies visually — no coding required. Start from scratch or a quick strategy.',
+        description: 'Snap blocks together to define entry rules, stakes, and stop conditions — no code required.',
     },
     {
-        emoji: '\u{26A1}',
-        title: 'Free curated bots',
-        description: 'Load ready-made, community-tested strategies straight into the builder and start running them in minutes.',
+        tag: 'BOTS',
+        title: '60+ free bots',
+        description: 'Load a ready-made strategy straight into the builder and see exactly how it works before you run it.',
     },
     {
-        emoji: '\u{1F4C8}',
-        title: 'Live charts & signals',
-        description: 'Track real-time price action, digits, and market signals without leaving the platform.',
+        tag: 'SIGNALS',
+        title: 'Live digits & charts',
+        description: 'Watch the same tick stream your bots trade on — even/odd, over/under, rise/fall — in real time.',
     },
     {
-        emoji: '\u{1F512}',
-        title: 'Your account, your control',
-        description: 'Trades run on your own Deriv account. We never hold your funds or place trades without your say-so.',
+        tag: 'CONTROL',
+        title: 'Your account, your rules',
+        description: 'Every trade runs on your own Deriv account. Nothing executes without a strategy you approved first.',
+    },
+];
+
+const STEPS = [
+    {
+        step: '01',
+        title: 'Create your Deriv account',
+        description: 'Free, and takes about two minutes. Your funds stay with Deriv — we never touch them directly.',
+    },
+    {
+        step: '02',
+        title: 'Load or build a bot',
+        description: 'Pick a free strategy from the library, or drag your own together in the visual builder.',
+    },
+    {
+        step: '03',
+        title: 'Run it and watch the ticks',
+        description: 'Start the bot, track every trade live, and stop it any time — you stay in control throughout.',
+    },
+];
+
+// A sample of real strategy names pulled from the bot library, used for the
+// scrolling preview strip below the hero. Duplicated once for a seamless loop.
+const BOT_PREVIEWS = [
+    'Even/Odd Digit Bot',
+    'Over/Under Speed Bot',
+    'Rise & Fall Momentum',
+    'Double Under Bot',
+    'Percentage Over Bot',
+    'Matches/Differs Scanner',
+];
+
+// PLACEHOLDER — not real customer feedback. Swap these three entries for
+// actual quotes from real users (Telegram, WhatsApp, wherever they come in)
+// before this ships. Left obviously generic on purpose so it's never
+// mistaken for genuine testimonials if it does go out as-is.
+const TESTIMONIALS = [
+    {
+        initials: '—',
+        quote: 'Add a real trader quote here.',
+        name: 'Your first reviewer',
+        role: 'Replace with their role/location',
+        rating: 5,
+    },
+    {
+        initials: '—',
+        quote: 'Add a second real trader quote here.',
+        name: 'Your second reviewer',
+        role: 'Replace with their role/location',
+        rating: 5,
+    },
+    {
+        initials: '—',
+        quote: 'Add a third real trader quote here.',
+        name: 'Your third reviewer',
+        role: 'Replace with their role/location',
+        rating: 5,
     },
 ];
 
@@ -32,7 +91,7 @@ const Landing = () => {
     const brand_name = domain_config.ui.brandName;
 
     return (
-        <div className='landing' style={{ '--landing-primary': domain_config.ui.primaryColor } as CSSProperties}>
+        <div className='landing' style={{ '--landing-accent': domain_config.ui.primaryColor } as CSSProperties}>
             <header className='landing__header'>
                 <div className='landing__brand'>
                     {domain_config.ui.logoUrl ? (
@@ -41,18 +100,37 @@ const Landing = () => {
                         <span className='landing__brand-name'>{brand_name}</span>
                     )}
                 </div>
-                <div className='landing__header-actions'>
-                    <a className='landing__link' href='/app'>
-                        Launch platform
-                    </a>
-                </div>
+                <a className='landing__link' href='/app'>
+                    Launch platform
+                </a>
             </header>
 
             <section className='landing__hero'>
-                <h1 className='landing__hero-title'>Automate your trades with {brand_name}</h1>
+                <div className='landing__trust-row'>
+                    {TRUST_BADGES.map(badge => (
+                        <span className='landing__trust-badge' key={badge}>
+                            <svg viewBox='0 0 16 16' width='14' height='14' aria-hidden='true'>
+                                <path
+                                    d='M13.5 4.5 6.5 11.5 2.5 7.5'
+                                    fill='none'
+                                    stroke='currentColor'
+                                    strokeWidth='1.8'
+                                    strokeLinecap='round'
+                                    strokeLinejoin='round'
+                                />
+                            </svg>
+                            {badge}
+                        </span>
+                    ))}
+                </div>
+                <h1 className='landing__hero-title'>
+                    Automate your trades.
+                    <br />
+                    Watch the ticks work.
+                </h1>
                 <p className='landing__hero-subtitle'>
-                    Build, run, and manage automated Deriv trading strategies without writing a single line of code —
-                    free bots, live charts, and a visual builder, all in one place.
+                    {brand_name} is a free, visual bot builder for Deriv — load a ready-made strategy or build your
+                    own, then let it trade on your rules while you watch every tick live.
                 </p>
                 <div className='landing__hero-actions'>
                     <a
@@ -68,24 +146,74 @@ const Landing = () => {
                     </a>
                 </div>
                 <p className='landing__hero-note'>
-                    New to Deriv? Creating an account through the link above costs you nothing extra and helps support{' '}
-                    {brand_name}.
+                    New to Deriv? Signing up through the link above costs you nothing extra and helps keep{' '}
+                    {brand_name} free.
                 </p>
             </section>
 
+            <div className='landing__carousel' aria-hidden='true'>
+                <div className='landing__carousel-track'>
+                    {[...BOT_PREVIEWS, ...BOT_PREVIEWS].map((name, i) => (
+                        <span className='landing__carousel-chip' key={i}>
+                            {name}
+                        </span>
+                    ))}
+                </div>
+            </div>
+
             <section className='landing__features'>
-                {FEATURES.map(feature => (
-                    <div className='landing__feature-card' key={feature.title}>
-                        <span className='landing__feature-emoji'>{feature.emoji}</span>
-                        <h3 className='landing__feature-title'>{feature.title}</h3>
-                        <p className='landing__feature-description'>{feature.description}</p>
-                    </div>
-                ))}
+                <span className='landing__eyebrow'>Platform</span>
+                <h2 className='landing__section-title'>Everything you need, built in</h2>
+                <div className='landing__feature-grid'>
+                    {FEATURES.map(feature => (
+                        <div className='landing__feature-card' key={feature.title}>
+                            <span className='landing__feature-tag'>{feature.tag}</span>
+                            <h3 className='landing__feature-title'>{feature.title}</h3>
+                            <p className='landing__feature-description'>{feature.description}</p>
+                        </div>
+                    ))}
+                </div>
+            </section>
+
+            <section className='landing__testimonials'>
+                <span className='landing__eyebrow'>Reviews</span>
+                <h2 className='landing__section-title'>What traders are saying</h2>
+                <div className='landing__testimonial-track'>
+                    {TESTIMONIALS.map(t => (
+                        <div className='landing__testimonial-card' key={t.name}>
+                            <span className='landing__testimonial-avatar'>{t.initials}</span>
+                            <p className='landing__testimonial-quote'>&ldquo;{t.quote}&rdquo;</p>
+                            <p className='landing__testimonial-name'>{t.name}</p>
+                            <p className='landing__testimonial-role'>{t.role}</p>
+                            <div className='landing__testimonial-stars' aria-label={`${t.rating} out of 5 stars`}>
+                                {Array.from({ length: 5 }).map((_, i) => (
+                                    <span key={i} className={i < t.rating ? 'is-filled' : ''}>
+                                        ★
+                                    </span>
+                                ))}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </section>
+
+            <section className='landing__steps'>
+                <span className='landing__eyebrow'>Getting started</span>
+                <h2 className='landing__section-title'>How it works</h2>
+                <div className='landing__steps-grid'>
+                    {STEPS.map(item => (
+                        <div className='landing__step' key={item.step}>
+                            <span className='landing__step-number'>{item.step}</span>
+                            <h3 className='landing__step-title'>{item.title}</h3>
+                            <p className='landing__step-description'>{item.description}</p>
+                        </div>
+                    ))}
+                </div>
             </section>
 
             <section className='landing__cta-band'>
-                <h2>Ready to start trading smarter?</h2>
-                <p>Open a free Deriv account, then jump into {brand_name} to build your first bot.</p>
+                <h2>Ready to see it trade?</h2>
+                <p>Open a free Deriv account, then jump into {brand_name} and run your first bot in minutes.</p>
                 <a
                     className='landing__cta landing__cta--primary'
                     href={signup_url}
