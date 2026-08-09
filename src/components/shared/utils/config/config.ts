@@ -40,6 +40,11 @@ type MartingaleConfig = {
     consecutiveLossThreshold: number;
 };
 
+type DomainSocialLinks = {
+    whatsapp?: string; // Full invite/chat link, e.g. https://chat.whatsapp.com/xxxxx or https://wa.me/xxxxx
+    telegram?: string; // Full channel/group link, e.g. https://t.me/xxxxx
+};
+
 type DomainUIConfig = {
     brandName: string;
     primaryColor: string;
@@ -70,6 +75,11 @@ type DomainUIConfig = {
     showDisclaimer: boolean;
     customCssVars: Record<string, string>;
     martingale?: MartingaleConfig;
+    // WhatsApp/Telegram community links for this domain. Left empty by default —
+    // fill in per domain via the `ui.socialLinks` override on createHostedDomainEntries()
+    // once each site's real community/channel link is available. The banner that
+    // reads this only renders links that are actually set.
+    socialLinks?: DomainSocialLinks;
 };
 
 interface DomainConfig {
@@ -179,6 +189,7 @@ const DEFAULT_DOMAIN_UI: DomainUIConfig = {
     showDisclaimer: true,
     customCssVars: {},
     martingale: DEFAULT_MARTINGALE_CONFIG,
+    socialLinks: {},
 };
 
 const LOCALHOST_DOMAIN_UI: Partial<DomainUIConfig> = {
@@ -327,6 +338,11 @@ export const DOMAIN_CONFIG: Record<string, DomainConfig> = {
         ui: {
             ...LOCALHOST_DOMAIN_UI,
             brandName: 'Risk Managers',
+            // TODO: replace with this domain's real WhatsApp/Telegram invite links.
+            // socialLinks: {
+            //     whatsapp: 'https://chat.whatsapp.com/xxxxxxxxxxxxxxxxxxxxxx',
+            //     telegram: 'https://t.me/xxxxxxxxxx',
+            // },
         },
     }),
     // ── Additional production domain ─────────────────────────────────────────

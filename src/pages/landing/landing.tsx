@@ -1,4 +1,5 @@
 import type { CSSProperties } from 'react';
+import CommunityBanner from '@/components/community-banner/community-banner';
 import { getDerivSignupUrl, getDomainConfig } from '@/components/shared';
 import RiskDisclaimerFloating from '@/components/risk-disclaimer-floating';
 import './landing.scss';
@@ -125,6 +126,13 @@ const Landing = () => {
                 </a>
             </header>
 
+            <CommunityBanner
+                whatsapp={domain_config.ui.socialLinks?.whatsapp}
+                telegram={domain_config.ui.socialLinks?.telegram}
+                brandName={brand_name}
+                variant='bar'
+            />
+
             <section className='landing__hero'>
                 <div className='landing__trust-row'>
                     {TRUST_BADGES.map(badge => (
@@ -245,6 +253,13 @@ const Landing = () => {
             </section>
 
             <footer className='landing__footer'>
+                <CommunityBanner
+                    whatsapp={domain_config.ui.socialLinks?.whatsapp}
+                    telegram={domain_config.ui.socialLinks?.telegram}
+                    brandName={brand_name}
+                    variant='card'
+                    className='landing__footer-community'
+                />
                 <p>
                     {brand_name} provides tools to build and run trading strategies on Deriv. Trading involves risk of
                     loss and may not be suitable for everyone. Past performance of any strategy or bot does not

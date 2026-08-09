@@ -1,0 +1,73 @@
+.community-banner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.6rem;
+    flex-wrap: wrap;
+    width: 100%;
+    box-sizing: border-box;
+
+    &--bar {
+        padding: 0.8rem 1.6rem;
+        background: var(--landing-accent, #2196f3);
+        color: #fff;
+    }
+
+    &--card {
+        padding: 1.2rem 1.6rem;
+        border-radius: 12px;
+        background: rgba(37, 211, 102, 0.08);
+        border: 1px solid rgba(37, 211, 102, 0.24);
+    }
+
+    &__text {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        font-size: 1.3rem;
+        font-weight: 600;
+        text-align: center;
+    }
+
+    &__badge {
+        font-size: 1.3rem;
+        line-height: 1;
+    }
+
+    &__links {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        flex-wrap: wrap;
+    }
+
+    &__link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1.2rem;
+        border-radius: 999px;
+        font-size: 1.2rem;
+        font-weight: 700;
+        text-decoration: none;
+        white-space: nowrap;
+        transition:
+            transform 0.15s ease,
+            opacity 0.15s ease;
+
+        &:hover {
+            transform: translateY(-1px);
+            opacity: 0.92;
+        }
+
+        &--whatsapp {
+            background: #25d366;
+            color: #08331c;
+        }
+
+        &--telegram {
+            background: #26a5e4;
+            color: #052f45;
+        }
+    }
+}
