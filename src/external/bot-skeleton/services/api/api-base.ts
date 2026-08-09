@@ -19,6 +19,7 @@ import {
 } from '@/utils/api-token-permissions';
 import { clearAuthData } from '@/utils/auth-utils';
 import { handleBackendError, isBackendError } from '@/utils/error-handler';
+import { tradingTimesService } from '@/components/shared/services/trading-times-service';
 import { activeSymbolsProcessorService } from '../../../../services/active-symbols-processor.service';
 import { observer as globalObserver } from '../../utils/observer';
 import { doUntilDone, socket_state } from '../tradeEngine/utils/helpers';
@@ -748,6 +749,14 @@ class APIBase {
 
             const activeSymbolsPromise = doUntilDone(() => this.api?.send({ active_symbols: 'brief' }), [], this);
 
+            // Warm the trading-times cache in parallel with active_symbols instead of
+            // after it resolves — enrichment needs trading_times right away and it's
+            // an independent WS request on the same connection, so there's no reason
+            // to wait. On a slow connection this was adding a second full ~10s
+            // timeout window on top of the first, roughly doubling worst-case load
+            // time; running them concurrently cuts that back to one.
+            const tradingTimesWarmup = tradingTimesService.getTradingTimes().catch(() => null);
+
             const apiResult = await Promise.race([activeSymbolsPromise, timeout]);
 
             const { active_symbols = [], error = {} } = apiResult as any;
@@ -761,6 +770,12 @@ class APIBase {
             }
 
             this.has_active_symbols = true;
+
+            // Let the parallel trading-times warm-up settle so the enrichment call
+            // below hits the now-populated cache instead of firing a second
+            // trading_times request (getTradingTimes() doesn't dedupe concurrent
+            // in-flight calls).
+            await tradingTimesWarmup;
 
             // Process active symbols using the dedicated service with fallback
             try {
