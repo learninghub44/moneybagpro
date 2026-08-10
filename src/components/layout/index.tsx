@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import { Outlet } from 'react-router-dom';
@@ -144,22 +144,51 @@ const Layout = observer(() => {
 
     const domain_config = getDomainConfig();
 
+    // Everything fixed-positioned below the top chrome (run panel, mobile tab
+    // content, sidebars) offsets against --app-chrome-height, which needs to
+    // equal the REAL combined height of the ticker banner + header — not a
+    // guess. Measure it directly so it stays correct regardless of banner
+    // presence, font scaling, browser zoom, or safe-area insets, instead of
+    // hardcoding a number that only holds for one screen/config.
+    const layoutRef = useRef<HTMLDivElement>(null);
+    const chromeRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const layout_el = layoutRef.current;
+        const chrome_el = chromeRef.current;
+        if (!layout_el || !chrome_el) return undefined;
+
+        const applyChromeHeight = () => {
+            layout_el.style.setProperty('--app-chrome-height', `${chrome_el.offsetHeight}px`);
+        };
+
+        applyChromeHeight();
+
+        if (typeof ResizeObserver === 'undefined') return undefined;
+        const observer = new ResizeObserver(applyChromeHeight);
+        observer.observe(chrome_el);
+        return () => observer.disconnect();
+    }, [isCallbackPage]);
+
     return (
         <div
+            ref={layoutRef}
             className={clsx('layout', {
                 responsive: isDesktop,
                 'quick-strategy-active': is_quick_strategy_active && !isDesktop,
             })}
         >
-            {!isCallbackPage && (
-                <CommunityBanner
-                    whatsapp={domain_config.ui.socialLinks?.whatsapp}
-                    telegram={domain_config.ui.socialLinks?.telegram}
-                    brandName={domain_config.ui.brandName}
-                    variant='ticker'
-                />
-            )}
-            {!isCallbackPage && <AppHeader isAuthenticating={isAuthenticating || !isInitialAuthCheckComplete} />}
+            <div ref={chromeRef}>
+                {!isCallbackPage && (
+                    <CommunityBanner
+                        whatsapp={domain_config.ui.socialLinks?.whatsapp}
+                        telegram={domain_config.ui.socialLinks?.telegram}
+                        brandName={domain_config.ui.brandName}
+                        variant='ticker'
+                    />
+                )}
+                {!isCallbackPage && <AppHeader isAuthenticating={isAuthenticating || !isInitialAuthCheckComplete} />}
+            </div>
             <Body>
                 <Outlet />
             </Body>

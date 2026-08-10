@@ -36,10 +36,12 @@
 
         &--mobile {
             position: fixed;
-            inset: var(--app-header-height, 4rem) 0 0;
+            inset: var(--app-chrome-height, var(--app-header-height, 4rem)) 0 0;
             width: 100%;
             z-index: 900;
-            height: calc(100% - var(--app-header-height, 4rem) - env(safe-area-inset-bottom, 0));
+            height: calc(
+                100% - var(--app-chrome-height, var(--app-header-height, 4rem)) - env(safe-area-inset-bottom, 0)
+            );
             padding-bottom: env(safe-area-inset-bottom, 0);
             background: var(--run-panel-frame-bg);
             border: 2px solid var(--run-panel-frame-border);
@@ -126,7 +128,7 @@
             // fully inside the visible area instead of poking out, and keep
             // it a large, obvious tap target.
             position: absolute !important;
-            top: 0.8rem !important;
+            top: 1.6rem !important;
             left: 50% !important;
             right: auto !important;
             transform: translateX(-50%) !important;

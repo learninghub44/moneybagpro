@@ -329,7 +329,7 @@
             width: 100%;
             max-width: 100%;
             inset-inline-end: 0;
-            top: var(--app-header-height, 4rem);
+            top: var(--app-chrome-height, var(--app-header-height, 4rem));
             z-index: 900;
         }
     }
