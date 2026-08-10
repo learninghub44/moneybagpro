@@ -98,20 +98,37 @@
 
         @include mobile-or-tablet-screen {
             position: absolute;
-            top: -1.6rem;
+            // This is the ONLY way back to the tabs/navigation on mobile while
+            // the run panel is open (main.scss hides .dc-tabs__list with
+            // visibility:hidden in that state) — so it has to be unmissable.
+            // Was 4.8rem x 3.2rem poking out just 1.6rem above the drawer;
+            // bumped to a bigger, higher-contrast pill that's obviously
+            // tappable instead of blending into the header strip above it.
+            top: -2rem;
             left: 50%;
             right: auto;
-            width: 4.8rem;
-            height: 3.2rem;
-            min-height: 3.2rem;
+            width: 6.4rem;
+            height: 4rem;
+            min-height: 4rem;
             transform: translateX(-50%);
             justify-content: center;
-            background-color: var(--general-main-1);
-            border: 1px solid var(--border-normal);
+            background-color: #17130f;
+            border: 1px solid rgba(200, 164, 93, 0.55);
+            box-shadow: 0 0.4rem 1.2rem rgb(0 0 0 / 35%);
+            z-index: 5;
         }
 
         svg {
+            // var(--text-general) was resolving to a near-invisible color
+            // against some header/theme backgrounds — the same bug already
+            // fixed on the mobile hamburger and account-switcher balance
+            // button. Hardcoded white guarantees the chevron is always
+            // visible regardless of theme.
             fill: var(--text-general);
+
+            @include mobile-or-tablet-screen {
+                fill: #ffffff;
+            }
         }
 
         &-icon {
