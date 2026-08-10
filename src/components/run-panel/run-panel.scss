@@ -117,9 +117,23 @@
         }
 
         @include mobile-or-tablet-screen {
-            width: 4.8rem;
-            height: 3.2rem;
-            min-height: 3.2rem;
+            // Was width:4.8rem/height:3.2rem sitting at top:-2rem (from
+            // drawer.scss) — poking above the drawer's own top edge. But
+            // .run-panel__container--mobile (the direct ancestor here) has
+            // overflow:hidden, so anything positioned outside the drawer's
+            // own box gets clipped off entirely. That's the actual bug:
+            // this toggle was being cut off, not just low-contrast. Pull it
+            // fully inside the visible area instead of poking out, and keep
+            // it a large, obvious tap target.
+            position: absolute !important;
+            top: 0.8rem !important;
+            left: 50% !important;
+            right: auto !important;
+            transform: translateX(-50%) !important;
+            width: 7.2rem;
+            height: 3.6rem;
+            min-height: 3.6rem;
+            z-index: 903;
         }
     }
 
