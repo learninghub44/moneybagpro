@@ -807,13 +807,10 @@ export const DOMAIN_CONFIG: Record<string, DomainConfig> = {
                 authBorder: '#d4af37',
                 gold: '#d4af37',
             }),
-            // TODO: replace with this domain's real WhatsApp/Telegram invite
-            // links once provided. Falls back to the DEFAULT_DOMAIN_UI
-            // placeholder links (wa.me/254700000000, t.me/YourChannel) until then.
-            // socialLinks: {
-            //     whatsapp: 'https://chat.whatsapp.com/xxxxxxxxxxxxxxxxxxxxxx',
-            //     telegram: 'https://t.me/xxxxxxxxxx',
-            // },
+            socialLinks: {
+                whatsapp: 'https://whatsapp.com/channel/0029VbCnRVX9WtC2aRQtDi2A',
+                // TODO: add real Telegram channel link once available.
+            },
         },
     }),
     ...createHostedDomainEntries({
