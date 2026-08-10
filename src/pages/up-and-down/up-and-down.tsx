@@ -29,6 +29,7 @@ type TTradeTypeId =
     | 'only_ups_downs';
 
 type TProposalPreview = Partial<Record<'CALL' | 'PUT', number>>;
+type TPrefetchedProposal = { id: string; ask_price: number; params_key: string; fetched_at: number };
 type TDirection = -1 | 0 | 1;
 type TSignalSnapshot = {
     confidence: number;
@@ -277,6 +278,9 @@ const UpAndDown = observer(() => {
     const [is_auto_signal_on, setIsAutoSignalOn] = useState(false);
     const [is_more_settings_open, setIsMoreSettingsOpen] = useState(false);
     const [proposal_preview, setProposalPreview] = useState<TProposalPreview>({});
+    const [prefetched_proposals, setPrefetchedProposals] = useState<Partial<Record<'CALL' | 'PUT', TPrefetchedProposal>>>(
+        {}
+    );
     const [proposal_message, setProposalMessage] = useState('');
     const [is_proposal_loading, setIsProposalLoading] = useState(false);
     const [is_purchasing, setIsPurchasing] = useState(false);
@@ -313,6 +317,7 @@ const UpAndDown = observer(() => {
     useEffect(() => {
         if (!can_quote || !base_trade_parameters) {
             setProposalPreview({});
+            setPrefetchedProposals({});
             setProposalMessage(
                 selected_trade_type === 'rise_fall'
                     ? 'Enter a valid stake and duration to quote Rise/Fall.'
@@ -358,10 +363,37 @@ const UpAndDown = observer(() => {
                     PUT: Number.isFinite(fall_payout) ? fall_payout : undefined,
                 });
                 setProposalMessage('Live proposal ready.');
+
+                // Stash the id + ask_price this preview call already fetched, keyed to
+                // the exact params used. If the user hits Buy while this is still
+                // fresh, we can execute straight away instead of fetching a brand new
+                // proposal — cutting one full WS round-trip off the critical path
+                // between clicking Buy and the trade actually executing.
+                const now = Date.now();
+                const next_prefetched: Partial<Record<'CALL' | 'PUT', TPrefetchedProposal>> = {};
+                (
+                    [
+                        ['CALL', rise_response],
+                        ['PUT', fall_response],
+                    ] as const
+                ).forEach(([contract_type, response]) => {
+                    const proposal = response?.proposal;
+                    const ask_price = Number(proposal?.ask_price);
+                    if (proposal?.id && Number.isFinite(ask_price)) {
+                        next_prefetched[contract_type] = {
+                            id: proposal.id,
+                            ask_price,
+                            params_key: JSON.stringify({ ...base_trade_parameters, contract_type }),
+                            fetched_at: now,
+                        };
+                    }
+                });
+                setPrefetchedProposals(next_prefetched);
             } catch (error) {
                 if (is_cancelled) return;
                 const message = error instanceof Error ? error.message : 'Unable to fetch a live proposal.';
                 setProposalPreview({});
+                setPrefetchedProposals({});
                 setProposalMessage(message);
             } finally {
                 if (!is_cancelled) setIsProposalLoading(false);
@@ -415,6 +447,15 @@ const UpAndDown = observer(() => {
             setTradeMessage(contract_type === 'CALL' ? 'Buying Rise contract...' : 'Buying Fall contract...');
 
             try {
+                const params_key = JSON.stringify({ ...base_trade_parameters, contract_type });
+                const prefetched = prefetched_proposals[contract_type];
+                // Only reuse a prefetched proposal if it's for these exact trade
+                // parameters and still very fresh (<2s) — otherwise its ask_price
+                // may no longer reflect the live market, so we fall back to
+                // buyContractForUi's own fresh proposal+buy flow.
+                const is_prefetch_usable =
+                    prefetched && prefetched.params_key === params_key && Date.now() - prefetched.fetched_at < 2000;
+
                 const buy = await buyContractForUi({
                     parameters: {
                         ...base_trade_parameters,
@@ -422,6 +463,9 @@ const UpAndDown = observer(() => {
                     },
                     price: normalized_stake,
                     source: 'Up & Down',
+                    ...(is_prefetch_usable
+                        ? { prefetchedProposal: { id: prefetched!.id, ask_price: prefetched!.ask_price } }
+                        : {}),
                 });
                 const buy_details = buy as Record<string, any>;
 

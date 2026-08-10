@@ -12,6 +12,7 @@ import { useTranslations } from '@deriv-com/translations';
 import { Drawer, MobileLanguagesDrawer, useDevice } from '@deriv-com/ui';
 import NetworkStatus from './../../footer/NetworkStatus';
 import ServerTime from './../../footer/ServerTime';
+import CommunityLinks from './../../footer/CommunityLinks';
 import BackButton from './back-button';
 import MenuContent from './menu-content';
 import MenuHeader from './menu-header';
@@ -126,6 +127,7 @@ const MobileMenu = ({ onLogout }: TMobileMenuProps) => {
                 <Drawer.Footer className='mobile-menu__footer'>
                     <ServerTime />
                     <NetworkStatus />
+                    <CommunityLinks />
                 </Drawer.Footer>
             </Drawer>
         </div>

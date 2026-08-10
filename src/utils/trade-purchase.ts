@@ -11,6 +11,15 @@ type TBuyContractArgs = {
     parameters: TTradeParameters;
     price: number;
     source: string;
+    /**
+     * Optional proposal id + ask_price already fetched moments earlier (e.g. a
+     * live preview quote shown on screen). When provided and still fresh, skips
+     * the fresh `proposal` round-trip and buys directly with it — cutting one
+     * full WS round-trip off the critical path between clicking Buy and the
+     * trade executing. Callers are responsible for only passing one that's
+     * still recent and matches the current parameters.
+     */
+    prefetchedProposal?: { id: string; ask_price: number };
 };
 
 class InsufficientDemoBalanceError extends Error {
@@ -92,7 +101,12 @@ const assertSufficientDemoBalance = (required_amount: number, source: string) =>
     }
 };
 
-export const buyContractForUi = async ({ parameters, price, source }: TBuyContractArgs): Promise<Buy> => {
+export const buyContractForUi = async ({
+    parameters,
+    price,
+    source,
+    prefetchedProposal,
+}: TBuyContractArgs): Promise<Buy> => {
     await ensureAuthorizedForTrading();
     assertApiTokenScope('trade');
 
@@ -102,25 +116,31 @@ export const buyContractForUi = async ({ parameters, price, source }: TBuyContra
     const normalized_parameters = normalizeTradeParameters(parameters);
 
     try {
-        const proposal_response = await (api_base.api as any).send({
-            proposal: 1,
-            ...normalized_parameters,
-        });
-        throwApiError(proposal_response, source);
+        let proposal_id: string | undefined = prefetchedProposal?.id;
+        let ask_price: number = prefetchedProposal?.ask_price ?? price;
 
-        const proposal = proposal_response?.proposal;
-        if (!proposal?.id) {
-            throw new Error(`${source} could not get a contract proposal.`);
+        if (!prefetchedProposal) {
+            const proposal_response = await (api_base.api as any).send({
+                proposal: 1,
+                ...normalized_parameters,
+            });
+            throwApiError(proposal_response, source);
+
+            const proposal = proposal_response?.proposal;
+            if (!proposal?.id) {
+                throw new Error(`${source} could not get a contract proposal.`);
+            }
+            proposal_id = proposal.id;
+            ask_price = Number(proposal.ask_price ?? price);
         }
 
-        const ask_price = Number(proposal.ask_price ?? price);
         assertSufficientDemoBalance(ask_price, source);
         globalObserver.emit('contract.status', {
             id: 'contract.purchase_sent',
             data: ask_price,
         });
 
-        const buy_response = await (api_base.api as any).send({ buy: proposal.id, price: ask_price });
+        const buy_response = await (api_base.api as any).send({ buy: proposal_id, price: ask_price });
         throwApiError(buy_response, source);
 
         const buy = buy_response?.buy;

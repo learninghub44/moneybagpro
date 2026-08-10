@@ -126,10 +126,10 @@ $account-balance-green: #0b6b37;
 
     &__currency-button {
         align-items: center;
-        background: var(--general-main-2);
-        border: 1px solid var(--general-section-1);
+        background: #17130f;
+        border: 1px solid rgba(200, 164, 93, 0.32);
         border-radius: 0.6rem;
-        color: var(--text-prominent);
+        color: #f5d58a;
         display: flex;
         font-size: 1.1rem;
         font-weight: 700;
@@ -138,6 +138,14 @@ $account-balance-green: #0b6b37;
         justify-content: center;
         min-width: 5.6rem;
         padding: 0 1rem;
+
+        &:hover {
+            border-color: rgba(200, 164, 93, 0.55);
+        }
+
+        svg {
+            color: #f5d58a;
+        }
     }
 
     &__currency-switcher {
