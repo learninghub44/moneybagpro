@@ -20,6 +20,41 @@
         border: 1px solid rgba(37, 211, 102, 0.24);
     }
 
+    // Scrolling marquee strip for the top of the in-app dashboard only.
+    // Deliberately its own block, sharing no layout rules with --bar/--card,
+    // so tweaking this can never affect the landing page banner.
+    &--ticker {
+        justify-content: flex-start;
+        flex-wrap: nowrap;
+        overflow: hidden;
+        padding: 0.6rem 0;
+        background: #111113;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        white-space: nowrap;
+    }
+
+    &__ticker-track {
+        display: inline-flex;
+        align-items: center;
+        gap: 6rem;
+        animation: community-banner-scroll 22s linear infinite;
+        will-change: transform;
+    }
+
+    &__ticker-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 2rem;
+        flex-shrink: 0;
+        padding-right: 6rem;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        &__ticker-track {
+            animation: none;
+        }
+    }
+
     &__text {
         display: flex;
         align-items: center;
@@ -69,5 +104,21 @@
             background: #26a5e4;
             color: #052f45;
         }
+    }
+}
+
+.community-banner--ticker {
+    .community-banner__text,
+    .community-banner__badge {
+        color: #fff;
+    }
+}
+
+@keyframes community-banner-scroll {
+    from {
+        transform: translateX(0);
+    }
+    to {
+        transform: translateX(-50%);
     }
 }

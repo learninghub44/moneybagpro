@@ -4,8 +4,11 @@ type CommunityBannerProps = {
     whatsapp?: string;
     telegram?: string;
     brandName?: string;
-    /** 'bar' = slim full-width strip (landing page). 'card' = compact rounded card (in-app placements). */
-    variant?: 'bar' | 'card';
+    /** 'bar' = slim full-width strip (landing page). 'card' = compact rounded
+     *  card (in-app placements). 'ticker' = scrolling marquee strip for the
+     *  top of the in-app dashboard — visually distinct from 'bar' so the two
+     *  never get confused with each other. */
+    variant?: 'bar' | 'card' | 'ticker';
     className?: string;
 };
 
@@ -41,38 +44,69 @@ const TelegramIcon = () => (
 const CommunityBanner = ({ whatsapp, telegram, brandName, variant = 'bar', className }: CommunityBannerProps) => {
     if (!whatsapp && !telegram) return null;
 
+    const links = (
+        <span className='community-banner__links'>
+            {whatsapp && (
+                <a
+                    className='community-banner__link community-banner__link--whatsapp'
+                    href={whatsapp}
+                    target='_blank'
+                    rel='noopener noreferrer'
+                >
+                    <WhatsAppIcon />
+                    WhatsApp
+                </a>
+            )}
+            {telegram && (
+                <a
+                    className='community-banner__link community-banner__link--telegram'
+                    href={telegram}
+                    target='_blank'
+                    rel='noopener noreferrer'
+                >
+                    <TelegramIcon />
+                    Telegram
+                </a>
+            )}
+        </span>
+    );
+
+    const text = (
+        <span className='community-banner__text'>
+            <span className='community-banner__badge' aria-hidden='true'>
+                ⚡
+            </span>
+            Join {brandName ? `the ${brandName}` : 'our'} community for signals &amp; updates
+        </span>
+    );
+
+    if (variant === 'ticker') {
+        // Duplicate the content once so the marquee can scroll from 0% to
+        // -50% and loop seamlessly (CSS-only, no JS measuring/animation).
+        const item = (
+            <span className='community-banner__ticker-item'>
+                {text}
+                {links}
+            </span>
+        );
+        return (
+            <div
+                className={`community-banner community-banner--ticker${className ? ` ${className}` : ''}`}
+                role='note'
+                aria-label='Community links'
+            >
+                <div className='community-banner__ticker-track'>
+                    {item}
+                    {item}
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className={`community-banner community-banner--${variant}${className ? ` ${className}` : ''}`}>
-            <span className='community-banner__text'>
-                <span className='community-banner__badge' aria-hidden='true'>
-                    ⚡
-                </span>
-                Join {brandName ? `the ${brandName}` : 'our'} community for signals &amp; updates
-            </span>
-            <span className='community-banner__links'>
-                {whatsapp && (
-                    <a
-                        className='community-banner__link community-banner__link--whatsapp'
-                        href={whatsapp}
-                        target='_blank'
-                        rel='noopener noreferrer'
-                    >
-                        <WhatsAppIcon />
-                        WhatsApp
-                    </a>
-                )}
-                {telegram && (
-                    <a
-                        className='community-banner__link community-banner__link--telegram'
-                        href={telegram}
-                        target='_blank'
-                        rel='noopener noreferrer'
-                    >
-                        <TelegramIcon />
-                        Telegram
-                    </a>
-                )}
-            </span>
+            {text}
+            {links}
         </div>
     );
 };

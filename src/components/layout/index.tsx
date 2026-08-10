@@ -5,7 +5,8 @@ import { Outlet } from 'react-router-dom';
 import { api_base } from '@/external/bot-skeleton';
 import { useStore } from '@/hooks/useStore';
 import { useDevice } from '@deriv-com/ui';
-import { crypto_currencies_display_order, fiat_currencies_display_order } from '../shared';
+import { crypto_currencies_display_order, fiat_currencies_display_order, getDomainConfig } from '../shared';
+import CommunityBanner from '../community-banner/community-banner';
 import Footer from './footer';
 import AppHeader from './header';
 import Body from './main-body';
@@ -141,6 +142,8 @@ const Layout = observer(() => {
         }
     }, [isAuthenticating, isInitialAuthCheckComplete]);
 
+    const domain_config = getDomainConfig();
+
     return (
         <div
             className={clsx('layout', {
@@ -148,6 +151,14 @@ const Layout = observer(() => {
                 'quick-strategy-active': is_quick_strategy_active && !isDesktop,
             })}
         >
+            {!isCallbackPage && (
+                <CommunityBanner
+                    whatsapp={domain_config.ui.socialLinks?.whatsapp}
+                    telegram={domain_config.ui.socialLinks?.telegram}
+                    brandName={domain_config.ui.brandName}
+                    variant='ticker'
+                />
+            )}
             {!isCallbackPage && <AppHeader isAuthenticating={isAuthenticating || !isInitialAuthCheckComplete} />}
             <Body>
                 <Outlet />
