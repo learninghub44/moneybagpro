@@ -116,8 +116,20 @@ const openSocket = (): Promise<WebSocket> =>
         };
     });
 
-const buildTradeRequestParameters = (trade: TBulkTradeParameters) => {
-    const symbol_field = getSymbolRequestField(trade.symbol);
+const buildTradeRequestParameters = (trade: TBulkTradeParameters, webSocketURL?: string) => {
+    // Mode 1 (executeTradeOnAccount) always connects over its own dedicated
+    // legacy socket (LEGACY_WS_SERVER, /websockets/v3), independent of
+    // whatever connection type the main app session happens to be using
+    // right now — that call passes LEGACY_WS_SERVER explicitly. Mode 2
+    // (runBulkTradesOnActiveAccount) instead sends over the main app's own
+    // live connection via buyContractForUi, so it must NOT be forced to
+    // legacy — it leaves webSocketURL undefined and lets
+    // getSymbolRequestField fall back to whatever that connection actually
+    // is. Without this distinction, forcing legacy everywhere would send
+    // { symbol } to a modern PKCE-flow connection that expects
+    // { underlying_symbol }, breaking Mode 2 the same way omitting it
+    // entirely was breaking Mode 1.
+    const symbol_field = getSymbolRequestField(trade.symbol, webSocketURL);
 
     return normalizeTradeParameters({
         ...symbol_field,
@@ -149,7 +161,7 @@ export const executeTradeOnAccount = async (
             return { loginid: account.loginid, ok: false, message: auth_response.error.message || 'Authorization failed.' };
         }
 
-        const parameters = buildTradeRequestParameters(trade);
+        const parameters = buildTradeRequestParameters(trade, LEGACY_WS_SERVER);
         const proposal_response = await sendOnSocket(socket, { proposal: 1, ...parameters });
         if (proposal_response.error) {
             return { loginid: account.loginid, ok: false, message: proposal_response.error.message || 'Could not get a price.' };
