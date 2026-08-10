@@ -1,0 +1,15 @@
+.mobile-menu-toggle-button {
+    align-items: center;
+    background: #17130f;
+    border: 1px solid rgba(200, 164, 93, 0.32);
+    border-radius: 0.6rem;
+    display: flex;
+    height: 3.2rem;
+    justify-content: center;
+    width: 3.2rem;
+
+    &:hover,
+    &:active {
+        border-color: rgba(200, 164, 93, 0.55);
+    }
+}
