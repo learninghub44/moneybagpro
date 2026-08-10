@@ -159,7 +159,14 @@ export const buyContractForUi = async ({
         }
 
         const api_error = getApiError(proposal_error);
-        if (api_error) {
+        // A prefetched proposal can go stale between the preview fetch and the
+        // click — Deriv proposals for volatility indices can reprice within a
+        // second or two. That's an artifact of our own optimization, not a
+        // real problem with the trade, so retry once with a freshly fetched
+        // proposal below instead of failing the trade outright. Only a fresh
+        // proposal's own rejection (or any other buy attempt's) should be
+        // treated as final.
+        if (api_error && !prefetchedProposal) {
             console.error(`[${source}] Proposal rejected by Deriv.`, {
                 code: api_error.code,
                 details: api_error.details,
@@ -169,7 +176,7 @@ export const buyContractForUi = async ({
             throwApiError({ error: api_error }, source);
         }
 
-        console.warn(`[${source}] Proposal buy failed, retrying with direct buy.`, proposal_error);
+        console.warn(`[${source}] Proposal buy failed, retrying with a fresh proposal.`, proposal_error);
     }
 
     assertSufficientDemoBalance(price, source);
