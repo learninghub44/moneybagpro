@@ -106,6 +106,8 @@ const TradeFieldsEditor = ({
     );
 };
 
+const initials = (loginid: string) => loginid.replace(/[0-9]/g, '').slice(0, 2).toUpperCase() || loginid.slice(0, 2).toUpperCase();
+
 const BulkTrading = observer(() => {
     const { client } = useStore();
     const [mode, setMode] = useState<'accounts' | 'batch'>('accounts');
@@ -115,6 +117,7 @@ const BulkTrading = observer(() => {
     const [selectedLoginids, setSelectedLoginids] = useState<string[]>(() =>
         linked_accounts.map(account => account.loginid)
     );
+    const all_selected = linked_accounts.length > 0 && selectedLoginids.length === linked_accounts.length;
     const [accountsTrade, setAccountsTrade] = useState<TBulkTradeParameters>(DEFAULT_TRADE);
     const [accountsResults, setAccountsResults] = useState<TBulkTradeResult[] | null>(null);
     const [isRunningAccounts, setIsRunningAccounts] = useState(false);
@@ -129,6 +132,13 @@ const BulkTrading = observer(() => {
             current.includes(loginid) ? current.filter(id => id !== loginid) : [...current, loginid]
         );
     };
+
+    const toggleAll = () => {
+        setSelectedLoginids(all_selected ? [] : linked_accounts.map(account => account.loginid));
+    };
+
+    const accounts_won = accountsResults?.filter(result => result.ok).length ?? 0;
+    const batch_won = batchResults ? Object.values(batchResults).filter(result => result.ok).length : 0;
 
     const handleRunAccounts = async () => {
         const accounts = linked_accounts.filter(account => selectedLoginids.includes(account.loginid));
@@ -159,20 +169,43 @@ const BulkTrading = observer(() => {
 
     return (
         <div className='bulk-trading-page'>
+            <div className='bulk-trading__hero'>
+                <div>
+                    <h2 className='bulk-trading__title'>Bulk Trading</h2>
+                    <p className='bulk-trading__subtitle'>Fire the same trade across accounts, or several trades at once.</p>
+                </div>
+                <div className='bulk-trading__stats'>
+                    <div className='bulk-trading__stat'>
+                        <span className='bulk-trading__stat-value'>{linked_accounts.length}</span>
+                        <span className='bulk-trading__stat-label'>Linked accounts</span>
+                    </div>
+                    <div className='bulk-trading__stat'>
+                        <span className='bulk-trading__stat-value'>{selectedLoginids.length}</span>
+                        <span className='bulk-trading__stat-label'>Selected</span>
+                    </div>
+                    <div className='bulk-trading__stat'>
+                        <span className='bulk-trading__stat-value'>{mode === 'accounts' ? accounts_won : batch_won}</span>
+                        <span className='bulk-trading__stat-label'>Last run wins</span>
+                    </div>
+                </div>
+            </div>
+
             <div className='bulk-trading__mode-toggle'>
                 <button
                     className={classNames('bulk-trading__mode-btn', { 'bulk-trading__mode-btn--active': mode === 'accounts' })}
                     onClick={() => setMode('accounts')}
                     type='button'
                 >
-                    Same trade, multiple accounts
+                    <span className='bulk-trading__mode-btn-title'>Same trade, multiple accounts</span>
+                    <span className='bulk-trading__mode-btn-desc'>Mirror one trade across every account you pick</span>
                 </button>
                 <button
                     className={classNames('bulk-trading__mode-btn', { 'bulk-trading__mode-btn--active': mode === 'batch' })}
                     onClick={() => setMode('batch')}
                     type='button'
                 >
-                    Multiple trades, one account
+                    <span className='bulk-trading__mode-btn-title'>Multiple trades, one account</span>
+                    <span className='bulk-trading__mode-btn-desc'>Stack different trades on your active account</span>
                 </button>
             </div>
 
@@ -189,23 +222,38 @@ const BulkTrading = observer(() => {
                             mode.
                         </p>
                     ) : (
-                        <div className='bulk-trading__account-list'>
-                            {linked_accounts.map(account => (
-                                <label key={account.loginid} className='bulk-trading__account'>
-                                    <input
-                                        checked={selectedLoginids.includes(account.loginid)}
-                                        onChange={() => toggleAccount(account.loginid)}
-                                        type='checkbox'
-                                    />
-                                    <span>
-                                        {account.loginid}
-                                        {account.currency ? ` · ${account.currency}` : ''}
-                                        {account.is_virtual ? ' · Demo' : ''}
-                                        {account.loginid === client?.loginid ? ' (current)' : ''}
-                                    </span>
-                                </label>
-                            ))}
-                        </div>
+                        <>
+                            <div className='bulk-trading__account-list-header'>
+                                <span>{linked_accounts.length} account{linked_accounts.length === 1 ? '' : 's'} available</span>
+                                <button className='bulk-trading__select-all-btn' onClick={toggleAll} type='button'>
+                                    {all_selected ? 'Deselect all' : 'Select all'}
+                                </button>
+                            </div>
+                            <div className='bulk-trading__account-list'>
+                                {linked_accounts.map(account => {
+                                    const checked = selectedLoginids.includes(account.loginid);
+                                    return (
+                                        <label
+                                            key={account.loginid}
+                                            className={classNames('bulk-trading__account', {
+                                                'bulk-trading__account--checked': checked,
+                                            })}
+                                        >
+                                            <input checked={checked} onChange={() => toggleAccount(account.loginid)} type='checkbox' />
+                                            <span className='bulk-trading__account-avatar'>{initials(account.loginid)}</span>
+                                            <span className='bulk-trading__account-info'>
+                                                <span className='bulk-trading__account-loginid'>{account.loginid}</span>
+                                                <span className='bulk-trading__account-meta'>
+                                                    {account.currency ?? ''}
+                                                    {account.loginid === client?.loginid ? ' · Current' : ''}
+                                                </span>
+                                            </span>
+                                            {account.is_virtual && <span className='bulk-trading__badge bulk-trading__badge--demo'>Demo</span>}
+                                        </label>
+                                    );
+                                })}
+                            </div>
+                        </>
                     )}
 
                     <TradeFieldsEditor trade={accountsTrade} onChange={setAccountsTrade} />
@@ -216,9 +264,11 @@ const BulkTrading = observer(() => {
                         onClick={handleRunAccounts}
                         type='button'
                     >
-                        {isRunningAccounts
-                            ? 'Placing trades…'
-                            : `Place on ${selectedLoginids.length} account${selectedLoginids.length === 1 ? '' : 's'}`}
+                        {isRunningAccounts ? (
+                            <span className='bulk-trading__spinner' />
+                        ) : (
+                            `Place on ${selectedLoginids.length} account${selectedLoginids.length === 1 ? '' : 's'}`
+                        )}
                     </button>
 
                     {accountsResults && (
@@ -231,6 +281,7 @@ const BulkTrading = observer(() => {
                                         'bulk-trading__result--error': !result.ok,
                                     })}
                                 >
+                                    <span className='bulk-trading__result-icon'>{result.ok ? '✓' : '✕'}</span>
                                     <strong>{result.loginid}</strong>
                                     <span>{result.ok ? `Bought · payout ${result.payout ?? '—'}` : result.message}</span>
                                 </li>
@@ -295,7 +346,7 @@ const BulkTrading = observer(() => {
                         onClick={handleRunBatch}
                         type='button'
                     >
-                        {isRunningBatch ? 'Placing trades…' : `Place ${batchTrades.length} trades`}
+                        {isRunningBatch ? <span className='bulk-trading__spinner' /> : `Place ${batchTrades.length} trades`}
                     </button>
                 </section>
             )}

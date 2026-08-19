@@ -3,8 +3,58 @@
     flex-direction: column;
     gap: 1.6rem;
     padding: 1.6rem;
-    max-width: 72rem;
+    max-width: 76rem;
     margin: 0 auto;
+}
+
+.bulk-trading__hero {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.6rem;
+    padding: 1.6rem 2rem;
+    border-radius: 1.2rem;
+    background: linear-gradient(135deg, rgba(255, 68, 79, 0.08), rgba(75, 180, 179, 0.08));
+    border: 1px solid var(--general-section-1, #d6dadb);
+}
+
+.bulk-trading__title {
+    margin: 0;
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+.bulk-trading__subtitle {
+    margin: 0.2rem 0 0;
+    font-size: 1.2rem;
+    opacity: 0.7;
+}
+
+.bulk-trading__stats {
+    display: flex;
+    gap: 2rem;
+}
+
+.bulk-trading__stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.bulk-trading__stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--brand-red-coral, #ff444f);
+}
+
+.bulk-trading__stat-label {
+    margin-top: 0.4rem;
+    font-size: 1rem;
+    opacity: 0.65;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
 }
 
 .bulk-trading__mode-toggle {
@@ -14,18 +64,41 @@
 
 .bulk-trading__mode-btn {
     flex: 1;
-    padding: 1rem 1.2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.3rem;
+    padding: 1.2rem 1.4rem;
     border: 1px solid var(--general-section-1, #d6dadb);
-    border-radius: 0.8rem;
+    border-radius: 1rem;
     background: transparent;
-    font-weight: 600;
     cursor: pointer;
+    text-align: left;
+    transition: border-color 0.15s ease, background 0.15s ease, transform 0.1s ease;
+
+    &:hover {
+        transform: translateY(-1px);
+    }
 
     &--active {
         border-color: var(--brand-red-coral, #ff444f);
-        background: var(--brand-red-coral, #ff444f);
+        background: linear-gradient(135deg, var(--brand-red-coral, #ff444f), #ff7a82);
         color: #fff;
+
+        .bulk-trading__mode-btn-desc {
+            color: rgba(255, 255, 255, 0.85);
+        }
     }
+}
+
+.bulk-trading__mode-btn-title {
+    font-weight: 700;
+    font-size: 1.3rem;
+}
+
+.bulk-trading__mode-btn-desc {
+    font-size: 1.1rem;
+    opacity: 0.7;
 }
 
 .bulk-trading__panel {
@@ -45,21 +118,106 @@
     opacity: 0.75;
 }
 
+.bulk-trading__account-list-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 1.1rem;
+    opacity: 0.75;
+}
+
+.bulk-trading__select-all-btn {
+    border: 0;
+    background: transparent;
+    color: var(--brand-red-coral, #ff444f);
+    font-weight: 600;
+    font-size: 1.1rem;
+    cursor: pointer;
+    padding: 0;
+}
+
 .bulk-trading__account-list {
     display: flex;
     flex-direction: column;
     gap: 0.6rem;
     padding: 1rem;
     border: 1px solid var(--general-section-1, #d6dadb);
-    border-radius: 0.8rem;
+    border-radius: 1rem;
+    max-height: 28rem;
+    overflow-y: auto;
 }
 
 .bulk-trading__account {
     display: flex;
     align-items: center;
-    gap: 0.8rem;
+    gap: 1rem;
+    padding: 0.8rem;
+    border-radius: 0.8rem;
     font-size: 1.3rem;
     cursor: pointer;
+    border: 1px solid transparent;
+    transition: background 0.15s ease, border-color 0.15s ease;
+
+    &:hover {
+        background: var(--general-section-1, #f4f5f6);
+    }
+
+    &--checked {
+        border-color: var(--brand-red-coral, #ff444f);
+        background: rgba(255, 68, 79, 0.06);
+    }
+
+    input {
+        width: 1.6rem;
+        height: 1.6rem;
+        accent-color: var(--brand-red-coral, #ff444f);
+        cursor: pointer;
+    }
+}
+
+.bulk-trading__account-avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.2rem;
+    height: 3.2rem;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--brand-red-coral, #ff444f), #ff9195);
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.2rem;
+}
+
+.bulk-trading__account-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    flex: 1;
+    min-width: 0;
+}
+
+.bulk-trading__account-loginid {
+    font-weight: 600;
+}
+
+.bulk-trading__account-meta {
+    font-size: 1.05rem;
+    opacity: 0.65;
+}
+
+.bulk-trading__badge {
+    padding: 0.3rem 0.8rem;
+    border-radius: 999px;
+    font-size: 1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+
+    &--demo {
+        background: rgba(75, 180, 179, 0.15);
+        color: #2c8b8a;
+    }
 }
 
 .bulk-trading__fields {
@@ -73,28 +231,59 @@
     flex-direction: column;
     gap: 0.4rem;
     font-size: 1.2rem;
+    font-weight: 500;
 
     select,
     input {
-        padding: 0.8rem;
+        padding: 0.9rem 1rem;
         border: 1px solid var(--general-section-1, #d6dadb);
-        border-radius: 0.6rem;
+        border-radius: 0.8rem;
         font-size: 1.3rem;
+        transition: border-color 0.15s ease;
+
+        &:focus {
+            outline: none;
+            border-color: var(--brand-red-coral, #ff444f);
+        }
     }
 }
 
 .bulk-trading__run-btn {
-    padding: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.2rem;
     border: 0;
-    border-radius: 0.8rem;
-    background: var(--status-success, #4bb4b3);
+    border-radius: 1rem;
+    background: linear-gradient(135deg, var(--status-success, #4bb4b3), #2c8b8a);
     color: #fff;
     font-weight: 700;
+    font-size: 1.3rem;
     cursor: pointer;
+    transition: transform 0.1s ease, opacity 0.15s ease;
+
+    &:hover:not(:disabled) {
+        transform: translateY(-1px);
+    }
 
     &:disabled {
         opacity: 0.5;
         cursor: not-allowed;
+    }
+}
+
+.bulk-trading__spinner {
+    width: 1.8rem;
+    height: 1.8rem;
+    border: 0.25rem solid rgba(255, 255, 255, 0.4);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: bulk-trading-spin 0.7s linear infinite;
+}
+
+@keyframes bulk-trading-spin {
+    to {
+        transform: rotate(360deg);
     }
 }
 
@@ -109,9 +298,10 @@
 
 .bulk-trading__result {
     display: flex;
-    justify-content: space-between;
-    padding: 0.8rem 1rem;
-    border-radius: 0.6rem;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 0.9rem 1.1rem;
+    border-radius: 0.8rem;
     font-size: 1.2rem;
 
     &--ok {
@@ -125,20 +315,46 @@
     }
 }
 
+.bulk-trading__result-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    flex-shrink: 0;
+    border-radius: 50%;
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.bulk-trading__result--ok .bulk-trading__result-icon {
+    background: #2c8b8a;
+}
+
+.bulk-trading__result--error .bulk-trading__result-icon {
+    background: #ec3f3f;
+}
+
 .bulk-trading__batch-item {
     display: flex;
     flex-direction: column;
     gap: 0.8rem;
-    padding: 1.2rem;
+    padding: 1.4rem;
     border: 1px solid var(--general-section-1, #d6dadb);
-    border-radius: 0.8rem;
+    border-radius: 1rem;
+    transition: border-color 0.15s ease;
+
+    &:hover {
+        border-color: var(--brand-red-coral, #ff444f);
+    }
 }
 
 .bulk-trading__batch-item-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-weight: 600;
+    font-weight: 700;
     font-size: 1.3rem;
 }
 
@@ -146,15 +362,27 @@
 .bulk-trading__add-btn {
     border: 1px dashed var(--general-section-1, #d6dadb);
     background: transparent;
-    border-radius: 0.6rem;
-    padding: 0.6rem 1rem;
+    border-radius: 0.8rem;
+    padding: 0.8rem 1rem;
     cursor: pointer;
     font-size: 1.2rem;
+    font-weight: 600;
+    transition: border-color 0.15s ease, color 0.15s ease;
+
+    &:hover {
+        border-color: var(--brand-red-coral, #ff444f);
+        color: var(--brand-red-coral, #ff444f);
+    }
+}
+
+.bulk-trading__remove-btn {
+    padding: 0.5rem 0.9rem;
+    font-size: 1.05rem;
 }
 
 .bulk-trading__batch-result {
     margin: 0;
-    padding: 0.6rem 1rem;
-    border-radius: 0.6rem;
+    padding: 0.7rem 1rem;
+    border-radius: 0.8rem;
     font-size: 1.2rem;
 }
