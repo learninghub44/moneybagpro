@@ -1,0 +1,315 @@
+.copy-trading-page {
+    display: flex;
+    flex-direction: column;
+    gap: 1.6rem;
+    padding: 1.6rem;
+    max-width: 76rem;
+    margin: 0 auto;
+}
+
+.copy-trading__hero {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.6rem;
+    padding: 1.6rem 2rem;
+    border-radius: 1.2rem;
+    background: linear-gradient(135deg, rgba(75, 180, 179, 0.1), rgba(255, 68, 79, 0.08));
+    border: 1px solid var(--general-section-1, #d6dadb);
+}
+
+.copy-trading__title {
+    margin: 0;
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+.copy-trading__subtitle {
+    margin: 0.2rem 0 0;
+    font-size: 1.2rem;
+    opacity: 0.7;
+}
+
+.copy-trading__stats {
+    display: flex;
+    gap: 2rem;
+}
+
+.copy-trading__stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.copy-trading__stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--status-success, #4bb4b3);
+}
+
+.copy-trading__stat-label {
+    margin-top: 0.4rem;
+    font-size: 1rem;
+    opacity: 0.65;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.copy-trading__panel {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    padding: 1.6rem;
+    border: 1px solid var(--general-section-1, #d6dadb);
+    border-radius: 1.2rem;
+}
+
+.copy-trading__panel-title {
+    margin: 0;
+    font-size: 1.4rem;
+    font-weight: 700;
+}
+
+.copy-trading__hint {
+    margin: 0;
+    font-size: 1.2rem;
+    opacity: 0.75;
+}
+
+.copy-trading__empty {
+    font-size: 1.2rem;
+    opacity: 0.75;
+}
+
+.copy-trading__lookup-row {
+    display: flex;
+    gap: 0.8rem;
+}
+
+.copy-trading__lookup-input {
+    flex: 1;
+    padding: 0.9rem 1rem;
+    border: 1px solid var(--general-section-1, #d6dadb);
+    border-radius: 0.8rem;
+    font-size: 1.3rem;
+
+    &:focus {
+        outline: none;
+        border-color: var(--status-success, #4bb4b3);
+    }
+}
+
+.copy-trading__lookup-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 1.6rem;
+    border: 0;
+    border-radius: 0.8rem;
+    background: var(--status-success, #4bb4b3);
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.2rem;
+    cursor: pointer;
+    white-space: nowrap;
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+}
+
+.copy-trading__lookup-error {
+    margin: 0;
+    font-size: 1.2rem;
+    color: #ec3f3f;
+}
+
+.copy-trading__stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+    gap: 1rem;
+}
+
+.copy-trading__stats-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 1.2rem;
+    border-radius: 1rem;
+    background: rgba(75, 180, 179, 0.08);
+}
+
+.copy-trading__stats-card-value {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #2c8b8a;
+}
+
+.copy-trading__stats-card-label {
+    font-size: 1rem;
+    opacity: 0.65;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.copy-trading__fields {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+    gap: 1rem;
+}
+
+.copy-trading__field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    font-size: 1.2rem;
+    font-weight: 500;
+
+    &--wide {
+        grid-column: 1 / -1;
+    }
+
+    input {
+        padding: 0.9rem 1rem;
+        border: 1px solid var(--general-section-1, #d6dadb);
+        border-radius: 0.8rem;
+        font-size: 1.3rem;
+        transition: border-color 0.15s ease;
+
+        &:focus {
+            outline: none;
+            border-color: var(--status-success, #4bb4b3);
+        }
+    }
+}
+
+.copy-trading__run-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.2rem;
+    border: 0;
+    border-radius: 1rem;
+    background: linear-gradient(135deg, var(--status-success, #4bb4b3), #2c8b8a);
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.3rem;
+    cursor: pointer;
+    transition: transform 0.1s ease, opacity 0.15s ease;
+
+    &:hover:not(:disabled) {
+        transform: translateY(-1px);
+    }
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+}
+
+.copy-trading__spinner {
+    width: 1.8rem;
+    height: 1.8rem;
+    border: 0.25rem solid rgba(255, 255, 255, 0.4);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: copy-trading-spin 0.7s linear infinite;
+}
+
+@keyframes copy-trading-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.copy-trading__result {
+    margin: 0;
+    padding: 0.9rem 1.1rem;
+    border-radius: 0.8rem;
+    font-size: 1.2rem;
+
+    &--ok {
+        background: rgba(75, 180, 179, 0.12);
+        color: #2c8b8a;
+    }
+
+    &--error {
+        background: rgba(236, 63, 63, 0.1);
+        color: #ec3f3f;
+    }
+}
+
+.copy-trading__trader-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.copy-trading__trader-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.2rem;
+    border: 1px solid var(--general-section-1, #d6dadb);
+    border-radius: 1rem;
+}
+
+.copy-trading__trader-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    min-width: 0;
+}
+
+.copy-trading__trader-loginid {
+    font-weight: 600;
+    font-size: 1.3rem;
+}
+
+.copy-trading__trader-meta {
+    font-size: 1.05rem;
+    opacity: 0.65;
+}
+
+.copy-trading__stop-btn {
+    padding: 0.7rem 1.2rem;
+    border: 1px solid #ec3f3f;
+    border-radius: 0.8rem;
+    background: transparent;
+    color: #ec3f3f;
+    font-weight: 600;
+    font-size: 1.1rem;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s ease, color 0.15s ease;
+
+    &:hover:not(:disabled) {
+        background: #ec3f3f;
+        color: #fff;
+    }
+
+    &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+}
+
+.copy-trading__copier-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+}
+
+.copy-trading__copier-chip {
+    padding: 0.5rem 1rem;
+    border-radius: 999px;
+    background: rgba(75, 180, 179, 0.12);
+    color: #2c8b8a;
+    font-weight: 600;
+    font-size: 1.1rem;
+}

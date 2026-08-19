@@ -91,6 +91,13 @@ export const LabelPairedChartTrendUpCaptionRegularIcon = createStrokeIcon(({ str
     </>
 ));
 
+export const LabelPairedCopyCaptionRegularIcon = createStrokeIcon(({ stroke, strokeWidth }) => (
+    <>
+        <rect x='9' y='9' width='11' height='11' rx='2' stroke={stroke} strokeWidth={strokeWidth} />
+        <path d='M6 15H5a2 2 0 01-2-2V5a2 2 0 012-2h8a2 2 0 012 2v1' stroke={stroke} strokeWidth={strokeWidth} strokeLinecap='round' strokeLinejoin='round' />
+    </>
+));
+
 export const LabelPairedFloppyDiskMdRegularIcon = createStrokeIcon(({ stroke, strokeWidth }) => (
     <>
         <path d='M6 5h10l2 2v12H6z' stroke={stroke} strokeWidth={strokeWidth} strokeLinejoin='round' />
