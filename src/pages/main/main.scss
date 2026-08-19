@@ -193,6 +193,35 @@
                     }
                 }
 
+                // On desktop the run-strategy-wrapper banner sits absolutely
+                // positioned top-right over this tab bar, permanently
+                // covering whichever tabs land under it. Without a scroll
+                // container those tabs (e.g. Bulk Trading, Copy Trading) are
+                // simply unreachable. Mirror the mobile scroll behavior here
+                // so the strip can be dragged/wheeled left to bring any
+                // covered tab out from under the banner, and pad the end so
+                // the last tab can clear it entirely.
+                @include desktop-screen {
+                    display: flex;
+                    flex-wrap: nowrap;
+                    overflow-x: auto;
+                    overflow-y: hidden;
+                    white-space: nowrap;
+                    scroll-behavior: smooth;
+                    scroll-padding-inline: 1.2rem;
+                    padding-inline-end: 35.2rem;
+                    -ms-overflow-style: none;
+                    scrollbar-width: none;
+
+                    &::-webkit-scrollbar {
+                        display: none;
+                    }
+
+                    .dc-tabs__item {
+                        flex-shrink: 0;
+                    }
+                }
+
                 &--header {
                     &--main {
                         &__tabs {
