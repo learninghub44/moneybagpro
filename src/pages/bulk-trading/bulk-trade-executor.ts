@@ -131,15 +131,25 @@ const buildTradeRequestParameters = (trade: TBulkTradeParameters, webSocketURL?:
     // entirely was breaking Mode 1.
     const symbol_field = getSymbolRequestField(trade.symbol, webSocketURL);
 
-    return normalizeTradeParameters({
-        ...symbol_field,
-        contract_type: trade.contract_type,
-        duration: trade.duration,
-        duration_unit: trade.duration_unit,
-        amount: trade.stake,
-        basis: 'stake',
-        barrier: trade.barrier || undefined,
-    });
+    // normalizeTradeParameters independently re-resolves the symbol field
+    // from whatever webSocketURL it's given (defaulting to the ambient
+    // main-session URL when omitted). If webSocketURL isn't forwarded here,
+    // Mode 1's correctly-computed { symbol } above gets silently discarded
+    // and recomputed against the main session's connection type instead of
+    // LEGACY_WS_SERVER — reintroducing the same "wrong symbol field" failure
+    // this file was already fixed for once, one layer removed.
+    return normalizeTradeParameters(
+        {
+            ...symbol_field,
+            contract_type: trade.contract_type,
+            duration: trade.duration,
+            duration_unit: trade.duration_unit,
+            amount: trade.stake,
+            basis: 'stake',
+            barrier: trade.barrier || undefined,
+        },
+        webSocketURL
+    );
 };
 
 /**
