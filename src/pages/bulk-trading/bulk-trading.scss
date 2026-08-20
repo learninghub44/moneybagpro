@@ -9,7 +9,7 @@
     // on shorter viewports (phones, small browser windows) can look clipped
     // even though scrolling further would technically reach it. env() adds
     // extra clearance on devices with a gesture bar / home indicator.
-    padding-bottom: calc(6rem + env(safe-area-inset-bottom, 0px));
+    padding-bottom: calc(10rem + env(safe-area-inset-bottom, 0px));
     max-width: 76rem;
     margin: 0 auto;
 }

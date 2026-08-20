@@ -726,23 +726,6 @@ const AppWrapper = observer(() => {
                                     <BulkTrading />
                                 </div>
                             )}
-                            {show_market_hacker && (
-                                <div
-                                    label={
-                                        <>
-                                            <LabelPairedRadarCaptionRegularIcon
-                                                height='24px'
-                                                width='24px'
-                                                fill='#c8a45d'
-                                            />
-                                            <Localize i18n_default_text='Market Hacker' />
-                                        </>
-                                    }
-                                    id='id-market-hacker'
-                                >
-                                    <MarketHacker />
-                                </div>
-                            )}
                             {show_copy_trading && (
                                 <div
                                     label={
@@ -758,6 +741,23 @@ const AppWrapper = observer(() => {
                                     id='id-copy-trading'
                                 >
                                     <CopyTrading />
+                                </div>
+                            )}
+                            {show_market_hacker && (
+                                <div
+                                    label={
+                                        <>
+                                            <LabelPairedRadarCaptionRegularIcon
+                                                height='24px'
+                                                width='24px'
+                                                fill='#c8a45d'
+                                            />
+                                            <Localize i18n_default_text='Market Hacker' />
+                                        </>
+                                    }
+                                    id='id-market-hacker'
+                                >
+                                    <MarketHacker />
                                 </div>
                             )}
                         </Tabs>
