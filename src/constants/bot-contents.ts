@@ -26,6 +26,7 @@ export const DBOT_TABS: TDashboardTabIndex = Object.freeze({
     TRADING_VIEW: 11,
     BULK_TRADING: 12,
     COPY_TRADING: 13,
+    MARKET_HACKER: 14,
 });
 
 export const MAX_STRATEGIES = 10;
@@ -45,6 +46,7 @@ export const TAB_IDS = [
     'id-tradingview',
     'id-bulk-trading',
     'id-copy-trading',
+    'id-market-hacker',
 ];
 
 export const DEBOUNCE_INTERVAL_TIME = 500;

@@ -17,6 +17,7 @@ import {
     LabelPairedObjectsColumnCaptionRegularIcon,
     LabelPairedPlaceholderCaptionRegularIcon,
     LabelPairedPuzzlePieceTwoCaptionBoldIcon,
+    LabelPairedRadarCaptionRegularIcon,
     LabelPairedSearchCaptionRegularIcon,
 } from '@/components/shared_ui/figma-icons/LabelPaired';
 import MobileWrapper from '@/components/shared_ui/mobile-wrapper';
@@ -57,6 +58,7 @@ import CopyTrading from '../copy-trading';
 import Dashboard from '../dashboard';
 import RunStrategy from '../dashboard/run-strategy';
 import ManualTrading from '../manual-trading';
+import MarketHacker from '../market-hacker';
 import Scanner from '../scanner';
 import TradingView from '../tradingview';
 import UpAndDown from '../up-and-down';
@@ -108,6 +110,7 @@ const AppWrapper = observer(() => {
         UP_AND_DOWN,
         BULK_TRADING,
         COPY_TRADING,
+        MARKET_HACKER,
     } = DBOT_TABS;
     const init_render = React.useRef(true);
     const hash = [
@@ -125,6 +128,7 @@ const AppWrapper = observer(() => {
         'tradingview',
         'bulk_trading',
         'copy_trading',
+        'market_hacker',
     ];
     const show_bot_ideas = isDomainFeatureEnabled('botIdeas');
     const show_auto_trades = isDomainFeatureEnabled('autoTrades');
@@ -135,6 +139,7 @@ const AppWrapper = observer(() => {
     const show_trading_view = isDomainFeatureEnabled('tradingView');
     const show_bulk_trading = isDomainFeatureEnabled('bulkTrading');
     const show_copy_trading = isDomainFeatureEnabled('copyTrading');
+    const show_market_hacker = isDomainFeatureEnabled('marketHacker');
     const isMainTabVisible = (tab_index: number) => {
         if (tab_index === BOT_IDEAS) return show_bot_ideas;
         if (tab_index === AUTO_TRADES) return show_auto_trades;
@@ -142,6 +147,7 @@ const AppWrapper = observer(() => {
         if (tab_index === SCANNER) return show_scanner;
         if (tab_index === BULK_TRADING) return show_bulk_trading;
         if (tab_index === COPY_TRADING) return show_copy_trading;
+        if (tab_index === MARKET_HACKER) return show_market_hacker;
         if (tab_index === DBOT_TABS.ACCUMILATOIRS) return show_accumilatoirs;
         if (tab_index === CHART) return show_chart;
         if (tab_index === TRADING_VIEW) return show_trading_view;
@@ -718,6 +724,23 @@ const AppWrapper = observer(() => {
                                     id='id-bulk-trading'
                                 >
                                     <BulkTrading />
+                                </div>
+                            )}
+                            {show_market_hacker && (
+                                <div
+                                    label={
+                                        <>
+                                            <LabelPairedRadarCaptionRegularIcon
+                                                height='24px'
+                                                width='24px'
+                                                fill='#c8a45d'
+                                            />
+                                            <Localize i18n_default_text='Market Hacker' />
+                                        </>
+                                    }
+                                    id='id-market-hacker'
+                                >
+                                    <MarketHacker />
                                 </div>
                             )}
                             {show_copy_trading && (
