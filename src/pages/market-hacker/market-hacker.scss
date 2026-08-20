@@ -3,6 +3,7 @@
     flex-direction: column;
     gap: 1.6rem;
     padding: 1.6rem;
+    padding-bottom: calc(6rem + env(safe-area-inset-bottom, 0px));
     max-width: 120rem;
     margin: 0 auto;
 }
@@ -112,6 +113,32 @@
     font-size: 1.05rem;
     opacity: 0.6;
     line-height: 1.5;
+}
+
+.market-hacker__stalled {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.2rem 1.6rem;
+    border: 1px solid #ec3f3f;
+    border-radius: 1rem;
+    background: rgba(236, 63, 63, 0.08);
+    color: #ec3f3f;
+    font-size: 1.15rem;
+}
+
+.market-hacker__stalled-btn {
+    flex-shrink: 0;
+    padding: 0.7rem 1.4rem;
+    border: 0;
+    border-radius: 0.8rem;
+    background: #ec3f3f;
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.1rem;
+    cursor: pointer;
 }
 
 .market-hacker__grid {

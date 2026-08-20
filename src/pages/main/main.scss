@@ -176,49 +176,47 @@
                 align-items: center;
                 border-bottom: 0;
                 box-shadow: none;
+                overflow: hidden;
 
-                @include mobile-or-tablet-screen {
-                    display: flex;
+                // The actual scrollable strip is the nested .dc-themed-scrollbars
+                // div (rendered by <ThemedScrollbars is_only_horizontal>), not
+                // this <ul> itself — it was previously left unconstrained
+                // (max-width: none) and its tab items had no flex-shrink: 0, so
+                // once there were more tabs than fit the row, items just got
+                // squeezed/clipped instead of overflowing into a scrollable
+                // strip. That showed up as tabs going missing: vertically
+                // clipped with no way to reach them on mobile, and permanently
+                // hidden behind the run-strategy-wrapper banner on desktop.
+                // Constrain it to the row's own width so overflow — and the
+                // scroll it should trigger — actually happens inside it, on
+                // both breakpoints.
+                .dc-themed-scrollbars {
+                    max-width: 100%;
                     overflow-x: auto;
                     overflow-y: hidden;
-                    white-space: nowrap;
-                    -webkit-overflow-scrolling: touch;
                     scroll-behavior: smooth;
                     scroll-padding-inline: 1.2rem;
+                    -webkit-overflow-scrolling: touch;
                     -ms-overflow-style: none;
                     scrollbar-width: none;
 
                     &::-webkit-scrollbar {
                         display: none;
+                    }
+
+                    li {
+                        flex-shrink: 0;
                     }
                 }
 
                 // On desktop the run-strategy-wrapper banner sits absolutely
-                // positioned top-right over this tab bar, permanently
-                // covering whichever tabs land under it. Without a scroll
-                // container those tabs (e.g. Bulk Trading, Copy Trading) are
-                // simply unreachable. Mirror the mobile scroll behavior here
-                // so the strip can be dragged/wheeled left to bring any
-                // covered tab out from under the banner, and pad the end so
-                // the last tab can clear it entirely.
+                // positioned top-right over this tab bar, permanently covering
+                // whichever tabs land under it. Pad the scrollable strip's end
+                // so the last tab can be dragged/wheeled fully clear of it
+                // instead of stopping right at its edge.
                 @include desktop-screen {
-                    display: flex;
-                    flex-wrap: nowrap;
-                    overflow-x: auto;
-                    overflow-y: hidden;
-                    white-space: nowrap;
-                    scroll-behavior: smooth;
-                    scroll-padding-inline: 1.2rem;
-                    padding-inline-end: 35.2rem;
-                    -ms-overflow-style: none;
-                    scrollbar-width: none;
-
-                    &::-webkit-scrollbar {
-                        display: none;
-                    }
-
-                    .dc-tabs__item {
-                        flex-shrink: 0;
+                    .dc-themed-scrollbars {
+                        padding-inline-end: 35.2rem;
                     }
                 }
 

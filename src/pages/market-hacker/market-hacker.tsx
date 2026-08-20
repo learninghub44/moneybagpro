@@ -36,11 +36,14 @@ const MarketHacker = observer(() => {
     );
     const [sort_mode, setSortMode] = useState<TSortMode>('possibility');
     const [is_paused, setIsPaused] = useState(false);
+    const [retry_key, setRetryKey] = useState(0);
+    const [is_stalled, setIsStalled] = useState(false);
     const digitsRef = useRef<Record<string, number[]>>({});
     const quotesRef = useRef<Record<string, number[]>>({});
 
     useEffect(() => {
         if (!is_active || is_paused) return undefined;
+        setIsStalled(false);
 
         const stopFeeds = startMarketFeeds({
             onError: (symbol, message) => {
@@ -50,19 +53,52 @@ const MarketHacker = observer(() => {
                 }));
             },
             onUpdate: (symbol, newDigits, newQuotes, price) => {
-                const label = MARKET_LABELS[symbol] ?? symbol;
-                const digits = [...(digitsRef.current[symbol] ?? []), ...newDigits].slice(-500);
-                const quotes = [...(quotesRef.current[symbol] ?? []), ...newQuotes].slice(-500);
-                digitsRef.current[symbol] = digits;
-                quotesRef.current[symbol] = quotes;
+                try {
+                    const label = MARKET_LABELS[symbol] ?? symbol;
+                    const digits = [...(digitsRef.current[symbol] ?? []), ...newDigits].slice(-500);
+                    const quotes = [...(quotesRef.current[symbol] ?? []), ...newQuotes].slice(-500);
+                    digitsRef.current[symbol] = digits;
+                    quotesRef.current[symbol] = quotes;
 
-                const scan = evaluateMarketScan(symbol, label, digits, quotes, price);
-                setScans(current => ({ ...current, [symbol]: scan }));
+                    const scan = evaluateMarketScan(symbol, label, digits, quotes, price);
+                    setScans(current => ({ ...current, [symbol]: scan }));
+                    setIsStalled(false);
+                } catch (error) {
+                    // A bad tick or an edge case in the scoring logic should
+                    // never take down the whole grid — surface it on just
+                    // this market's card and keep the rest scanning.
+                    setScans(current => ({
+                        ...current,
+                        [symbol]: {
+                            ...current[symbol],
+                            error: error instanceof Error ? error.message : 'Could not process this market.',
+                            isLoading: false,
+                        },
+                    }));
+                }
             },
         });
 
         return stopFeeds;
-    }, [is_active, is_paused]);
+    }, [is_active, is_paused, retry_key]);
+
+    // If nothing has come back from any market after a generous window —
+    // most likely the trading API connection itself hasn't been
+    // established yet — surface that plainly instead of leaving every card
+    // stuck on its loading spinner indefinitely with no explanation.
+    useEffect(() => {
+        if (!is_active || is_paused) return undefined;
+
+        const timeout = setTimeout(() => {
+            setScans(current => {
+                const all_still_loading = Object.values(current).every(scan => scan.isLoading && !scan.error);
+                setIsStalled(all_still_loading);
+                return current;
+            });
+        }, 15000);
+
+        return () => clearTimeout(timeout);
+    }, [is_active, is_paused, retry_key]);
 
     const sorted_scans = useMemo(() => {
         const list = SUPPORTED_VOLATILITY_MARKETS.map(market => scans[market.symbol]).filter(Boolean);
@@ -130,6 +166,35 @@ const MarketHacker = observer(() => {
                 Possibility scores are statistical bias in recent digit and price history, not a guarantee — markets are
                 random and past ticks don&apos;t determine future ones. Use this to spot patterns, not as financial advice.
             </p>
+
+            {is_stalled && (
+                <div className='market-hacker__stalled'>
+                    <span>
+                        Markets haven&apos;t responded yet — this usually means the connection hasn&apos;t finished
+                        starting up.
+                    </span>
+                    <button
+                        className='market-hacker__stalled-btn'
+                        onClick={() => {
+                            setIsStalled(false);
+                            setScans(
+                                Object.fromEntries(
+                                    SUPPORTED_VOLATILITY_MARKETS.map(market => [
+                                        market.symbol,
+                                        emptyMarketScan(market.symbol, market.label),
+                                    ])
+                                )
+                            );
+                            digitsRef.current = {};
+                            quotesRef.current = {};
+                            setRetryKey(current => current + 1);
+                        }}
+                        type='button'
+                    >
+                        Retry scan
+                    </button>
+                </div>
+            )}
 
             <div className='market-hacker__grid'>
                 {sorted_scans.map(scan => (
