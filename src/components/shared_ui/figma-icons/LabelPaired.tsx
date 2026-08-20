@@ -98,6 +98,15 @@ export const LabelPairedCopyCaptionRegularIcon = createStrokeIcon(({ stroke, str
     </>
 ));
 
+export const LabelPairedRadarCaptionRegularIcon = createStrokeIcon(({ stroke, strokeWidth }) => (
+    <>
+        <circle cx='12' cy='12' r='9' stroke={stroke} strokeWidth={strokeWidth} />
+        <circle cx='12' cy='12' r='5' stroke={stroke} strokeWidth={strokeWidth} />
+        <circle cx='12' cy='12' r='1.4' fill={stroke} stroke='none' />
+        <path d='M12 12L18 6' stroke={stroke} strokeWidth={strokeWidth} strokeLinecap='round' />
+    </>
+));
+
 export const LabelPairedFloppyDiskMdRegularIcon = createStrokeIcon(({ stroke, strokeWidth }) => (
     <>
         <path d='M6 5h10l2 2v12H6z' stroke={stroke} strokeWidth={strokeWidth} strokeLinejoin='round' />
