@@ -3,6 +3,13 @@
     flex-direction: column;
     gap: 1.6rem;
     padding: 1.6rem;
+    // The tab content area scrolls independently (.dc-tabs__content), so this
+    // is the buffer that keeps the run button / results from ever sitting
+    // flush against the bottom edge — without it, the last inch of content
+    // on shorter viewports (phones, small browser windows) can look clipped
+    // even though scrolling further would technically reach it. env() adds
+    // extra clearance on devices with a gesture bar / home indicator.
+    padding-bottom: calc(6rem + env(safe-area-inset-bottom, 0px));
     max-width: 76rem;
     margin: 0 auto;
 }
