@@ -3,9 +3,23 @@
     flex-direction: column;
     gap: 1.6rem;
     padding: 1.6rem;
-    padding-bottom: calc(10rem + env(safe-area-inset-bottom, 0px));
+    // Grounded in the run-panel's own height variables (controls bar + the
+    // Summary/Transactions/Journal drawer strip that can stack above it),
+    // not a guessed rem value — so this stays correct if those heights
+    // ever change, and covers the worst case where the drawer is open.
+    padding-bottom: calc(
+        var(--run-panel-mobile-controls-height, 7.6rem) + var(--run-panel-mobile-stat-height, 12.8rem) + 2rem +
+            env(safe-area-inset-bottom, 0px)
+    );
     max-width: 120rem;
     margin: 0 auto;
+    // Text here (breakdown stats, signal labels, etc.) doesn't set its own
+    // color, so it must not rely on ambient inheritance — that cascade is
+    // unreliable on this build (conflicting --text-general sources between
+    // app.scss's forced navy override and the theme defaults), which is why
+    // this content can render near-invisible against the dark shell,
+    // especially with dark mode toggled.
+    color: var(--text-general, #fff);
 }
 
 .market-hacker__hero {
@@ -154,7 +168,7 @@
     padding: 1.4rem;
     border: 1px solid var(--general-section-1, #d6dadb);
     border-radius: 1.2rem;
-    background: var(--general-main-1, #fff);
+    background: var(--rm-shell-run-panel, var(--general-main-1, #001840));
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
 
     &--ready {
@@ -252,7 +266,7 @@
         position: absolute;
         inset: 0.4rem;
         border-radius: 50%;
-        background: var(--general-main-1, #fff);
+        background: var(--rm-shell-run-panel, var(--general-main-1, #001840));
     }
 }
 

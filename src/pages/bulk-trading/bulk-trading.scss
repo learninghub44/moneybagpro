@@ -5,13 +5,22 @@
     padding: 1.6rem;
     // The tab content area scrolls independently (.dc-tabs__content), so this
     // is the buffer that keeps the run button / results from ever sitting
-    // flush against the bottom edge — without it, the last inch of content
-    // on shorter viewports (phones, small browser windows) can look clipped
-    // even though scrolling further would technically reach it. env() adds
-    // extra clearance on devices with a gesture bar / home indicator.
-    padding-bottom: calc(10rem + env(safe-area-inset-bottom, 0px));
+    // flush against the bottom edge. Grounded in the run-panel's own height
+    // variables (controls bar + the Summary/Transactions/Journal drawer
+    // strip that can stack above it) rather than a guessed rem value, so it
+    // covers the worst case where that drawer is open and still reaches the
+    // real bottom of the content when scrolled.
+    padding-bottom: calc(
+        var(--run-panel-mobile-controls-height, 7.6rem) + var(--run-panel-mobile-stat-height, 12.8rem) + 2rem +
+            env(safe-area-inset-bottom, 0px)
+    );
     max-width: 76rem;
     margin: 0 auto;
+    // Body text here doesn't set its own color and shouldn't rely on ambient
+    // inheritance — that cascade is unreliable on this build (conflicting
+    // --text-general sources between app.scss's forced navy override and
+    // the theme defaults), which is why content can render near-invisible.
+    color: var(--text-general, #fff);
 }
 
 .bulk-trading__hero {

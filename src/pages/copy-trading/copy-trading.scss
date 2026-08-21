@@ -3,9 +3,18 @@
     flex-direction: column;
     gap: 1.6rem;
     padding: 1.6rem;
-    padding-bottom: calc(10rem + env(safe-area-inset-bottom, 0px));
+    // Grounded in the run-panel's own height variables (controls bar + the
+    // Summary/Transactions/Journal drawer strip that can stack above it),
+    // covering the worst case where that drawer is open.
+    padding-bottom: calc(
+        var(--run-panel-mobile-controls-height, 7.6rem) + var(--run-panel-mobile-stat-height, 12.8rem) + 2rem +
+            env(safe-area-inset-bottom, 0px)
+    );
     max-width: 76rem;
     margin: 0 auto;
+    // Body text here doesn't set its own color and shouldn't rely on ambient
+    // inheritance — see market-hacker.scss / bulk-trading.scss for why.
+    color: var(--text-general, #fff);
 }
 
 .copy-trading__hero {
