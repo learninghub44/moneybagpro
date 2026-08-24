@@ -107,6 +107,20 @@ export const LabelPairedRadarCaptionRegularIcon = createStrokeIcon(({ stroke, st
     </>
 ));
 
+export const LabelPairedMicrophoneCaptionRegularIcon = createStrokeIcon(({ stroke, strokeWidth }) => (
+    <>
+        <rect x='9' y='3' width='6' height='11' rx='3' stroke={stroke} strokeWidth={strokeWidth} />
+        <path
+            d='M6 11v1a6 6 0 0012 0v-1'
+            stroke={stroke}
+            strokeWidth={strokeWidth}
+            strokeLinecap='round'
+            strokeLinejoin='round'
+        />
+        <path d='M12 18v3M9 21h6' stroke={stroke} strokeWidth={strokeWidth} strokeLinecap='round' />
+    </>
+));
+
 export const LabelPairedFloppyDiskMdRegularIcon = createStrokeIcon(({ stroke, strokeWidth }) => (
     <>
         <path d='M6 5h10l2 2v12H6z' stroke={stroke} strokeWidth={strokeWidth} strokeLinejoin='round' />

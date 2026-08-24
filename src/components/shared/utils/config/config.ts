@@ -35,6 +35,7 @@ type DomainFeatureFlags = {
     bulkTrading: boolean;
     copyTrading: boolean;
     marketHacker: boolean;
+    voiceTrade: boolean;
 };
 
 type MartingaleConfig = {
@@ -156,6 +157,7 @@ const DEFAULT_DOMAIN_FEATURES: DomainFeatureFlags = {
     bulkTrading: true,
     copyTrading: true,
     marketHacker: true,
+    voiceTrade: true,
 };
 
 const DEFAULT_MARTINGALE_CONFIG: MartingaleConfig = {

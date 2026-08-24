@@ -14,6 +14,7 @@ import {
     LabelPairedCircleStarCaptionRegularIcon,
     LabelPairedCopyCaptionRegularIcon,
     LabelPairedLightbulbCaptionRegularIcon,
+    LabelPairedMicrophoneCaptionRegularIcon,
     LabelPairedObjectsColumnCaptionRegularIcon,
     LabelPairedPlaceholderCaptionRegularIcon,
     LabelPairedPuzzlePieceTwoCaptionBoldIcon,
@@ -62,6 +63,7 @@ import MarketHacker from '../market-hacker';
 import Scanner from '../scanner';
 import TradingView from '../tradingview';
 import UpAndDown from '../up-and-down';
+import VoiceTrade from '../voice-trade';
 import './main.scss';
 
 const AppWrapper = observer(() => {
@@ -111,6 +113,7 @@ const AppWrapper = observer(() => {
         BULK_TRADING,
         COPY_TRADING,
         MARKET_HACKER,
+        VOICE_TRADE,
     } = DBOT_TABS;
     const init_render = React.useRef(true);
     const hash = [
@@ -129,6 +132,7 @@ const AppWrapper = observer(() => {
         'bulk_trading',
         'copy_trading',
         'market_hacker',
+        'voice_trade',
     ];
     const show_bot_ideas = isDomainFeatureEnabled('botIdeas');
     const show_auto_trades = isDomainFeatureEnabled('autoTrades');
@@ -140,6 +144,7 @@ const AppWrapper = observer(() => {
     const show_bulk_trading = isDomainFeatureEnabled('bulkTrading');
     const show_copy_trading = isDomainFeatureEnabled('copyTrading');
     const show_market_hacker = isDomainFeatureEnabled('marketHacker');
+    const show_voice_trade = isDomainFeatureEnabled('voiceTrade');
     const isMainTabVisible = (tab_index: number) => {
         if (tab_index === BOT_IDEAS) return show_bot_ideas;
         if (tab_index === AUTO_TRADES) return show_auto_trades;
@@ -148,6 +153,7 @@ const AppWrapper = observer(() => {
         if (tab_index === BULK_TRADING) return show_bulk_trading;
         if (tab_index === COPY_TRADING) return show_copy_trading;
         if (tab_index === MARKET_HACKER) return show_market_hacker;
+        if (tab_index === VOICE_TRADE) return show_voice_trade;
         if (tab_index === DBOT_TABS.ACCUMILATOIRS) return show_accumilatoirs;
         if (tab_index === CHART) return show_chart;
         if (tab_index === TRADING_VIEW) return show_trading_view;
@@ -758,6 +764,23 @@ const AppWrapper = observer(() => {
                                     id='id-market-hacker'
                                 >
                                     <MarketHacker />
+                                </div>
+                            )}
+                            {show_voice_trade && (
+                                <div
+                                    label={
+                                        <>
+                                            <LabelPairedMicrophoneCaptionRegularIcon
+                                                height='24px'
+                                                width='24px'
+                                                fill='#c8a45d'
+                                            />
+                                            <Localize i18n_default_text='Voice Trade' />
+                                        </>
+                                    }
+                                    id='id-voice-trade'
+                                >
+                                    <VoiceTrade />
                                 </div>
                             )}
                         </Tabs>
