@@ -118,17 +118,54 @@ const findMarket = (normalized: string): TMarketAlias | undefined => {
     });
 };
 
+type TBarrierKeyword = 'differ' | 'match' | 'over' | 'under';
+
+const BARRIER_KEYWORD_TO_CONTRACT: Record<TBarrierKeyword, TVoiceContractType> = {
+    differ: 'DIGITDIFF',
+    match: 'DIGITMATCH',
+    over: 'DIGITOVER',
+    under: 'DIGITUNDER',
+};
+
+const BARRIER_KEYWORD_TO_LABEL: Record<TBarrierKeyword, string> = {
+    differ: 'Differs',
+    match: 'Matches',
+    over: 'Over',
+    under: 'Under',
+};
+
+const normalizeBarrierKeyword = (keyword: string): TBarrierKeyword => {
+    if (keyword === 'over') return 'over';
+    if (keyword === 'under') return 'under';
+    if (keyword.startsWith('match')) return 'match';
+    return 'differ';
+};
+
 type TActionMatch = { actionLabel: string; barrier?: string; contractType: TVoiceContractType };
 
-const findAction = (normalized: string): TActionMatch | undefined => {
+/**
+ * A barrier action word (over/under/matches/differs) said without its digit
+ * — "trade over" with no number yet. Kept separate from a completed
+ * TActionMatch so the conversational flow knows to ask specifically for the
+ * missing digit next, instead of re-asking the whole trade-type question.
+ */
+type TPendingBarrier = { keyword: TBarrierKeyword };
+
+const findAction = (normalized: string): TActionMatch | TPendingBarrier | undefined => {
     const barrierMatch = normalized.match(/\b(over|under|match(?:es)?|differ(?:s)?)\s+(\d)\b/);
     if (barrierMatch) {
-        const [, keyword, digit] = barrierMatch;
-        if (keyword === 'over') return { actionLabel: `Over ${digit}`, barrier: digit, contractType: 'DIGITOVER' };
-        if (keyword === 'under') return { actionLabel: `Under ${digit}`, barrier: digit, contractType: 'DIGITUNDER' };
-        if (keyword.startsWith('match'))
-            return { actionLabel: `Matches ${digit}`, barrier: digit, contractType: 'DIGITMATCH' };
-        return { actionLabel: `Differs ${digit}`, barrier: digit, contractType: 'DIGITDIFF' };
+        const [, rawKeyword, digit] = barrierMatch;
+        const keyword = normalizeBarrierKeyword(rawKeyword);
+        return {
+            actionLabel: `${BARRIER_KEYWORD_TO_LABEL[keyword]} ${digit}`,
+            barrier: digit,
+            contractType: BARRIER_KEYWORD_TO_CONTRACT[keyword],
+        };
+    }
+
+    const bareBarrierMatch = normalized.match(/\b(over|under|match(?:es)?|differ(?:s)?)\b/);
+    if (bareBarrierMatch) {
+        return { keyword: normalizeBarrierKeyword(bareBarrierMatch[1]) };
     }
 
     if (/\bodd\b/.test(normalized)) return { actionLabel: 'Odd', contractType: 'DIGITODD' };
@@ -138,6 +175,8 @@ const findAction = (normalized: string): TActionMatch | undefined => {
 
     return undefined;
 };
+
+const isPendingBarrier = (action: TActionMatch | TPendingBarrier): action is TPendingBarrier => 'keyword' in action;
 
 const findStake = (normalized: string): number | undefined => {
     const patterns = [
@@ -154,21 +193,23 @@ const findStake = (normalized: string): number | undefined => {
     return undefined;
 };
 
-const findDuration = (normalized: string): number => {
+const findDurationIfSpecified = (normalized: string): number | undefined => {
     const match = normalized.match(/\b(?:duration|for)?\s*(\d+)\s*ticks?\b/);
-    if (!match) return DEFAULT_DURATION_TICKS;
+    if (!match) return undefined;
 
     const value = Number(match[1]);
-    if (!Number.isFinite(value)) return DEFAULT_DURATION_TICKS;
+    if (!Number.isFinite(value)) return undefined;
 
     return Math.min(MAX_DURATION_TICKS, Math.max(MIN_DURATION_TICKS, Math.round(value)));
 };
 
 /**
  * Parses a raw speech-to-text transcript into a trade the app can actually
- * submit. Returns a specific, speakable-back error message naming exactly
- * what's missing (market / action / stake) rather than a generic failure, so
- * the UI can prompt the person to just repeat that one part.
+ * submit in one shot. Returns a specific, speakable-back error message
+ * naming exactly what's missing (market / action / stake) rather than a
+ * generic failure. Kept for the "say the whole thing at once" case; the
+ * conversational back-and-forth flow uses the draft/slot functions below,
+ * which share the same underlying extraction.
  */
 export const parseVoiceCommand = (rawTranscript: string): TVoiceParseResult => {
     const normalized = normalizeSpokenNumbers(rawTranscript.toLowerCase().trim());
@@ -179,11 +220,12 @@ export const parseVoiceCommand = (rawTranscript: string): TVoiceParseResult => {
 
     const market = findMarket(normalized);
     const action = findAction(normalized);
+    const resolvedAction = action && !isPendingBarrier(action) ? action : undefined;
     const stake = findStake(normalized);
 
     const missing: string[] = [];
     if (!market) missing.push('a market, e.g. "Volatility 75 Index"');
-    if (!action) missing.push('a trade type, e.g. "Rise", "Over 5", "Even"');
+    if (!resolvedAction) missing.push('a trade type, e.g. "Rise", "Over 5", "Even"');
     if (stake === undefined) missing.push('a stake, e.g. "stake 10"');
 
     if (missing.length > 0) {
@@ -197,10 +239,10 @@ export const parseVoiceCommand = (rawTranscript: string): TVoiceParseResult => {
     return {
         ok: true,
         trade: {
-            actionLabel: action!.actionLabel,
-            barrier: action!.barrier,
-            contractType: action!.contractType,
-            duration: findDuration(normalized),
+            actionLabel: resolvedAction!.actionLabel,
+            barrier: resolvedAction!.barrier,
+            contractType: resolvedAction!.contractType,
+            duration: findDurationIfSpecified(normalized) ?? DEFAULT_DURATION_TICKS,
             marketLabel: market!.label,
             stake: stake!,
             symbol: market!.symbol,
@@ -210,3 +252,213 @@ export const parseVoiceCommand = (rawTranscript: string): TVoiceParseResult => {
 
 export const contractTypeNeedsBarrier = (contractType: TVoiceContractType): boolean =>
     BARRIER_CONTRACT_TYPES.has(contractType);
+
+// ---------------------------------------------------------------------------
+// Conversational slot-filling: build a trade up over several turns instead of
+// requiring one perfectly-formed sentence. Each turn's transcript is merged
+// into a growing draft; getNextVoiceSlot says what to ask for next.
+// ---------------------------------------------------------------------------
+
+export type TVoiceSlot = 'action' | 'barrier' | 'market' | 'stake';
+
+export type TTradeDraft = {
+    actionLabel?: string;
+    barrier?: string;
+    contractType?: TVoiceContractType;
+    duration?: number;
+    marketLabel?: string;
+    pendingBarrierKeyword?: TBarrierKeyword;
+    stake?: number;
+    symbol?: string;
+};
+
+export const EMPTY_TRADE_DRAFT: TTradeDraft = {};
+
+/**
+ * Merges whatever a single utterance contains into the running draft.
+ * Later turns overwrite earlier ones field-by-field, so someone can correct
+ * themselves mid-conversation ("actually make it 20") without starting over.
+ * `expectedSlot` (the slot the app just asked about, if any) enables lenient
+ * single-value replies that wouldn't parse on their own — a bare "10" is
+ * read as the stake if that's what was asked, a bare "5" is read as the
+ * barrier digit if a barrier keyword is already pending, etc.
+ */
+export const mergeVoiceTranscriptIntoDraft = (
+    draft: TTradeDraft,
+    rawTranscript: string,
+    expectedSlot?: TVoiceSlot | null
+): TTradeDraft => {
+    const normalized = normalizeSpokenNumbers(rawTranscript.toLowerCase().trim());
+    const next: TTradeDraft = { ...draft };
+
+    const market = findMarket(normalized);
+    if (market) {
+        next.marketLabel = market.label;
+        next.symbol = market.symbol;
+    } else if (expectedSlot === 'market') {
+        // Bare number reply to "which market?" — e.g. just "75" or "ten".
+        const bareNumber = normalized.match(/\b(\d+(?:\.\d+)?)\b/);
+        if (bareNumber) {
+            const impliedIs1s = /\b1s\b|\b1 second\b/.test(normalized);
+            const implied = findMarket(impliedIs1s ? `volatility ${bareNumber[1]} 1s` : `volatility ${bareNumber[1]}`);
+            if (implied) {
+                next.marketLabel = implied.label;
+                next.symbol = implied.symbol;
+            }
+        }
+    }
+
+    if (expectedSlot === 'barrier' && draft.pendingBarrierKeyword) {
+        const bareDigit = normalized.match(/\b(\d)\b/);
+        if (bareDigit) {
+            const keyword = draft.pendingBarrierKeyword;
+            next.contractType = BARRIER_KEYWORD_TO_CONTRACT[keyword];
+            next.actionLabel = `${BARRIER_KEYWORD_TO_LABEL[keyword]} ${bareDigit[1]}`;
+            next.barrier = bareDigit[1];
+            next.pendingBarrierKeyword = undefined;
+        }
+    } else {
+        const action = findAction(normalized);
+        if (action) {
+            if (isPendingBarrier(action)) {
+                next.pendingBarrierKeyword = action.keyword;
+                next.contractType = undefined;
+                next.actionLabel = undefined;
+                next.barrier = undefined;
+            } else {
+                next.actionLabel = action.actionLabel;
+                next.barrier = action.barrier;
+                next.contractType = action.contractType;
+                next.pendingBarrierKeyword = undefined;
+            }
+        }
+    }
+
+    const stake = findStake(normalized);
+    if (stake !== undefined) {
+        next.stake = stake;
+    } else if (expectedSlot === 'stake' || expectedSlot === null) {
+        const bareNumber = normalized.match(/\b(\d+(?:\.\d+)?)\b/);
+        if (bareNumber) next.stake = Number(bareNumber[1]);
+    }
+
+    const duration = findDurationIfSpecified(normalized);
+    if (duration !== undefined) next.duration = duration;
+
+    return next;
+};
+
+/** Which slot to ask about next, or null once the draft is ready to confirm. */
+export const getNextVoiceSlot = (draft: TTradeDraft): TVoiceSlot | null => {
+    if (!draft.symbol || !draft.marketLabel) return 'market';
+    if (draft.pendingBarrierKeyword) return 'barrier';
+    if (!draft.contractType) return 'action';
+    if (draft.stake === undefined) return 'stake';
+    return null;
+};
+
+export const getVoiceSlotQuestion = (slot: TVoiceSlot, draft: TTradeDraft): string => {
+    if (slot === 'market') return 'Which market? For example, Volatility 75 Index.';
+    if (slot === 'barrier') {
+        const keyword = draft.pendingBarrierKeyword ? BARRIER_KEYWORD_TO_LABEL[draft.pendingBarrierKeyword] : 'that';
+        return `${keyword} which digit, 0 to 9?`;
+    }
+    if (slot === 'action') return 'What trade type? Rise, Fall, Even, Odd, Over, Under, Matches, or Differs.';
+    return 'How much do you want to stake?';
+};
+
+export const isVoiceDraftComplete = (draft: TTradeDraft): draft is TTradeDraft & {
+    contractType: TVoiceContractType;
+    marketLabel: string;
+    stake: number;
+    symbol: string;
+} => getNextVoiceSlot(draft) === null && draft.stake !== undefined && draft.stake > 0;
+
+export const finalizeVoiceDraft = (draft: TTradeDraft): TParsedVoiceTrade | undefined => {
+    if (!isVoiceDraftComplete(draft)) return undefined;
+
+    return {
+        actionLabel: draft.actionLabel ?? '',
+        barrier: draft.barrier,
+        contractType: draft.contractType,
+        duration: draft.duration ?? DEFAULT_DURATION_TICKS,
+        marketLabel: draft.marketLabel,
+        stake: draft.stake,
+        symbol: draft.symbol,
+    };
+};
+
+export const describeVoiceDraftForConfirmation = (trade: TParsedVoiceTrade, currency: string): string =>
+    `${trade.actionLabel} on ${trade.marketLabel}, stake ${trade.stake} ${currency}, ${trade.duration} ticks. Say yes to confirm, or no to cancel.`;
+
+export type TVoiceYesNo = 'no' | 'yes' | undefined;
+
+export const parseVoiceYesNo = (rawTranscript: string): TVoiceYesNo => {
+    const normalized = rawTranscript.toLowerCase().trim();
+
+    // Check negation first — phrases like "don't do it" or "no, don't place it"
+    // contain word sequences ("do it", "place it") that would otherwise match
+    // the affirmative pattern below. Getting this backwards on a real-money
+    // confirmation is exactly the kind of bug that must not ship.
+    if (/\b(no|nope|nah|cancel|stop|don'?t|do not|abort)\b/.test(normalized)) return 'no';
+    if (/\b(yes|yeah|yep|confirm|correct|go ahead|buy it|place it|do it)\b/.test(normalized)) return 'yes';
+
+    return undefined;
+};
+
+export const hasVoiceCancelIntent = (rawTranscript: string): boolean =>
+    /\b(cancel|stop|never mind|nevermind|forget it|abort)\b/.test(rawTranscript.toLowerCase().trim());
+
+export type TVoiceReplyOutcome =
+    | { kind: 'ask'; draft: TTradeDraft; prompt: string; slot: TVoiceSlot | 'confirmation' }
+    | { kind: 'cancelled' }
+    | { kind: 'confirmed'; trade: TParsedVoiceTrade };
+
+/**
+ * The single place that decides what happens after one turn of conversation,
+ * given what was already gathered (draft) and what the app just asked about
+ * (slot, or 'confirmation' once the draft is complete). Used identically by
+ * the spoken-voice loop and the typed-text fallback so both modes behave the
+ * same way — cancel words, yes/no, and mid-flow corrections all work
+ * regardless of whether the person is talking or typing.
+ */
+export const processVoiceReply = (
+    rawTranscript: string,
+    draft: TTradeDraft,
+    slot: TVoiceSlot | 'confirmation',
+    currency: string
+): TVoiceReplyOutcome => {
+    if (hasVoiceCancelIntent(rawTranscript)) return { kind: 'cancelled' };
+
+    if (slot === 'confirmation') {
+        const answer = parseVoiceYesNo(rawTranscript);
+        if (answer === 'yes') {
+            const trade = finalizeVoiceDraft(draft);
+            if (trade) return { kind: 'confirmed', trade };
+        }
+        if (answer === 'no') return { kind: 'cancelled' };
+
+        // Not a clear yes/no — treat it as a correction ("actually make it 20")
+        // and re-confirm with the updated draft rather than failing the turn.
+        const corrected = mergeVoiceTranscriptIntoDraft(draft, rawTranscript, null);
+        const nextSlot = getNextVoiceSlot(corrected);
+        if (nextSlot) {
+            return { draft: corrected, kind: 'ask', prompt: getVoiceSlotQuestion(nextSlot, corrected), slot: nextSlot };
+        }
+        const trade = finalizeVoiceDraft(corrected)!;
+        return {
+            draft: corrected,
+            kind: 'ask',
+            prompt: describeVoiceDraftForConfirmation(trade, currency),
+            slot: 'confirmation',
+        };
+    }
+
+    const merged = mergeVoiceTranscriptIntoDraft(draft, rawTranscript, slot);
+    const nextSlot = getNextVoiceSlot(merged);
+    if (nextSlot) {
+        return { draft: merged, kind: 'ask', prompt: getVoiceSlotQuestion(nextSlot, merged), slot: nextSlot };
+    }
+    const trade = finalizeVoiceDraft(merged)!;
+    return { draft: merged, kind: 'ask', prompt: describeVoiceDraftForConfirmation(trade, currency), slot: 'confirmation' };
+};
