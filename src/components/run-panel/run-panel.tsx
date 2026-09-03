@@ -320,7 +320,7 @@ const RunPanel = observer(() => {
 
     // Show run panel on all tabs on desktop, but only on BOT_BUILDER on mobile.
     const show_run_panel = isDesktop || active_tab === BOT_BUILDER || active_tour;
-    if ((!show_run_panel && isDesktop) || active_tour === 'bot_builder') return null;
+    if (!show_run_panel || active_tour === 'bot_builder') return null;
 
     return (
         <>
