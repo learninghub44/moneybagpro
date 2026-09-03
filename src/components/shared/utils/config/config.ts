@@ -55,6 +55,7 @@ type DomainUIConfig = {
     accentColor: string;
     logoUrl: string;
     faviconUrl: string;
+    ogImageUrl: string;
     headerBgColor: string;
     headerTextColor: string;
     sidebarBgColor: string;
@@ -172,6 +173,7 @@ const DEFAULT_DOMAIN_UI: DomainUIConfig = {
     accentColor: '#2196f3',
     logoUrl: '',
     faviconUrl: '',
+    ogImageUrl: '',
     headerBgColor: '#1a1a2e',
     headerTextColor: 'var(--text-colored-background)',
     sidebarBgColor: '#16213e',
@@ -893,13 +895,12 @@ export const DOMAIN_CONFIG: Record<string, DomainConfig> = {
                 authBorder: '#5eead4',
                 gold: '#fbbf24',
             }),
-            // TODO: replace with this domain's real WhatsApp/Telegram invite
-            // links once provided. Falls back to the DEFAULT_DOMAIN_UI
-            // placeholder links (wa.me/254700000000, t.me/YourChannel) until then.
-            // socialLinks: {
-            //     whatsapp: 'https://chat.whatsapp.com/xxxxxxxxxxxxxxxxxxxxxx',
-            //     telegram: 'https://t.me/xxxxxxxxxx',
-            // },
+            faviconUrl: '/moneypool.site/brand/favicon-32.png',
+            ogImageUrl: '/moneypool.site/brand/og-image.jpg',
+            socialLinks: {
+                whatsapp: 'https://chat.whatsapp.com/L81HVXhmEwKKGSWjXmvWm1?s=cl&p=a&mlu=4&ilr=4',
+                telegram: 'https://t.me/+pLgwSIdU3hQ2MDhk',
+            },
         },
     }),
     ...createHostedDomainEntries({
@@ -1040,14 +1041,39 @@ export const applyDomainUI = (): void => {
     if (ui.brandName) {
         document.title = ui.brandName;
         const description = `${ui.brandName} — automated Deriv trading bot platform.`;
-        const setMeta = (selector: string, content: string) => {
-            const el = document.querySelector(selector);
-            if (el) el.setAttribute('content', content);
+        const setMeta = (selector: string, attr: string, value: string) => {
+            let el = document.querySelector(selector);
+            if (!el) {
+                el = document.createElement('meta');
+                // selector is always of the form `meta[name="x"]` or `meta[property="x"]`
+                const match = selector.match(/meta\[(name|property)="([^"]+)"\]/);
+                if (match) el.setAttribute(match[1], match[2]);
+                document.head.appendChild(el);
+            }
+            el.setAttribute(attr, value);
         };
-        setMeta('meta[name="title"]', ui.brandName);
-        setMeta('meta[name="description"]', description);
-        setMeta('meta[property="og:title"]', ui.brandName);
-        setMeta('meta[property="og:description"]', description);
+        setMeta('meta[name="title"]', 'content', ui.brandName);
+        setMeta('meta[name="description"]', 'content', description);
+        setMeta('meta[property="og:title"]', 'content', ui.brandName);
+        setMeta('meta[property="og:description"]', 'content', description);
+
+        if (ui.ogImageUrl) {
+            const absoluteImageUrl = new URL(ui.ogImageUrl, window.location.origin).href;
+            setMeta('meta[property="og:image"]', 'content', absoluteImageUrl);
+            setMeta('meta[name="twitter:card"]', 'content', 'summary_large_image');
+            setMeta('meta[name="twitter:image"]', 'content', absoluteImageUrl);
+        }
+
+        if (ui.faviconUrl) {
+            let favicon = document.querySelector('link[rel="icon"]');
+            if (!favicon) {
+                favicon = document.createElement('link');
+                favicon.setAttribute('rel', 'icon');
+                document.head.appendChild(favicon);
+            }
+            favicon.setAttribute('href', ui.faviconUrl);
+            favicon.removeAttribute('type');
+        }
     }
 };
 
