@@ -85,6 +85,7 @@ const AiHub = observer(() => {
     const digitsRef = useRef<Record<string, number[]>>({});
     const quotesRef = useRef<Record<string, number[]>>({});
     const stopRequestedRef = useRef(false);
+    const abortControllerRef = useRef<AbortController | null>(null);
     const logEndRef = useRef<HTMLDivElement | null>(null);
 
     useEffect(() => {
@@ -125,12 +126,16 @@ const AiHub = observer(() => {
     }, [runLog]);
 
     useEffect(() => {
-        if (!is_active) stopRequestedRef.current = true;
+        if (!is_active) {
+            stopRequestedRef.current = true;
+            abortControllerRef.current?.abort();
+        }
     }, [is_active]);
 
     useEffect(
         () => () => {
             stopRequestedRef.current = true;
+            abortControllerRef.current?.abort();
         },
         []
     );
@@ -165,6 +170,10 @@ const AiHub = observer(() => {
 
     const handleStop = useCallback(() => {
         stopRequestedRef.current = true;
+        // Without this, Stop only took effect once the current trade's tick
+        // duration finished settling — which could be several seconds away —
+        // instead of ending the wait right away.
+        abortControllerRef.current?.abort();
     }, []);
 
     const handleLoadAndRun = useCallback(async () => {
@@ -225,12 +234,32 @@ const AiHub = observer(() => {
 
                 pushContract(fallbackContract);
 
+                const controller = new AbortController();
+                abortControllerRef.current = controller;
+
                 const settled = await streamContractUntilSettled({
                     contractId: buy.contract_id,
                     fallback: fallbackContract,
                     onUpdate: snapshot => pushContract(snapshot),
+                    signal: controller.signal,
                     source: 'AiHub',
                 });
+
+                abortControllerRef.current = null;
+
+                if (!settled.is_sold) {
+                    // Stopped mid-trade: the contract itself is still live and
+                    // will settle on its own (check Transactions later for the
+                    // result) — it just isn't counted in this run's total
+                    // since we don't yet know if it won or lost.
+                    appendLog(
+                        `Run ${runIndex} stopped — trade is still open and will settle on its own. Check Transactions for the result.`
+                    );
+                    setRunSummary(
+                        `Stopped manually after ${runIndex} run${runIndex === 1 ? '' : 's'} (last trade still settling). Total P/L: ${totalProfit.toFixed(2)} ${currency}.`
+                    );
+                    break;
+                }
 
                 const profit = Number(settled?.profit ?? 0);
                 totalProfit = Number((totalProfit + profit).toFixed(8));
