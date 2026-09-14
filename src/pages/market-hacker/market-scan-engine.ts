@@ -37,6 +37,7 @@ export type TTopSignal = {
 };
 
 export type TMarketScan = {
+    candidates: TTopSignal[];
     digitCount: number;
     error: string | null;
     evenPercent: number;
@@ -183,6 +184,7 @@ export const evaluateMarketScan = (
     );
 
     return {
+        candidates,
         digitCount: recentDigits.length,
         error: null,
         evenPercent,
@@ -203,6 +205,7 @@ export const evaluateMarketScan = (
 };
 
 export const emptyMarketScan = (symbol: string, label: string): TMarketScan => ({
+    candidates: [],
     digitCount: 0,
     error: null,
     evenPercent: 0,

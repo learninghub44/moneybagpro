@@ -121,6 +121,19 @@ export const LabelPairedMicrophoneCaptionRegularIcon = createStrokeIcon(({ strok
     </>
 ));
 
+export const LabelPairedSparkleCaptionRegularIcon = createStrokeIcon(({ stroke, strokeWidth }) => (
+    <>
+        <path
+            d='M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3z'
+            stroke={stroke}
+            strokeWidth={strokeWidth}
+            strokeLinejoin='round'
+            fill='none'
+        />
+        <path d='M18.5 15l0.7 2 2 0.7-2 0.7-0.7 2-0.7-2-2-0.7 2-0.7 0.7-2z' stroke={stroke} strokeWidth='1' fill='none' />
+    </>
+));
+
 export const LabelPairedFloppyDiskMdRegularIcon = createStrokeIcon(({ stroke, strokeWidth }) => (
     <>
         <path d='M6 5h10l2 2v12H6z' stroke={stroke} strokeWidth={strokeWidth} strokeLinejoin='round' />
