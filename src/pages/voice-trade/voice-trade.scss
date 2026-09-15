@@ -9,7 +9,7 @@
     );
     max-width: 76rem;
     margin: 0 auto;
-    color: var(--text-general, #fff);
+    color: var(--text-general, #10213f);
 }
 
 .voice-trade__card {
@@ -19,8 +19,8 @@
     gap: 1.2rem;
     padding: 2.4rem 1.6rem;
     border-radius: 1.6rem;
-    background: var(--rm-shell-run-panel, var(--general-main-1, #001840));
-    border: 1px solid var(--general-section-1, rgba(255, 255, 255, 0.12));
+    background: var(--rm-shell-run-panel, var(--general-main-1, #ffffff));
+    border: 1px solid var(--general-section-1, rgba(16, 33, 63, 0.1));
     text-align: center;
 }
 
@@ -40,7 +40,7 @@
     em {
         font-style: normal;
         font-weight: 600;
-        color: #c8a45d;
+        color: var(--rm-shell-accent, #1a73e8);
     }
 }
 
@@ -55,12 +55,12 @@
     border-radius: 50%;
     border: none;
     cursor: pointer;
-    background: radial-gradient(circle at 30% 30%, #ffd27a, #c8a45d);
+    background: radial-gradient(circle at 30% 30%, #ffd27a, var(--rm-shell-accent, #1a73e8));
     color: #1a1200;
     font-size: 1.2rem;
     font-weight: 700;
     transition: transform 0.15s ease, box-shadow 0.15s ease;
-    box-shadow: 0 0 0 0 rgba(200, 164, 93, 0.5);
+    box-shadow: 0 0 0 0 rgba(26, 115, 232, 0.5);
 
     &:active {
         transform: scale(0.97);
@@ -148,8 +148,8 @@
     overflow-y: auto;
     padding: 1rem;
     border-radius: 1rem;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid var(--general-section-1, rgba(255, 255, 255, 0.1));
+    background: rgba(16, 33, 63, 0.03);
+    border: 1px solid var(--general-section-1, rgba(16, 33, 63, 0.08));
     text-align: left;
 }
 
@@ -165,7 +165,7 @@
 
     &--bot {
         align-self: flex-start;
-        background: rgba(200, 164, 93, 0.14);
+        background: rgba(26, 115, 232, 0.14);
     }
 
     &--user {
@@ -214,13 +214,13 @@
         flex: 1;
         padding: 1rem 1.2rem;
         border-radius: 0.8rem;
-        border: 1px solid var(--general-section-1, rgba(255, 255, 255, 0.18));
-        background: rgba(255, 255, 255, 0.04);
-        color: var(--text-general, #fff);
+        border: 1px solid var(--general-section-1, rgba(16, 33, 63, 0.15));
+        background: rgba(16, 33, 63, 0.04);
+        color: var(--text-general, #10213f);
         font-size: 1.2rem;
 
         &::placeholder {
-            color: var(--text-general, #fff);
+            color: var(--text-general, #10213f);
             opacity: 0.45;
         }
     }
@@ -229,7 +229,7 @@
         padding: 1rem 1.6rem;
         border-radius: 0.8rem;
         border: none;
-        background: #c8a45d;
+        background: var(--rm-shell-accent, #1a73e8);
         color: #1a1200;
         font-weight: 700;
         cursor: pointer;
@@ -247,8 +247,8 @@
     gap: 0.8rem;
     padding: 1.6rem;
     border-radius: 1.2rem;
-    background: var(--rm-shell-run-panel, var(--general-main-1, #001840));
-    border: 1px solid var(--general-section-1, rgba(255, 255, 255, 0.12));
+    background: var(--rm-shell-run-panel, var(--general-main-1, #ffffff));
+    border: 1px solid var(--general-section-1, rgba(16, 33, 63, 0.1));
 
     h3 {
         margin: 0 0 0.4rem;
@@ -263,7 +263,7 @@
     align-items: center;
     padding: 0.8rem 1rem;
     border-radius: 0.8rem;
-    background: rgba(255, 255, 255, 0.03);
+    background: rgba(16, 33, 63, 0.03);
     font-size: 1.2rem;
 
     &--won .voice-trade__history-status {
@@ -275,7 +275,7 @@
     }
 
     &--open .voice-trade__history-status {
-        color: #c8a45d;
+        color: var(--rm-shell-accent, #1a73e8);
     }
 }
 

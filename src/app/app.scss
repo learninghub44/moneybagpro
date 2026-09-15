@@ -1,47 +1,51 @@
-// ─── RiskManagers Dark Navy Theme ─────────────────────────────────────────────
+// ─── White / Blue Theme ────────────────────────────────────────────────────
+// Content areas are white/light; the header and nav strip stay dark navy
+// (matches the reference layout: white page body, navy nav bar, blue accent
+// buttons) instead of the previous all-navy theme.
 :root {
     // Shell background layers
-    --rm-shell-bg: #001840;
-    --rm-shell-run-panel: #001840;
-    --rm-shell-section: #071f48;
-    --rm-shell-section-2: #0a2240;
-    --rm-shell-top: #000e2b;
+    --rm-shell-bg: #f7f9fc;
+    --rm-shell-run-panel: #ffffff;
+    --rm-shell-section: #eef3fb;
+    --rm-shell-section-2: #e4ecf9;
+    --rm-shell-top: #001840;
     --rm-shell-top-light: #0a1a38;
-    --rm-shell-nav: #000e2b;
+    --rm-shell-nav: #001840;
 
     // Text colours
-    --rm-shell-text: #ffffff;
+    --rm-shell-text: #10213f;
     --rm-shell-header-text: #ffffff;
-    --rm-shell-panel-text: #c4cfe0;
-    --rm-shell-panel-text-muted: #8899bb;
+    --rm-shell-panel-text: #33415c;
+    --rm-shell-panel-text-muted: #6b7a94;
 
-    // Accent / gold / borders
-    --rm-shell-gold: #00d4ff;
-    --rm-shell-accent: #00d4ff;
-    --rm-shell-section-border: rgba(0, 212, 255, 0.12);
-    --rm-shell-auth-blue: #0a78d4;
-    --rm-shell-auth-border: rgba(0, 212, 255, 0.25);
+    // Accent / borders — genuinely blue now, not the old "gold" name left
+    // over from an earlier iteration.
+    --rm-shell-gold: #1a73e8;
+    --rm-shell-accent: #1a73e8;
+    --rm-shell-section-border: rgba(26, 115, 232, 0.15);
+    --rm-shell-auth-blue: #1a73e8;
+    --rm-shell-auth-border: rgba(26, 115, 232, 0.3);
     --rm-shell-button-text: #ffffff;
 }
 
-// Force dark mode colours for main content so it matches the navy shell
+// Match main content to the white/blue shell instead of forcing dark.
 body.theme--light,
 body {
-    --general-main-1: #001840;
-    --general-main-2: #071f48;
-    --general-section-1: rgba(0, 212, 255, 0.08);
-    --general-section-2: #0a2240;
-    --text-general: #ffffff;
-    --text-less-prominent: #8899bb;
-    --text-disabled: #4c6080;
+    --general-main-1: #ffffff;
+    --general-main-2: #f7f9fc;
+    --general-section-1: rgba(26, 115, 232, 0.06);
+    --general-section-2: #eef3fb;
+    --text-general: #10213f;
+    --text-less-prominent: #6b7a94;
+    --text-disabled: #a9b4c7;
     --text-colored-background: #ffffff;
-    --border-normal: rgba(0, 212, 255, 0.12);
-    --border-hover: rgba(0, 212, 255, 0.35);
-    --button-primary-default: #0a78d4;
-    --button-primary-hover: #0d8ef0;
-    --icons: #00d4ff;
-    --icon-black-plus: #c4cfe0;
-    --shadow-menu: 0 8px 32px rgba(0, 0, 0, 0.5);
+    --border-normal: rgba(26, 115, 232, 0.15);
+    --border-hover: rgba(26, 115, 232, 0.35);
+    --button-primary-default: #1a73e8;
+    --button-primary-hover: #1560c4;
+    --icons: #1a73e8;
+    --icon-black-plus: #33415c;
+    --shadow-menu: 0 8px 32px rgba(16, 33, 63, 0.12);
 }
 
 .bot {
