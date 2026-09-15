@@ -1,121 +1,463 @@
 .bulk-trading-page {
     display: flex;
     flex-direction: column;
-    gap: 1.6rem;
+    gap: 1.2rem;
     padding: 1.6rem;
-    // The tab content area scrolls independently (.dc-tabs__content), so this
-    // is the buffer that keeps the run button / results from ever sitting
-    // flush against the bottom edge. Grounded in the run-panel's own height
-    // variables (controls bar + the Summary/Transactions/Journal drawer
-    // strip that can stack above it) rather than a guessed rem value, so it
-    // covers the worst case where that drawer is open and still reaches the
-    // real bottom of the content when scrolled.
     padding-bottom: calc(
         var(--run-panel-mobile-controls-height, 7.6rem) + var(--run-panel-mobile-stat-height, 12.8rem) + 2rem +
             env(safe-area-inset-bottom, 0px)
     );
-    max-width: 76rem;
+    max-width: 52rem;
     margin: 0 auto;
-    // Body text here doesn't set its own color and shouldn't rely on ambient
-    // inheritance — that cascade is unreliable on this build (conflicting
-    // --text-general sources between app.scss's forced navy override and
-    // the theme defaults), which is why content can render near-invisible.
-    color: var(--text-general, #fff);
-}
+    color: var(--text-general, #1a1a1a);
+    font-family: Arial, Helvetica, sans-serif;
 
-.bulk-trading__hero {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1.6rem;
-    padding: 1.6rem 2rem;
-    border-radius: 1.2rem;
-    background: linear-gradient(135deg, rgba(255, 68, 79, 0.08), rgba(75, 180, 179, 0.08));
-    border: 1px solid var(--general-section-1, #d6dadb);
-}
-
-.bulk-trading__title {
-    margin: 0;
-    font-size: 1.8rem;
-    font-weight: 700;
-}
-
-.bulk-trading__subtitle {
-    margin: 0.2rem 0 0;
-    font-size: 1.2rem;
-    opacity: 0.7;
-}
-
-.bulk-trading__stats {
-    display: flex;
-    gap: 2rem;
-}
-
-.bulk-trading__stat {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.bulk-trading__stat-value {
-    font-size: 2rem;
-    font-weight: 700;
-    line-height: 1;
-    color: var(--brand-red-coral, #ff444f);
-}
-
-.bulk-trading__stat-label {
-    margin-top: 0.4rem;
-    font-size: 1rem;
-    opacity: 0.65;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
+    * {
+        box-sizing: border-box;
+    }
 }
 
 .bulk-trading__mode-toggle {
     display: flex;
-    gap: 0.8rem;
+    gap: 0.6rem;
 }
 
 .bulk-trading__mode-btn {
     flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.3rem;
-    padding: 1.2rem 1.4rem;
+    padding: 1rem;
     border: 1px solid var(--general-section-1, #d6dadb);
-    border-radius: 1rem;
+    border-radius: 0.8rem;
     background: transparent;
+    color: inherit;
+    font-weight: 700;
+    font-size: 1.2rem;
     cursor: pointer;
-    text-align: left;
-    transition: border-color 0.15s ease, background 0.15s ease, transform 0.1s ease;
-
-    &:hover {
-        transform: translateY(-1px);
-    }
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 
     &--active {
-        border-color: var(--brand-red-coral, #ff444f);
-        background: linear-gradient(135deg, var(--brand-red-coral, #ff444f), #ff7a82);
+        border-color: #2c8b8a;
+        background: #2c8b8a;
         color: #fff;
+    }
+}
 
-        .bulk-trading__mode-btn-desc {
-            color: rgba(255, 255, 255, 0.85);
+// ---------------------------------------------------------------------------
+// Scanner mode
+// ---------------------------------------------------------------------------
+
+.bt-scanner {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+}
+
+.bt-scanner__row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+
+    &--three {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+.bt-scanner__field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    opacity: 0.75;
+
+    select,
+    input {
+        padding: 1.1rem 1rem;
+        border: 1px solid #d8dbde;
+        border-radius: 0.7rem;
+        background: #eef0f2;
+        color: #1a1a1a;
+        font-size: 1.4rem;
+        font-weight: 700;
+        text-transform: none;
+        width: 100%;
+
+        &:focus {
+            outline: none;
+            border-color: #2c8b8a;
         }
     }
 }
 
-.bulk-trading__mode-btn-title {
-    font-weight: 700;
-    font-size: 1.3rem;
+.bt-scanner__field--barrier {
+    gap: 0.6rem;
 }
 
-.bulk-trading__mode-btn-desc {
-    font-size: 1.1rem;
-    opacity: 0.7;
+.bt-scanner__barrier-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
 }
+
+.bt-scanner__barrier-digit {
+    width: 3.4rem;
+    height: 3.4rem;
+    border-radius: 50%;
+    border: 1px solid #d8dbde;
+    background: #eef0f2;
+    font-weight: 700;
+    font-size: 1.3rem;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+
+    &--active {
+        background: #2c8b8a;
+        border-color: #2c8b8a;
+        color: #fff;
+    }
+}
+
+.bt-scanner__sample-input {
+    text-align: center;
+    font-size: 1.8rem !important;
+}
+
+.bt-scanner__current-tick {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.4rem 0 0.2rem;
+}
+
+.bt-scanner__current-tick-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    opacity: 0.6;
+}
+
+.bt-scanner__live-dot {
+    width: 0.7rem;
+    height: 0.7rem;
+    border-radius: 50%;
+    background: #2ecf7d;
+    box-shadow: 0 0 0 0 rgba(46, 207, 125, 0.6);
+    animation: bt-pulse 1.4s ease-out infinite;
+}
+
+@keyframes bt-pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(46, 207, 125, 0.55);
+    }
+    100% {
+        box-shadow: 0 0 0 0.6rem rgba(46, 207, 125, 0);
+    }
+}
+
+.bt-scanner__current-tick-value {
+    font-size: 3.4rem;
+    font-weight: 800;
+    color: #2c8b8a;
+    line-height: 1;
+}
+
+.bt-scanner__error {
+    margin: 0;
+    padding: 0.8rem 1rem;
+    border-radius: 0.7rem;
+    background: #fff1f2;
+    color: #b91c1c;
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-align: center;
+}
+
+.bt-scanner__toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.8rem;
+    padding: 1.1rem;
+    border-radius: 0.8rem;
+    border: 1px solid #35e07b;
+    background: #0c0f0e;
+    color: #35e07b;
+    font-weight: 800;
+    font-size: 1.2rem;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    box-shadow: 0 0 1.2rem rgba(53, 224, 123, 0.35);
+    transition: box-shadow 0.15s ease;
+
+    &:hover {
+        box-shadow: 0 0 1.6rem rgba(53, 224, 123, 0.55);
+    }
+}
+
+.bt-scanner__toggle-icon {
+    display: flex;
+}
+
+.bt-scanner__toggle-caret {
+    width: 0.7rem;
+    height: 0.7rem;
+    border-right: 0.2rem solid currentColor;
+    border-bottom: 0.2rem solid currentColor;
+    transform: rotate(45deg);
+    margin-left: 0.2rem;
+    transition: transform 0.15s ease;
+}
+
+.bt-scanner__toggle--open .bt-scanner__toggle-caret {
+    transform: rotate(-135deg);
+}
+
+.bt-digits {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    row-gap: 1.6rem;
+    column-gap: 0.6rem;
+    justify-items: center;
+    padding: 0.4rem 0;
+}
+
+.bt-digit {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.bt-digit__circle {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 6.2rem;
+    height: 6.2rem;
+    border-radius: 50%;
+    background: #f2f3f5;
+    border: 0.3rem solid #e3e5e8;
+
+    &--special {
+        border-color: var(--ring-color);
+        box-shadow: 0 0 0 0.1rem var(--ring-color) inset;
+    }
+}
+
+.bt-digit__number {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #1a1a1a;
+}
+
+.bt-digit__percent {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #4a4f54;
+}
+
+.bt-eo-strip {
+    display: flex;
+    justify-content: center;
+    gap: 0.6rem;
+    padding-top: 0.2rem;
+}
+
+.bt-eo-strip__item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.bt-eo-strip__chip {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.2rem;
+    height: 3.2rem;
+    border-radius: 0.6rem;
+    font-weight: 800;
+    font-size: 1.3rem;
+    color: #fff;
+
+    &--even {
+        background: #2c9a8f;
+    }
+
+    &--odd {
+        background: #e5484d;
+    }
+}
+
+.bt-eo-strip__arrow {
+    width: 0;
+    height: 0;
+    border-left: 0.6rem solid transparent;
+    border-right: 0.6rem solid transparent;
+    border-bottom: 0.9rem solid #e5484d;
+}
+
+.bt-autotrader {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    padding: 1.1rem;
+    border: 1px solid #d8dbde;
+    border-radius: 0.8rem;
+    background: #eef0f2;
+    color: #1a1a1a;
+    font-weight: 700;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+
+    &--armed {
+        border-color: #2c8b8a;
+        background: rgba(44, 139, 138, 0.12);
+        color: #2c8b8a;
+    }
+}
+
+.bt-autotrader__gear {
+    width: 1.4rem;
+    height: 1.4rem;
+    border-radius: 50%;
+    border: 0.2rem solid currentColor;
+    position: relative;
+
+    &::before {
+        content: '';
+        position: absolute;
+        inset: -0.35rem;
+        border-radius: 50%;
+        border: 0.15rem dashed currentColor;
+        opacity: 0.6;
+    }
+}
+
+.bt-buy-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.bt-buy-buttons__btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 1.4rem 1rem;
+    border: 0;
+    border-radius: 0.6rem;
+    color: #fff;
+    cursor: pointer;
+    clip-path: polygon(6% 0, 100% 0, 94% 100%, 0 100%);
+    transition: transform 0.1s ease, opacity 0.15s ease;
+
+    &:hover:not(:disabled) {
+        transform: translateY(-2px);
+    }
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    &--teal {
+        background: linear-gradient(135deg, #2c9a8f, #1f6f66);
+    }
+
+    &--red {
+        background: linear-gradient(135deg, #e5484d, #b8262b);
+    }
+}
+
+.bt-buy-buttons__label {
+    font-size: 1.4rem;
+    font-weight: 800;
+}
+
+.bt-buy-buttons__payout {
+    font-size: 1.3rem;
+    font-weight: 700;
+}
+
+.bt-buy-buttons__percent {
+    font-size: 1.2rem;
+    font-weight: 600;
+    opacity: 0.9;
+}
+
+.bt-warning {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-self: flex-start;
+    width: 2.6rem;
+    height: 2.6rem;
+    border-radius: 50%;
+    border: 1px solid #3a2f00;
+    background: #1a1400;
+    color: #f5a623;
+    cursor: pointer;
+}
+
+.bt-warning__text {
+    margin: -0.6rem 0 0;
+    padding: 0.9rem 1rem;
+    border-radius: 0.7rem;
+    background: #fff8e6;
+    border: 1px solid #f5d685;
+    color: #7a5a00;
+    font-size: 1.1rem;
+    line-height: 1.5;
+}
+
+.bt-scanner__summary {
+    margin: 0;
+    text-align: center;
+    font-size: 1.1rem;
+    font-weight: 700;
+    opacity: 0.75;
+}
+
+.bt-status-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.7rem;
+    padding: 1rem;
+    border-radius: 0.8rem;
+    background: #10131a;
+    color: #cfd4d9;
+    font-weight: 700;
+    font-size: 1.2rem;
+}
+
+.bt-status-bar__dot {
+    width: 0.8rem;
+    height: 0.8rem;
+    border-radius: 50%;
+    background: #5a606a;
+
+    &--live {
+        background: #2ecf7d;
+        box-shadow: 0 0 0 0 rgba(46, 207, 125, 0.6);
+        animation: bt-pulse 1.4s ease-out infinite;
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Accounts mode (unchanged)
+// ---------------------------------------------------------------------------
 
 .bulk-trading__panel {
     display: flex;
@@ -145,7 +487,7 @@
 .bulk-trading__select-all-btn {
     border: 0;
     background: transparent;
-    color: var(--brand-red-coral, #ff444f);
+    color: #2c8b8a;
     font-weight: 600;
     font-size: 1.1rem;
     cursor: pointer;
@@ -179,14 +521,14 @@
     }
 
     &--checked {
-        border-color: var(--brand-red-coral, #ff444f);
-        background: rgba(255, 68, 79, 0.06);
+        border-color: #2c8b8a;
+        background: rgba(44, 139, 138, 0.08);
     }
 
     input {
         width: 1.6rem;
         height: 1.6rem;
-        accent-color: var(--brand-red-coral, #ff444f);
+        accent-color: #2c8b8a;
         cursor: pointer;
     }
 }
@@ -199,7 +541,7 @@
     height: 3.2rem;
     flex-shrink: 0;
     border-radius: 50%;
-    background: linear-gradient(135deg, var(--brand-red-coral, #ff444f), #ff9195);
+    background: linear-gradient(135deg, #2c9a8f, #1f6f66);
     color: #fff;
     font-weight: 700;
     font-size: 1.2rem;
@@ -259,7 +601,7 @@
 
         &:focus {
             outline: none;
-            border-color: var(--brand-red-coral, #ff444f);
+            border-color: #2c8b8a;
         }
     }
 }
@@ -271,7 +613,7 @@
     padding: 1.2rem;
     border: 0;
     border-radius: 1rem;
-    background: linear-gradient(135deg, var(--status-success, #4bb4b3), #2c8b8a);
+    background: linear-gradient(135deg, #4bb4b3, #2c8b8a);
     color: #fff;
     font-weight: 700;
     font-size: 1.3rem;
@@ -350,55 +692,4 @@
 
 .bulk-trading__result--error .bulk-trading__result-icon {
     background: #ec3f3f;
-}
-
-.bulk-trading__batch-item {
-    display: flex;
-    flex-direction: column;
-    gap: 0.8rem;
-    padding: 1.4rem;
-    border: 1px solid var(--general-section-1, #d6dadb);
-    border-radius: 1rem;
-    transition: border-color 0.15s ease;
-
-    &:hover {
-        border-color: var(--brand-red-coral, #ff444f);
-    }
-}
-
-.bulk-trading__batch-item-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-weight: 700;
-    font-size: 1.3rem;
-}
-
-.bulk-trading__remove-btn,
-.bulk-trading__add-btn {
-    border: 1px dashed var(--general-section-1, #d6dadb);
-    background: transparent;
-    border-radius: 0.8rem;
-    padding: 0.8rem 1rem;
-    cursor: pointer;
-    font-size: 1.2rem;
-    font-weight: 600;
-    transition: border-color 0.15s ease, color 0.15s ease;
-
-    &:hover {
-        border-color: var(--brand-red-coral, #ff444f);
-        color: var(--brand-red-coral, #ff444f);
-    }
-}
-
-.bulk-trading__remove-btn {
-    padding: 0.5rem 0.9rem;
-    font-size: 1.05rem;
-}
-
-.bulk-trading__batch-result {
-    margin: 0;
-    padding: 0.7rem 1rem;
-    border-radius: 0.8rem;
-    font-size: 1.2rem;
 }
