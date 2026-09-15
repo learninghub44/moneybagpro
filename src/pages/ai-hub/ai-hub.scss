@@ -39,6 +39,7 @@
 
 .ai-hub__category-tabs {
     display: flex;
+    flex-wrap: wrap;
     gap: 0.6rem;
     padding: 0.4rem;
     border-radius: 1rem;
@@ -56,6 +57,12 @@
     font-weight: 600;
     font-size: 1.15rem;
     cursor: pointer;
+    white-space: nowrap;
+
+    @include mobile-or-tablet-screen {
+        flex: 1 1 calc(50% - 0.6rem);
+        font-size: 1.05rem;
+    }
 
     &--active {
         background: #c8a45d;

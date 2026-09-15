@@ -1,11 +1,12 @@
 import type { TMarketScan } from '../market-hacker/market-scan-engine';
 
-export type TAiHubCategory = 'even_odd' | 'over_under' | 'rise_fall';
+export type TAiHubCategory = 'even_odd' | 'matches_differs' | 'over_under' | 'rise_fall';
 
-export type TAiHubContractType = 'CALL' | 'DIGITEVEN' | 'DIGITODD' | 'DIGITOVER' | 'DIGITUNDER' | 'PUT';
+export type TAiHubContractType = 'CALL' | 'DIGITDIFF' | 'DIGITEVEN' | 'DIGITODD' | 'DIGITOVER' | 'DIGITUNDER' | 'PUT';
 
 const CATEGORY_CONTRACT_TYPES: Record<TAiHubCategory, TAiHubContractType[]> = {
     even_odd: ['DIGITEVEN', 'DIGITODD'],
+    matches_differs: ['DIGITDIFF'],
     over_under: ['DIGITOVER', 'DIGITUNDER'],
     rise_fall: ['CALL', 'PUT'],
 };
@@ -62,7 +63,7 @@ export const findBestAiHubSignal = (
 };
 
 export const contractTypeNeedsBarrier = (contractType: TAiHubContractType): boolean =>
-    contractType === 'DIGITOVER' || contractType === 'DIGITUNDER';
+    contractType === 'DIGITOVER' || contractType === 'DIGITUNDER' || contractType === 'DIGITDIFF';
 
 export type TAiHubRunConfig = {
     martingaleMultiplier: number;

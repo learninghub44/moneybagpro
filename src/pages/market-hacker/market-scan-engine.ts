@@ -4,6 +4,8 @@ import {
     DIGIT_STRATEGIES,
     DigitStrategyId,
     evaluateDigitStrategy,
+    findColdestDigitDiffersSignal,
+    getSampleConfidence,
     SUPPORTED_VOLATILITY_MARKETS,
 } from '@/utils/digit-strategy';
 import { getLastDigitFromQuote } from '@/utils/market-data';
@@ -29,7 +31,7 @@ export type TStrategySignal = {
 
 export type TTopSignal = {
     barrier?: string;
-    contractType?: 'DIGITOVER' | 'DIGITUNDER' | 'DIGITEVEN' | 'DIGITODD' | 'CALL' | 'PUT';
+    contractType?: 'DIGITOVER' | 'DIGITUNDER' | 'DIGITEVEN' | 'DIGITODD' | 'DIGITDIFF' | 'CALL' | 'PUT';
     detail: string;
     entryReady: boolean;
     label: string;
@@ -65,6 +67,7 @@ const buildStrategySignal = (
 ): TStrategySignal => {
     const strategy = DIGIT_STRATEGIES[strategyId];
     const evaluation = evaluateDigitStrategy(strategyId, digitPercentages, recentDigits);
+    const sampleConfidence = getSampleConfidence(recentDigits.length);
 
     let possibility = 30;
     if (evaluation.entryReady) {
@@ -83,7 +86,7 @@ const buildStrategySignal = (
         entryReady: evaluation.entryReady,
         id: strategyId,
         isQualified: evaluation.isQualified,
-        possibility: clampPossibility(possibility),
+        possibility: clampPossibility(possibility * sampleConfidence),
         trailingTriggerCount: evaluation.trailingTriggerCount,
         triggerLabel: strategy.triggerLabel,
     };
@@ -147,6 +150,8 @@ export const evaluateMarketScan = (
     const evenOddPossibility = clampPossibility(50 + Math.abs(evenPercent - 50) * 1.6);
     const evenOddLabel = evenPercent > oddPercent ? 'Even' : 'Odd';
 
+    const coldestDigitSignal = findColdestDigitDiffersSignal(digitPercentages, recentDigits.length);
+
     const candidates: TTopSignal[] = [
         ...strategies.map(strategy => ({
             barrier: strategy.barrier,
@@ -177,6 +182,18 @@ export const evaluateMarketScan = (
             label: evenOddLabel,
             possibility: evenOddPossibility,
         },
+        ...(coldestDigitSignal
+            ? [
+                  {
+                      barrier: String(coldestDigitSignal.digit),
+                      contractType: 'DIGITDIFF' as const,
+                      detail: `Digit ${coldestDigitSignal.digit} has appeared least often recently (${coldestDigitSignal.percent.toFixed(1)}%). Differs against any single digit has a structural ~90% base win rate from the contract's own payout odds, not from this history — the coldest digit is used because it's the least likely to repeat right now.`,
+                      entryReady: false,
+                      label: `Differs ${coldestDigitSignal.digit}`,
+                      possibility: coldestDigitSignal.possibility,
+                  },
+              ]
+            : []),
     ];
 
     const topSignal = candidates.reduce((best, candidate) =>

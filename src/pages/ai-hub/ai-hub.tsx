@@ -31,6 +31,7 @@ const CATEGORY_TABS: { label: string; value: TAiHubCategory }[] = [
     { label: 'Over/Under', value: 'over_under' },
     { label: 'Even/Odd', value: 'even_odd' },
     { label: 'Rise/Fall', value: 'rise_fall' },
+    { label: 'Differs', value: 'matches_differs' },
 ];
 
 type TRunLogEntry = { id: string; text: string; tone: 'info' | 'loss' | 'win' };
