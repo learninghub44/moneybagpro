@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
+import EntryScannerModal, { type TEntryScannerResult } from '@/components/entry-scanner-modal';
 import { DBOT_TABS } from '@/constants/bot-contents';
 import { api_base } from '@/external/bot-skeleton';
 import { useStore } from '@/hooks/useStore';
@@ -67,6 +68,13 @@ const ApexBot = observer(() => {
     const [lastError, setLastError] = useState<string | null>(null);
     const [tradeHistory, setTradeHistory] = useState<TApexTradeLogEntry[]>([]);
     const [marketFilter, setMarketFilter] = useState('');
+    const [isScannerOpen, setIsScannerOpen] = useState(false);
+    const [pinnedSignal, setPinnedSignal] = useState<TEntryScannerResult | null>(null);
+    const pinnedSignalRef = useRef<TEntryScannerResult | null>(null);
+
+    useEffect(() => {
+        pinnedSignalRef.current = pinnedSignal;
+    }, [pinnedSignal]);
 
     const [scans, setScans] = useState<Record<string, TMarketScan>>(() =>
         Object.fromEntries(
@@ -189,7 +197,18 @@ const ApexBot = observer(() => {
 
         try {
             while (!stopRequestedRef.current) {
-                const signal = findBestSignalAcrossAllCategories(scansRef.current);
+                const pinned = pinnedSignalRef.current;
+                const signal: TAiHubSignal | null = pinned
+                    ? {
+                          barrier: pinned.barrier,
+                          contractType: pinned.contractType,
+                          detail: pinned.statusLabel,
+                          label: pinned.tradeTypeLabel,
+                          marketLabel: pinned.marketLabel,
+                          possibility: 100,
+                          symbol: pinned.symbol,
+                      }
+                    : findBestSignalAcrossAllCategories(scansRef.current);
 
                 if (!signal) {
                     const hasAnyLiveMarket = Object.values(scansRef.current).some(scan => scan.price !== null);
@@ -409,6 +428,31 @@ const ApexBot = observer(() => {
                         />
                     </label>
                 </div>
+
+                <button
+                    className='apex-bot__scanner-btn'
+                    disabled={isRunning}
+                    onClick={() => setIsScannerOpen(true)}
+                    type='button'
+                >
+                    Entry Scanner
+                </button>
+
+                {pinnedSignal && (
+                    <div className='apex-bot__pinned'>
+                        <span>
+                            Pinned: <strong>{pinnedSignal.marketLabel}</strong> · {pinnedSignal.tradeTypeLabel}
+                        </span>
+                        <button
+                            className='apex-bot__pinned-clear'
+                            disabled={isRunning}
+                            onClick={() => setPinnedSignal(null)}
+                            type='button'
+                        >
+                            Clear
+                        </button>
+                    </div>
+                )}
             </section>
 
             {lastError && (
@@ -485,6 +529,15 @@ const ApexBot = observer(() => {
                 qualifies — it is not a prediction, and past ticks don&apos;t determine future ones. Trading involves
                 risk of loss.
             </p>
+
+            <EntryScannerModal
+                onClose={() => setIsScannerOpen(false)}
+                onLoad={loadedSignal => {
+                    setPinnedSignal(loadedSignal);
+                    setIsScannerOpen(false);
+                }}
+                open={isScannerOpen}
+            />
         </div>
     );
 });
