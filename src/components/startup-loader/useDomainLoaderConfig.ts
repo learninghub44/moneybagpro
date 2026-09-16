@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { getDomainUIConfig } from '@/components/shared/utils/config/config';
 import { domainLoaderConfig, defaultLoaderConfig, DomainLoaderConfig } from './domainLoaderConfig';
 import { normalizeHostname } from './normalizeHostname';
 
@@ -9,11 +10,29 @@ import { normalizeHostname } from './normalizeHostname';
 export function useDomainLoaderConfig(): DomainLoaderConfig {
     return useMemo(() => {
         const hostname = normalizeHostname(typeof window !== 'undefined' ? window.location.hostname : 'localhost');
-        const withWelcomeText = (config: DomainLoaderConfig, domain = hostname): DomainLoaderConfig => ({
-            ...config,
-            domain,
-            welcomeText: `Welcome to ${domain}`,
-        });
+
+        // The site's actual name always comes from here — the same brandName
+        // every other part of the app uses (header, tab title, SEO tags) —
+        // rather than this file's own domain map, which needs a manual entry
+        // per domain and silently falls back to a generic name if one is
+        // missing (as it was for every newly added site).
+        let brandName = '';
+        try {
+            brandName = getDomainUIConfig().brandName || '';
+        } catch {
+            brandName = '';
+        }
+
+        const withWelcomeText = (config: DomainLoaderConfig, domain = hostname): DomainLoaderConfig => {
+            const siteName = brandName || config.siteName;
+            return {
+                ...config,
+                domain,
+                siteName,
+                welcomeText: `Welcome to ${domain}`,
+                footerText: `Powered by ${siteName}`,
+            };
+        };
 
         // Check for exact match
         if (domainLoaderConfig[hostname]) {

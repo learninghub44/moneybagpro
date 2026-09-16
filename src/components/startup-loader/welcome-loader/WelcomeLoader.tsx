@@ -1,7 +1,6 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useDomainLoaderConfig } from '../useDomainLoaderConfig';
 import { useLoaderProgress } from '../useLoaderProgress';
-import { useTypingEffect } from './useTypingEffect';
 import './WelcomeLoader.scss';
 
 interface WelcomeLoaderProps {
@@ -11,10 +10,8 @@ interface WelcomeLoaderProps {
     onComplete: () => void;
 }
 
-const BACKGROUND_IMAGE_URL =
-    'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&w=1920&q=80';
-
-const STATUS_MESSAGES = [
+const BOOT_MESSAGES = [
+    'Initializing D-Bot...',
     'Connecting to trading services...',
     'Loading market data...',
     'Preparing your dashboard...',
@@ -29,28 +26,12 @@ export const WelcomeLoader: React.FC<WelcomeLoaderProps> = ({
 }) => {
     const config = useDomainLoaderConfig();
     const [isExiting, setIsExiting] = useState(false);
-    const [imageLoaded, setImageLoaded] = useState(false);
-
-    const phrases = useMemo(
-        () => ['Welcome, Trader', 'Trade With Confidence', `Powered by ${config.siteName}`, 'Master The Markets'],
-        [config.siteName]
-    );
-
-    const { text: typedText } = useTypingEffect({ phrases, pauseDuration: 1500 });
 
     const { progress } = useLoaderProgress({
         appReady,
         minimumDuration,
         maximumDuration,
     });
-
-    useEffect(() => {
-        const img = new Image();
-        img.src = BACKGROUND_IMAGE_URL;
-        img.onload = () => setImageLoaded(true);
-        // Fall back gracefully even if the image fails to load
-        img.onerror = () => setImageLoaded(true);
-    }, []);
 
     useEffect(() => {
         const originalOverflow = document.body.style.overflow;
@@ -81,7 +62,7 @@ export const WelcomeLoader: React.FC<WelcomeLoaderProps> = ({
         }
     }, [progress]);
 
-    const statusIndex = Math.min(STATUS_MESSAGES.length - 1, Math.floor((progress / 100) * STATUS_MESSAGES.length));
+    const statusIndex = Math.min(BOOT_MESSAGES.length - 1, Math.floor((progress / 100) * BOOT_MESSAGES.length));
 
     const cssVariables = {
         '--welcome-accent': config.accentColor,
@@ -91,33 +72,37 @@ export const WelcomeLoader: React.FC<WelcomeLoaderProps> = ({
     } as React.CSSProperties;
 
     return (
-        <div
-            className={`welcome-loader ${isExiting ? 'welcome-loader--exiting' : ''} ${
-                imageLoaded ? 'welcome-loader--image-loaded' : ''
-            }`}
-            style={cssVariables}
-        >
-            <div className='welcome-loader__bg' style={{ backgroundImage: `url(${BACKGROUND_IMAGE_URL})` }} />
-            <div className='welcome-loader__overlay' />
-            <div className='welcome-loader__vignette' />
+        <div className={`welcome-loader ${isExiting ? 'welcome-loader--exiting' : ''}`} style={cssVariables}>
+            <div className='welcome-loader__bg' aria-hidden='true'>
+                <div className='welcome-loader__grid' />
+                <div className='welcome-loader__glow welcome-loader__glow--a' />
+                <div className='welcome-loader__glow welcome-loader__glow--b' />
+                <div className='welcome-loader__particles'>
+                    {Array.from({ length: 24 }).map((_, index) => (
+                        <span key={index} className='welcome-loader__particle' style={{ '--i': index } as React.CSSProperties} />
+                    ))}
+                </div>
+            </div>
 
-            <div className='welcome-loader__content'>
-                <div className='welcome-loader__brand'>{config.siteName}</div>
+            <div className='welcome-loader__card'>
+                <h1 className='welcome-loader__title'>{config.siteName}</h1>
+                <p className='welcome-loader__subtitle'>{config.siteName} Trading Workspace</p>
 
-                <h1 className='welcome-loader__headline'>
-                    <span>{typedText}</span>
-                    <span className='welcome-loader__cursor' aria-hidden='true' />
-                </h1>
+                <div className='welcome-loader__dots' aria-hidden='true'>
+                    <span className='welcome-loader__dot' />
+                    <span className='welcome-loader__dot' />
+                    <span className='welcome-loader__dot' />
+                </div>
 
-                <p className='welcome-loader__subtitle'>{config.subtitle}</p>
+                <p className='welcome-loader__status'>{BOOT_MESSAGES[statusIndex]}</p>
 
                 <div className='welcome-loader__progress-wrap'>
                     <div className='welcome-loader__progress-track'>
                         <div className='welcome-loader__progress-fill' style={{ width: `${progress}%` }} />
                     </div>
                     <div className='welcome-loader__progress-meta'>
-                        <span className='welcome-loader__status'>{STATUS_MESSAGES[statusIndex]}</span>
-                        <span className='welcome-loader__percent'>{Math.round(progress)}%</span>
+                        <span>Boot sequence</span>
+                        <span>{Math.round(progress)}%</span>
                     </div>
                 </div>
             </div>
