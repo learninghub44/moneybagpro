@@ -743,23 +743,6 @@ const AppWrapper = observer(() => {
                                     <BulkTrading />
                                 </div>
                             )}
-                            {show_apex_bot && (
-                                <div
-                                    label={
-                                        <>
-                                            <LabelPairedChartTrendUpCaptionRegularIcon
-                                                height='24px'
-                                                width='24px'
-                                                fill='#1a73e8'
-                                            />
-                                            <Localize i18n_default_text='Apex Bot' />
-                                        </>
-                                    }
-                                    id='id-apex-bot'
-                                >
-                                    <ApexBot />
-                                </div>
-                            )}
                             {show_copy_trading && (
                                 <div
                                     label={
@@ -826,6 +809,23 @@ const AppWrapper = observer(() => {
                                     id='id-ai-hub'
                                 >
                                     <AiHub />
+                                </div>
+                            )}
+                            {show_apex_bot && (
+                                <div
+                                    label={
+                                        <>
+                                            <LabelPairedChartTrendUpCaptionRegularIcon
+                                                height='24px'
+                                                width='24px'
+                                                fill='#1a73e8'
+                                            />
+                                            <Localize i18n_default_text='Apex Bot' />
+                                        </>
+                                    }
+                                    id='id-apex-bot'
+                                >
+                                    <ApexBot />
                                 </div>
                             )}
                         </Tabs>
