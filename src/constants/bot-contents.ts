@@ -29,6 +29,7 @@ export const DBOT_TABS: TDashboardTabIndex = Object.freeze({
     MARKET_HACKER: 14,
     VOICE_TRADE: 15,
     AI_HUB: 16,
+    APEX_BOT: 17,
 });
 
 export const MAX_STRATEGIES = 10;
@@ -51,6 +52,7 @@ export const TAB_IDS = [
     'id-market-hacker',
     'id-voice-trade',
     'id-ai-hub',
+    'id-apex-bot',
 ];
 
 export const DEBOUNCE_INTERVAL_TIME = 500;

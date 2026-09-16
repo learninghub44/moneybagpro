@@ -1,0 +1,404 @@
+.apex-bot-page {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    padding: 1.6rem;
+    padding-bottom: calc(
+        var(--run-panel-mobile-controls-height, 7.6rem) + var(--run-panel-mobile-stat-height, 12.8rem) + 2rem +
+            env(safe-area-inset-bottom, 0px)
+    );
+    max-width: 52rem;
+    margin: 0 auto;
+    color: var(--text-general, #1a1a1a);
+
+    * {
+        box-sizing: border-box;
+    }
+}
+
+.apex-bot__stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.apex-bot__stat {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    padding: 1.2rem;
+    border-radius: 1rem;
+    border: 1px solid var(--general-section-1, #d6dadb);
+    background: var(--general-main-1, #fff);
+
+    &--pl {
+        border-color: #1868ef;
+    }
+
+    &--won {
+        border-color: #2c9a8f;
+    }
+
+    &--lost {
+        border-color: #e5484d;
+    }
+
+    &--rate {
+        border-color: #2c9a8f;
+    }
+}
+
+.apex-bot__stat-label {
+    font-size: 1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    opacity: 0.6;
+}
+
+.apex-bot__stat-value {
+    font-size: 2.2rem;
+    font-weight: 800;
+
+    &--positive {
+        color: #2c9a8f;
+    }
+
+    &--negative {
+        color: #e5484d;
+    }
+}
+
+.apex-bot__start-btn {
+    padding: 1.3rem;
+    border: 0;
+    border-radius: 0.8rem;
+    background: #0c1b3a;
+    color: #fff;
+    font-weight: 800;
+    font-size: 1.3rem;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    transition: background 0.15s ease;
+
+    &:hover {
+        background: #142a5c;
+    }
+
+    &--running {
+        background: #b8262b;
+
+        &:hover {
+            background: #d13237;
+        }
+    }
+}
+
+.apex-bot__card {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1.4rem;
+    border-radius: 1rem;
+    background: var(--general-main-1, #f7f8f9);
+    border: 1px solid var(--general-section-1, #e3e5e8);
+
+    h3 {
+        margin: 0;
+        font-size: 1.4rem;
+        font-weight: 800;
+    }
+}
+
+.apex-bot__card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.apex-bot__card-header-badge {
+    font-size: 1.1rem;
+    font-weight: 700;
+    opacity: 0.6;
+}
+
+.apex-bot__field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    opacity: 0.75;
+    flex: 1;
+
+    input {
+        padding: 1rem;
+        border: 1px solid #d8dbde;
+        border-radius: 0.7rem;
+        background: #fff;
+        color: #1a1a1a;
+        font-size: 1.4rem;
+        font-weight: 700;
+        text-transform: none;
+        width: 100%;
+
+        &:focus {
+            outline: none;
+            border-color: #2c8b8a;
+        }
+
+        &:disabled {
+            opacity: 0.6;
+        }
+    }
+}
+
+.apex-bot__field--wide {
+    width: 100%;
+}
+
+.apex-bot__field-row {
+    display: flex;
+    gap: 1rem;
+}
+
+.apex-bot__field--toggle {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 0.6rem;
+}
+
+.apex-bot__toggle {
+    position: relative;
+    width: 4.4rem;
+    height: 2.4rem;
+    border-radius: 999px;
+    border: 0;
+    background: #c7cbd1;
+    cursor: pointer;
+    transition: background 0.15s ease;
+
+    &--on {
+        background: #2c6ef2;
+    }
+
+    &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+}
+
+.apex-bot__toggle-knob {
+    position: absolute;
+    top: 0.3rem;
+    left: 0.3rem;
+    width: 1.8rem;
+    height: 1.8rem;
+    border-radius: 50%;
+    background: #fff;
+    transition: transform 0.15s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+}
+
+.apex-bot__toggle--on .apex-bot__toggle-knob {
+    transform: translateX(2rem);
+}
+
+.apex-bot__error {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.8rem;
+    padding: 1.2rem;
+    border-radius: 1rem;
+    background: #fff1f1;
+    border: 1px solid #f3b4b6;
+}
+
+.apex-bot__error-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.4rem;
+    height: 2.4rem;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: #ffdcdd;
+    color: #d13237;
+    font-weight: 800;
+}
+
+.apex-bot__error-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+
+    strong {
+        color: #b8262b;
+        font-size: 1.3rem;
+    }
+
+    p {
+        margin: 0;
+        color: #8a3a3c;
+        font-size: 1.15rem;
+        line-height: 1.4;
+    }
+}
+
+.apex-bot__error-close {
+    border: 0;
+    background: transparent;
+    color: #b8262b;
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 1.2rem;
+}
+
+.apex-bot__empty {
+    margin: 0;
+    font-size: 1.15rem;
+    opacity: 0.6;
+}
+
+.apex-bot__history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    max-height: 22rem;
+    overflow-y: auto;
+}
+
+.apex-bot__history-item {
+    padding: 0.8rem 1rem;
+    border-radius: 0.7rem;
+    font-size: 1.15rem;
+    background: rgba(0, 0, 0, 0.03);
+
+    &--win {
+        background: rgba(44, 154, 143, 0.12);
+        color: #1f6f66;
+    }
+
+    &--loss {
+        background: rgba(229, 72, 77, 0.1);
+        color: #b8262b;
+    }
+}
+
+.apex-bot__market-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+}
+
+.apex-bot__badge {
+    padding: 0.5rem 1rem;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.05);
+    font-size: 1.05rem;
+    font-weight: 700;
+
+    &--live {
+        background: rgba(44, 154, 143, 0.18);
+        color: #1f6f66;
+    }
+}
+
+.apex-bot__market-filter {
+    padding: 1rem;
+    border: 1px solid #d8dbde;
+    border-radius: 0.7rem;
+    background: #fff;
+    font-size: 1.2rem;
+
+    &:focus {
+        outline: none;
+        border-color: #2c8b8a;
+    }
+}
+
+.apex-bot__market-table {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--general-section-1, #e3e5e8);
+    border-radius: 0.8rem;
+    overflow: hidden;
+}
+
+.apex-bot__market-table-head {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr 1fr;
+    padding: 0.9rem 1rem;
+    background: rgba(0, 0, 0, 0.04);
+    font-size: 1rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    opacity: 0.6;
+}
+
+.apex-bot__market-row {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr 1fr;
+    align-items: center;
+    padding: 1rem;
+    border-top: 1px solid var(--general-section-1, #eceff1);
+    font-size: 1.2rem;
+}
+
+.apex-bot__market-name-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    min-width: 0;
+
+    strong {
+        font-size: 1.2rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}
+
+.apex-bot__market-status {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 1rem;
+    opacity: 0.6;
+}
+
+.apex-bot__market-status-dot {
+    width: 0.6rem;
+    height: 0.6rem;
+    border-radius: 50%;
+    background: #c7cbd1;
+}
+
+.apex-bot__market-status--live .apex-bot__market-status-dot {
+    background: #2ecf7d;
+}
+
+.apex-bot__market-price {
+    font-weight: 700;
+    color: #4a4f54;
+}
+
+.apex-bot__market-digits {
+    font-weight: 700;
+    color: #4a4f54;
+}
+
+.apex-bot__disclaimer {
+    margin: 0;
+    font-size: 1.05rem;
+    opacity: 0.6;
+    line-height: 1.5;
+}
