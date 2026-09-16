@@ -435,6 +435,18 @@ const BulkTrading = observer(() => {
     const [accountsResults, setAccountsResults] = useState<TBulkTradeResult[] | null>(null);
     const [isRunningAccounts, setIsRunningAccounts] = useState(false);
 
+    // Keep the Accounts Trade panel's contract type in sync with the trade
+    // group selected above — without this it stays stuck on whatever was
+    // picked last (defaulting to Even/Odd) even after switching the trade
+    // group to Over/Under or Matches/Differs.
+    useEffect(() => {
+        const validTypes = TRADE_VARIANTS[tradeGroup].map(variant => variant.contractType);
+        if (!validTypes.includes(accountsTrade.contract_type as TTradeVariant['contractType'])) {
+            setAccountsTrade(current => ({ ...current, contract_type: validTypes[0] }));
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [tradeGroup]);
+
     const toggleAccount = (loginid: string) => {
         setSelectedLoginids(current =>
             current.includes(loginid) ? current.filter(id => id !== loginid) : [...current, loginid]
@@ -561,14 +573,18 @@ const BulkTrading = observer(() => {
                             <div className='bt-digits'>
                                 {digitStats.map(stat => {
                                     const ringColor = specialDigitColorMap[stat.digit];
+                                    const isCurrentDigit =
+                                        recentDigits.length > 0 && stat.digit === recentDigits[recentDigits.length - 1];
                                     return (
                                         <div className='bt-digit' key={stat.digit}>
                                             <div
                                                 className={classNames('bt-digit__circle', {
                                                     'bt-digit__circle--special': Boolean(ringColor),
+                                                    'bt-digit__circle--current': isCurrentDigit,
                                                 })}
                                                 style={{ '--ring-color': ringColor ?? RING_COLORS.neutral } as CSSProperties}
                                             >
+                                                {isCurrentDigit && <span className='bt-digit__cursor' />}
                                                 <span className='bt-digit__number'>{stat.digit}</span>
                                                 <span className='bt-digit__percent'>{stat.percent.toFixed(2)}%</span>
                                             </div>
@@ -580,7 +596,6 @@ const BulkTrading = observer(() => {
                             <div className='bt-eo-strip'>
                                 {recentDigits.map((digit, index) => {
                                     const isEven = digit % 2 === 0;
-                                    const isCurrent = index === recentDigits.length - 1;
                                     return (
                                         <div className='bt-eo-strip__item' key={`${digit}-${index}`}>
                                             <span
@@ -591,7 +606,6 @@ const BulkTrading = observer(() => {
                                             >
                                                 {isEven ? 'E' : 'O'}
                                             </span>
-                                            {isCurrent && <span className='bt-eo-strip__arrow' />}
                                         </div>
                                     );
                                 })}

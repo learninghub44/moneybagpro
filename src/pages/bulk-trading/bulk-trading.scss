@@ -234,6 +234,7 @@
 }
 
 .bt-digit__circle {
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -243,11 +244,33 @@
     border-radius: 50%;
     background: #f2f3f5;
     border: 0.3rem solid #e3e5e8;
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
 
     &--special {
         border-color: var(--ring-color);
         box-shadow: 0 0 0 0.1rem var(--ring-color) inset;
     }
+
+    &--current {
+        border-color: #e5484d;
+        box-shadow: 0 0 0 0.2rem rgba(229, 72, 77, 0.28);
+        transform: scale(1.06);
+    }
+}
+
+.bt-digit__cursor {
+    position: absolute;
+    top: -0.9rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 0.6rem solid transparent;
+    border-right: 0.6rem solid transparent;
+    border-top: 0.9rem solid #e5484d;
 }
 
 .bt-digit__number {
@@ -294,14 +317,6 @@
     &--odd {
         background: #e5484d;
     }
-}
-
-.bt-eo-strip__arrow {
-    width: 0;
-    height: 0;
-    border-left: 0.6rem solid transparent;
-    border-right: 0.6rem solid transparent;
-    border-bottom: 0.9rem solid #e5484d;
 }
 
 .bt-autotrader {
