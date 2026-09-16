@@ -27,6 +27,17 @@ setupDiagnostics();
 
 removeLegacyPwaState();
 
+// Registered after cleanup so it isn't caught by the legacy-registration
+// sweep above. Deliberately minimal — see public/sw.js for what it does
+// and does not cache.
+if ('serviceWorker' in navigator && window.location.protocol === 'https:') {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').catch(error => {
+            console.error('Service worker registration failed:', error);
+        });
+    });
+}
+
 const canonicalHost = getCanonicalHostForHost(window.location.hostname);
 const shouldRedirectToCanonicalHost = Boolean(canonicalHost && canonicalHost !== window.location.hostname);
 

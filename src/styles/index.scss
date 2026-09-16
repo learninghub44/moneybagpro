@@ -2,6 +2,13 @@
 // Removed IBM Plex Sans Google Font import - now using brand font from brand.config.json
 // Third-party developers can add their own font imports if needed
 
+html,
+body,
+#root {
+    max-width: 100vw;
+    overflow-x: hidden;
+}
+
 body {
     // Updated to use brand font variable from brand.config.json
     font-family: var(--brand-font-primary);
