@@ -1,0 +1,62 @@
+.banner {
+    position: fixed;
+    left: 1.6rem;
+    right: 1.6rem;
+    bottom: 1.6rem;
+    max-width: 44rem;
+    margin: 0 auto;
+    z-index: 40000;
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    padding: 1.2rem 1.6rem;
+    border-radius: var(--radius-md, 0.8rem);
+    background: var(--rm-shell-top, #ffffff);
+    color: var(--rm-shell-text, #0f172a);
+    border: 1px solid var(--rm-shell-border, #e2e8f0);
+    box-shadow: var(--shadow-lg, 0 12px 32px rgba(0, 0, 0, 0.25));
+}
+
+.text {
+    flex: 1;
+    font-size: 1.3rem;
+    line-height: 1.4;
+}
+
+.actions {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    flex-shrink: 0;
+}
+
+.install {
+    border: 0;
+    border-radius: var(--radius-sm, 0.4rem);
+    padding: 0.7rem 1.4rem;
+    background: var(--rm-shell-run, #2196f3);
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.2rem;
+    cursor: pointer;
+    box-shadow: var(--shadow-sm);
+    transition: filter 0.15s ease;
+
+    &:hover {
+        filter: brightness(1.08);
+    }
+}
+
+.dismiss {
+    border: 0;
+    background: transparent;
+    color: var(--rm-shell-muted, #475569);
+    font-size: 1.3rem;
+    cursor: pointer;
+    padding: 0.6rem;
+    line-height: 1;
+
+    &:hover {
+        color: var(--rm-shell-text, #0f172a);
+    }
+}

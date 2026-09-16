@@ -3,6 +3,7 @@ import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
 import { useLocation, useNavigate } from 'react-router-dom';
 import AiStrategyFloating from '@/components/ai-strategy-floating';
+import PwaInstallPrompt from '@/components/pwa-install-prompt';
 import RiskDisclaimerFloating from '@/components/risk-disclaimer-floating';
 import { generateOAuthURL, getDomainRedirectUrl, isDomainFeatureEnabled } from '@/components/shared';
 import DesktopWrapper from '@/components/shared_ui/desktop-wrapper';
@@ -835,6 +836,7 @@ const AppWrapper = observer(() => {
             </div>
             <RiskDisclaimerFloating />
             <AiStrategyFloating />
+            <PwaInstallPrompt />
             <DesktopWrapper>
                 {should_show_run_panel && (
                     <div className='main__run-strategy-wrapper'>
