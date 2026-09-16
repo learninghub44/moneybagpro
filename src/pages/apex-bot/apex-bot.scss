@@ -207,6 +207,58 @@
     transform: translateX(2rem);
 }
 
+.apex-bot__scanner-btn {
+    padding: 1.1rem;
+    border: 1px solid #2c6ef2;
+    border-radius: 0.8rem;
+    background: rgba(44, 110, 242, 0.08);
+    color: #1a4fd6;
+    font-weight: 800;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: background 0.15s ease;
+
+    &:hover:not(:disabled) {
+        background: rgba(44, 110, 242, 0.16);
+    }
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+}
+
+.apex-bot__pinned {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.8rem;
+    padding: 0.9rem 1.1rem;
+    border-radius: 0.8rem;
+    background: rgba(44, 154, 143, 0.12);
+    color: #1f6f66;
+    font-size: 1.1rem;
+
+    strong {
+        font-weight: 800;
+    }
+}
+
+.apex-bot__pinned-clear {
+    border: 0;
+    background: transparent;
+    color: #1f6f66;
+    font-weight: 700;
+    text-decoration: underline;
+    cursor: pointer;
+    flex-shrink: 0;
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+}
+
 .apex-bot__error {
     display: flex;
     align-items: flex-start;
