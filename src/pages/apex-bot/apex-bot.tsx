@@ -6,6 +6,7 @@ import { DBOT_TABS } from '@/constants/bot-contents';
 import { api_base } from '@/external/bot-skeleton';
 import { useStore } from '@/hooks/useStore';
 import { buyContractForUi, streamContractUntilSettled } from '@/utils/trade-purchase';
+import { apexBotBridge, APEX_BOT_AUTO_START_FLAG, APEX_BOT_OPEN_SCANNER_FLAG } from '@/stores/apex-bot-bridge';
 import { findBestSignalAcrossAllCategories, formatPl, type TApexTradeLogEntry } from './apex-bot-engine';
 import {
     contractTypeNeedsBarrier,
@@ -169,6 +170,8 @@ const ApexBot = observer(() => {
         abortControllerRef.current?.abort();
     }, []);
 
+    const runBotRef = useRef<() => void>(() => {});
+
     const runBot = useCallback(async () => {
         const stake = Number(stakeInput);
         if (!Number.isFinite(stake) || stake <= 0) {
@@ -296,6 +299,46 @@ const ApexBot = observer(() => {
             setIsRunning(false);
         }
     }, [stakeInput, takeProfitInput, stopLossInput, isMartingaleEnabled, multiplierInput, currency, appendHistory, pushContract]);
+
+    useEffect(() => {
+        runBotRef.current = () => void runBot();
+    }, [runBot]);
+
+    // Let the floating AI button (mounted as a sibling, not a child) drive
+    // this bot without needing a prop path down to it.
+    useEffect(() => {
+        apexBotBridge.registerControls({
+            start: () => runBotRef.current(),
+            stop: () => handleStop(),
+        });
+        return () => apexBotBridge.unregisterControls();
+    }, [handleStop]);
+
+    useEffect(() => {
+        apexBotBridge.setRunning(isRunning);
+    }, [isRunning]);
+
+    useEffect(() => {
+        apexBotBridge.setPinnedSignal(pinnedSignal ? `${pinnedSignal.marketLabel} · ${pinnedSignal.tradeTypeLabel}` : null);
+    }, [pinnedSignal]);
+
+    // Consume one-shot requests the floating AI button left in session
+    // storage right before switching us into view.
+    useEffect(() => {
+        if (!is_active) return;
+        try {
+            if (sessionStorage.getItem(APEX_BOT_OPEN_SCANNER_FLAG) === '1') {
+                sessionStorage.removeItem(APEX_BOT_OPEN_SCANNER_FLAG);
+                setIsScannerOpen(true);
+            }
+            if (sessionStorage.getItem(APEX_BOT_AUTO_START_FLAG) === '1') {
+                sessionStorage.removeItem(APEX_BOT_AUTO_START_FLAG);
+                runBotRef.current();
+            }
+        } catch {
+            // Ignore storage access failures (private browsing, etc.).
+        }
+    }, [is_active]);
 
     const handleToggleBot = () => {
         if (isRunning) {
