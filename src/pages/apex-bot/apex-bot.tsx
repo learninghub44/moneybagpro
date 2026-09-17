@@ -65,6 +65,7 @@ const ApexBot = observer(() => {
     const [multiplierInput, setMultiplierInput] = useState('2');
 
     const [isRunning, setIsRunning] = useState(false);
+    const [scanningStatus, setScanningStatus] = useState<string | null>(null);
     const [totals, setTotals] = useState({ totalProfit: 0, won: 0, lost: 0 });
     const [lastError, setLastError] = useState<string | null>(null);
     const [tradeHistory, setTradeHistory] = useState<TApexTradeLogEntry[]>([]);
@@ -182,6 +183,10 @@ const ApexBot = observer(() => {
             setLastError("Deriv connection isn't ready yet. Check your connection and try again.");
             return;
         }
+        if (!client.is_logged_in) {
+            setLastError('Please log in to your Deriv account before starting Apex Bot.');
+            return;
+        }
 
         const takeProfit = Math.max(0, Number(takeProfitInput) || 0);
         const stopLoss = Math.max(0, Number(stopLossInput) || 0);
@@ -215,6 +220,11 @@ const ApexBot = observer(() => {
 
                 if (!signal) {
                     const hasAnyLiveMarket = Object.values(scansRef.current).some(scan => scan.price !== null);
+                    setScanningStatus(
+                        hasAnyLiveMarket
+                            ? 'Scanning every market for a qualifying signal…'
+                            : 'Connecting to live market data…'
+                    );
                     if (!hasAnyLiveMarket) {
                         noMarketWaitMs += SIGNAL_POLL_MS;
                         if (noMarketWaitMs >= NO_MARKET_TIMEOUT_MS) {
@@ -226,6 +236,7 @@ const ApexBot = observer(() => {
                     continue;
                 }
                 noMarketWaitMs = 0;
+                setScanningStatus(null);
 
                 const effectiveStake = getNextMartingaleStake(stake, martingaleMultiplier, consecutiveLosses);
                 appendHistory(
@@ -297,8 +308,19 @@ const ApexBot = observer(() => {
             appendHistory(`Error: ${message} — stopping.`, 'loss');
         } finally {
             setIsRunning(false);
+            setScanningStatus(null);
         }
-    }, [stakeInput, takeProfitInput, stopLossInput, isMartingaleEnabled, multiplierInput, currency, appendHistory, pushContract]);
+    }, [
+        stakeInput,
+        takeProfitInput,
+        stopLossInput,
+        isMartingaleEnabled,
+        multiplierInput,
+        currency,
+        appendHistory,
+        pushContract,
+        client.is_logged_in,
+    ]);
 
     useEffect(() => {
         runBotRef.current = () => void runBot();
@@ -341,11 +363,20 @@ const ApexBot = observer(() => {
     }, [is_active]);
 
     const handleToggleBot = () => {
-        if (isRunning) {
-            handleStop();
-            return;
+        try {
+            if (isRunning) {
+                handleStop();
+                return;
+            }
+            runBot().catch(error => {
+                setIsRunning(false);
+                setLastError(error instanceof Error ? error.message : 'Apex Bot failed to start.');
+            });
+        } catch (error) {
+            // Belt-and-braces: guarantees a click can never fail completely
+            // silently, regardless of what throws.
+            setLastError(error instanceof Error ? error.message : 'Apex Bot failed to start.');
         }
-        void runBot();
     };
 
     const winRate = totals.won + totals.lost > 0 ? (totals.won / (totals.won + totals.lost)) * 100 : 0;
@@ -410,6 +441,12 @@ const ApexBot = observer(() => {
             >
                 {isRunning ? 'STOP BOT' : 'START BOT'}
             </button>
+
+            {!client.is_logged_in && (
+                <p className='apex-bot__login-hint'>Log in to your Deriv account to let Apex Bot place trades.</p>
+            )}
+
+            {isRunning && scanningStatus && <p className='apex-bot__scanning-status'>{scanningStatus}</p>}
 
             <section className='apex-bot__card'>
                 <div className='apex-bot__card-header'>

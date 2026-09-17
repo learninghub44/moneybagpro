@@ -191,6 +191,7 @@ const BulkTrading = observer(() => {
     const [isRunning, setIsRunning] = useState(false);
     const [runningSide, setRunningSide] = useState<string | null>(null);
     const [lastRunSummary, setLastRunSummary] = useState<{ ok: number; won: number; lost: number } | null>(null);
+    const [runError, setRunError] = useState<string | null>(null);
     const [scannerError, setScannerError] = useState<string | null>(null);
 
     const subscriptionRef = useRef<{ unsubscribe?: () => void } | null>(null);
@@ -368,39 +369,60 @@ const BulkTrading = observer(() => {
         });
 
         const values = Object.values(results);
+        const failures = values.filter(result => !result.ok);
         setLastRunSummary({
             ok: values.filter(result => result.ok).length,
             won: values.filter(result => result.won).length,
             lost: values.filter(result => result.ok && result.won === false).length,
         });
+        // runBulkTradesOnActiveAccount never throws — every failure (auth,
+        // balance, a rejected proposal, …) comes back as {ok:false, message}
+        // instead. Surface the actual reason rather than only a "0 placed"
+        // count, or a real failure looks identical to nothing happening.
+        setRunError(failures.length ? failures[0].message : null);
     };
 
     const handleTradeClick = async (variant: TTradeVariant) => {
         if (isRunning) return;
 
-        if (!isAutoTraderArmed) {
+        if (!client.is_logged_in) {
+            setRunError('Please log in to your Deriv account before trading.');
+            return;
+        }
+
+        setRunError(null);
+
+        try {
+            if (!isAutoTraderArmed) {
+                setIsRunning(true);
+                setRunningSide(variant.contractType);
+                try {
+                    await fireBulkBatch(variant.contractType);
+                } finally {
+                    setIsRunning(false);
+                    setRunningSide(null);
+                }
+                return;
+            }
+
+            autoTraderActiveRef.current = true;
             setIsRunning(true);
             setRunningSide(variant.contractType);
             try {
-                await fireBulkBatch(variant.contractType);
+                while (autoTraderActiveRef.current) {
+                    await fireBulkBatch(variant.contractType);
+                    if (!autoTraderActiveRef.current) break;
+                }
             } finally {
                 setIsRunning(false);
                 setRunningSide(null);
             }
-            return;
-        }
-
-        autoTraderActiveRef.current = true;
-        setIsRunning(true);
-        setRunningSide(variant.contractType);
-        try {
-            while (autoTraderActiveRef.current) {
-                await fireBulkBatch(variant.contractType);
-                if (!autoTraderActiveRef.current) break;
-            }
-        } finally {
+        } catch (error) {
+            // Belt-and-braces: guarantees a click can never fail completely
+            // silently, regardless of what throws.
             setIsRunning(false);
             setRunningSide(null);
+            setRunError(error instanceof Error ? error.message : 'Trade failed.');
         }
     };
 
@@ -649,6 +671,10 @@ const BulkTrading = observer(() => {
                         {isRunning ? 'Stop auto trader' : isAutoTraderArmed ? 'Auto trader armed · tap a side to start' : 'Auto trader'}
                     </button>
 
+                    {!client.is_logged_in && (
+                        <p className='bt-scanner__login-hint'>Log in to your Deriv account to place trades.</p>
+                    )}
+
                     <div className='bt-buy-buttons'>
                         {TRADE_VARIANTS[tradeGroup].map(variant => {
                             const profitPercent = getProfitPercent(variant.contractType, barrier);
@@ -689,6 +715,8 @@ const BulkTrading = observer(() => {
                             determine future ones. Past performance does not guarantee future results.
                         </p>
                     )}
+
+                    {runError && !isRunning && <p className='bt-scanner__error'>{runError}</p>}
 
                     {lastRunSummary && !isRunning && (
                         <p className='bt-scanner__summary'>

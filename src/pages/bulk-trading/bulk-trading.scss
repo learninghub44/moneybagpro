@@ -358,6 +358,17 @@
     }
 }
 
+.bt-scanner__login-hint {
+    margin: -0.4rem 0 0;
+    padding: 1rem 1.2rem;
+    border-radius: 0.8rem;
+    background: rgba(255, 152, 0, 0.12);
+    color: #9a5b00;
+    font-weight: 700;
+    font-size: 1.15rem;
+    text-align: center;
+}
+
 .bt-buy-buttons {
     display: grid;
     grid-template-columns: 1fr 1fr;
