@@ -1,4 +1,4 @@
-import { Component, type ReactNode } from 'react';
+import { Component, type PointerEvent, type ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { isDomainFeatureEnabled } from '@/components/shared';
 import { DBOT_TABS } from '@/constants/bot-contents';
@@ -20,6 +20,35 @@ const setFlag = (key: string) => {
     }
 };
 
+// A drag beyond this many pixels counts as a drag, not a click — small
+// pointer jitter on a tap/click still fires the button's action normally.
+const DRAG_THRESHOLD_PX = 6;
+const POSITION_STORAGE_PREFIX = 'db_floating_scanner_pos_';
+
+type TPoint = { x: number; y: number };
+
+const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), Math.max(min, max));
+
+const loadSavedPosition = (id: string): TPoint | null => {
+    try {
+        const raw = localStorage.getItem(`${POSITION_STORAGE_PREFIX}${id}`);
+        if (!raw) return null;
+        const parsed = JSON.parse(raw);
+        if (typeof parsed?.x === 'number' && typeof parsed?.y === 'number') return parsed;
+    } catch {
+        // Ignore malformed/inaccessible storage — falls back to default CSS position.
+    }
+    return null;
+};
+
+const savePosition = (id: string, point: TPoint) => {
+    try {
+        localStorage.setItem(`${POSITION_STORAGE_PREFIX}${id}`, JSON.stringify(point));
+    } catch {
+        // Ignore storage failures — dragging still works for this session.
+    }
+};
+
 // Three differently-branded entry points into the same real, rule-based
 // market scanner Apex Bot already uses (tick/digit pattern analysis — no
 // external AI API or key involved). Deliberately NOT named after real AI
@@ -31,6 +60,103 @@ const SCANNERS = [
     { id: 'pulse', label: 'Pulse', position: styles.posBottomLeft, glow: styles.glowTeal },
     { id: 'vantage', label: 'Vantage', position: styles.posMidRight, glow: styles.glowGold },
 ] as const;
+
+type TScanner = (typeof SCANNERS)[number];
+
+const DraggableScannerButton = ({ scanner, onActivate }: { scanner: TScanner; onActivate: () => void }) => {
+    const buttonRef = useRef<HTMLButtonElement | null>(null);
+    const [pos, setPos] = useState<TPoint | null>(() => loadSavedPosition(scanner.id));
+    const dragStateRef = useRef<{ startX: number; startY: number; originLeft: number; originTop: number; moved: boolean } | null>(
+        null
+    );
+
+    // Re-clamp into view on resize (e.g. rotating a phone) so a saved
+    // position can never end up off-screen.
+    useEffect(() => {
+        const handleResize = () => {
+            const el = buttonRef.current;
+            if (!el || !pos) return;
+            const rect = el.getBoundingClientRect();
+            const nextX = clamp(pos.x, 0, window.innerWidth - rect.width);
+            const nextY = clamp(pos.y, 0, window.innerHeight - rect.height);
+            if (nextX !== pos.x || nextY !== pos.y) {
+                setPos({ x: nextX, y: nextY });
+                savePosition(scanner.id, { x: nextX, y: nextY });
+            }
+        };
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [pos?.x, pos?.y]);
+
+    const handlePointerDown = useCallback((event: PointerEvent<HTMLButtonElement>) => {
+        const el = buttonRef.current;
+        if (!el) return;
+        const rect = el.getBoundingClientRect();
+        dragStateRef.current = {
+            startX: event.clientX,
+            startY: event.clientY,
+            originLeft: rect.left,
+            originTop: rect.top,
+            moved: false,
+        };
+        el.setPointerCapture(event.pointerId);
+    }, []);
+
+    const handlePointerMove = useCallback((event: PointerEvent<HTMLButtonElement>) => {
+        const drag = dragStateRef.current;
+        const el = buttonRef.current;
+        if (!drag || !el) return;
+        const deltaX = event.clientX - drag.startX;
+        const deltaY = event.clientY - drag.startY;
+        if (!drag.moved && Math.hypot(deltaX, deltaY) < DRAG_THRESHOLD_PX) return;
+        drag.moved = true;
+
+        const rect = el.getBoundingClientRect();
+        const nextX = clamp(drag.originLeft + deltaX, 0, window.innerWidth - rect.width);
+        const nextY = clamp(drag.originTop + deltaY, 0, window.innerHeight - rect.height);
+        setPos({ x: nextX, y: nextY });
+    }, []);
+
+    const handlePointerUp = useCallback(
+        (event: PointerEvent<HTMLButtonElement>) => {
+            const drag = dragStateRef.current;
+            const el = buttonRef.current;
+            if (el?.hasPointerCapture(event.pointerId)) el.releasePointerCapture(event.pointerId);
+
+            if (drag?.moved) {
+                setPos(current => {
+                    if (current) savePosition(scanner.id, current);
+                    return current;
+                });
+            } else {
+                // No meaningful movement — treat as a genuine click.
+                onActivate();
+            }
+            dragStateRef.current = null;
+        },
+        [onActivate, scanner.id]
+    );
+
+    const style = pos ? { left: `${pos.x}px`, top: `${pos.y}px`, right: 'auto', bottom: 'auto' } : undefined;
+
+    return (
+        <button
+            ref={buttonRef}
+            className={`${styles.trigger} ${pos ? '' : scanner.position} ${scanner.glow} ${styles.draggable}`}
+            style={style}
+            onPointerDown={handlePointerDown}
+            onPointerMove={handlePointerMove}
+            onPointerUp={handlePointerUp}
+            onPointerCancel={handlePointerUp}
+            title={`${scanner.label}: market scanner (drag to move)`}
+            type='button'
+        >
+            <span className={styles.shine} />
+            <span className={styles.label}>{scanner.label}</span>
+        </button>
+    );
+};
 
 const AiStrategyFloatingButtons = observer(() => {
     const store = useStore();
@@ -55,19 +181,14 @@ const AiStrategyFloatingButtons = observer(() => {
     return (
         <>
             {SCANNERS.map(scanner => (
-                <button
+                <DraggableScannerButton
                     key={scanner.id}
-                    className={`${styles.trigger} ${scanner.position} ${scanner.glow}`}
-                    onClick={() => {
+                    scanner={scanner}
+                    onActivate={() => {
                         setFlag(APEX_BOT_OPEN_SCANNER_FLAG);
                         setActiveTab?.(DBOT_TABS.APEX_BOT);
                     }}
-                    title={`${scanner.label}: market scanner`}
-                    type='button'
-                >
-                    <span className={styles.shine} />
-                    <span className={styles.label}>{scanner.label}</span>
-                </button>
+                />
             ))}
         </>
     );

@@ -28,6 +28,15 @@
     }
 }
 
+.draggable {
+    touch-action: none;
+    cursor: grab;
+
+    &:active {
+        cursor: grabbing;
+    }
+}
+
 // Spread across three separate areas of the screen, not clustered together.
 .posBottomRight {
     right: 1.6rem;
