@@ -996,8 +996,51 @@ export const isMartingaleEnabled = (): boolean => {
     return mode !== 'no_martingale';
 };
 
+// Domains with their own generated manifest + icon set under
+// public/manifests/<host>.json and public/icons/sites/<host>/. Any host not
+// in this list (localhost, a Vercel preview URL, a not-yet-onboarded domain)
+// falls back to the generic shared PWA assets at the site root.
+const DOMAINS_WITH_OWN_PWA_ASSETS = new Set([
+    'riskmanagers.site',
+    'derivhhub.com',
+    'masterhunter.site',
+    'husseinfx.site',
+    'levynetrading.site',
+    'tradinghubs.site',
+    'mafiahub.site',
+    'easytraders.site',
+    'dollarmaster.site',
+    'profitempire.site',
+    'mkulimamdogo.site',
+    'kicktrade.site',
+    'moneybagpro.site',
+    'dollarsigns.site',
+    'moneypool.site',
+    'dtraders.site',
+]);
+
+const applyDomainPwaIcons = (canonicalHost: string): void => {
+    if (typeof document === 'undefined') return;
+
+    const hasOwnAssets = DOMAINS_WITH_OWN_PWA_ASSETS.has(canonicalHost);
+    const manifestHref = hasOwnAssets ? `/manifests/${canonicalHost}.json` : '/manifest.json';
+    const iconBase = hasOwnAssets ? `/icons/sites/${canonicalHost}` : '/icons';
+
+    const setLinkHref = (selector: string, href: string) => {
+        const el = document.querySelector<HTMLLinkElement>(selector);
+        if (el) el.setAttribute('href', href);
+    };
+
+    setLinkHref('link[rel="manifest"]', manifestHref);
+    setLinkHref('link[rel="icon"][type="image/png"]', `${iconBase}/icon-192.png`);
+    setLinkHref('link[rel="apple-touch-icon"]', `${iconBase}/apple-touch-icon.png`);
+    setLinkHref('link[rel="icon"][type="image/x-icon"]', `${iconBase}/favicon.ico`);
+};
+
 export const applyDomainUI = (): void => {
     const ui = getDomainUIConfig();
+    const domainConfig = getDomainConfig();
+    applyDomainPwaIcons(domainConfig.canonicalHost);
     const targets = [document.documentElement, document.body].filter(Boolean);
     const setVariable = (key: string, value: string) => {
         targets.forEach(target => target.style.setProperty(key, value));
