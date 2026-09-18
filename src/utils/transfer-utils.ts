@@ -26,3 +26,20 @@ export const navigateToTransfer = (currency: string): void => {
         navigateToUrl(standalone_routes.transfer, true);
     }
 };
+
+/**
+ * Navigates to Deriv's own cashier deposit page. Third-party OAuth apps like
+ * this one can't process deposits directly — Deriv handles all payment
+ * methods, KYC, and compliance on their own cashier, so this hands off to it
+ * rather than attempting to reimplement any of that here.
+ */
+export const navigateToDeposit = (): void => {
+    try {
+        const currentLanguage = getInitialLanguage();
+        const lang_param = currentLanguage ? `?lang=${currentLanguage}` : '';
+        navigateToUrl(`${standalone_routes.cashier_deposit}${lang_param}`, true);
+    } catch (error) {
+        console.error('Error navigating to deposit page:', error);
+        navigateToUrl(standalone_routes.cashier_deposit, true);
+    }
+};

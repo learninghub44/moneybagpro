@@ -38,6 +38,7 @@ type DomainFeatureFlags = {
     voiceTrade: boolean;
     aiHub: boolean;
     apexBot: boolean;
+    reports: boolean;
 };
 
 type MartingaleConfig = {
@@ -163,6 +164,7 @@ const DEFAULT_DOMAIN_FEATURES: DomainFeatureFlags = {
     voiceTrade: true,
     aiHub: true,
     apexBot: true,
+    reports: true,
 };
 
 const DEFAULT_MARTINGALE_CONFIG: MartingaleConfig = {

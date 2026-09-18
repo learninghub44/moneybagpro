@@ -134,6 +134,14 @@ export const LabelPairedSparkleCaptionRegularIcon = createStrokeIcon(({ stroke, 
     </>
 ));
 
+export const LabelPairedClipboardCaptionRegularIcon = createStrokeIcon(({ stroke, strokeWidth }) => (
+    <>
+        <rect x='5' y='4' width='14' height='17' rx='2' stroke={stroke} strokeWidth={strokeWidth} fill='none' />
+        <rect x='9' y='2.5' width='6' height='3' rx='1' stroke={stroke} strokeWidth={strokeWidth} fill='none' />
+        <path d='M8 10h8M8 13.5h8M8 17h5' stroke={stroke} strokeWidth={strokeWidth} strokeLinecap='round' />
+    </>
+));
+
 export const LabelPairedFloppyDiskMdRegularIcon = createStrokeIcon(({ stroke, strokeWidth }) => (
     <>
         <path d='M6 5h10l2 2v12H6z' stroke={stroke} strokeWidth={strokeWidth} strokeLinejoin='round' />

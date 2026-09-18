@@ -9,7 +9,7 @@ import { useApiBase } from '@/hooks/useApiBase';
 import { useLogout } from '@/hooks/useLogout';
 import { useStore } from '@/hooks/useStore';
 import { ApiTokenAuthService } from '@/services/api-token-auth.service';
-import { navigateToTransfer } from '@/utils/transfer-utils';
+import { navigateToDeposit, navigateToTransfer } from '@/utils/transfer-utils';
 import { Localize, localize } from '@deriv-com/translations';
 import { Header, useDevice, Wrapper } from '@deriv-com/ui';
 import { AppLogo } from '../app-logo';
@@ -156,6 +156,10 @@ const AppHeader = observer(() => {
         navigateToTransfer(transferCurrency);
     }, [authData?.currency]);
 
+    const handleDeposit = useCallback(() => {
+        navigateToDeposit();
+    }, []);
+
     const renderAccountSection = useCallback(
         (position: 'left' | 'right' = 'right') => {
             // Show account switcher and logout when user is fully authenticated
@@ -170,7 +174,7 @@ const AppHeader = observer(() => {
                         </div>
                     );
                 } else if (position === 'right') {
-                    // For right section - transfer button (and account switcher on desktop)
+                    // For right section - deposit + transfer buttons (and account switcher on desktop)
                     return (
                         <div className='auth-actions'>
                             {isDesktop && (
@@ -178,6 +182,15 @@ const AppHeader = observer(() => {
                                     <AccountSwitcher activeAccount={activeAccount} />
                                 </div>
                             )}
+                            <Button
+                                className='header-deposit-button'
+                                primary
+                                type='button'
+                                disabled={client?.is_logging_out}
+                                onClick={handleDeposit}
+                            >
+                                <Localize i18n_default_text='Deposit' />
+                            </Button>
                             <Button
                                 primary
                                 type='button'
@@ -250,6 +263,7 @@ const AppHeader = observer(() => {
             handleLogin,
             handleSignup,
             handleTransfer,
+            handleDeposit,
         ]
     );
 
