@@ -49,17 +49,18 @@ const savePosition = (id: string, point: TPoint) => {
     }
 };
 
-// Three differently-branded entry points into the same real, rule-based
-// market scanner Apex Bot already uses (tick/digit pattern analysis — no
-// external AI API or key involved). Deliberately NOT named after real AI
-// products/companies (Gemini, Groq, Claude are actual third-party brands) —
-// these buttons don't call those services, so labeling them that way would
-// mislead traders about what's actually analyzing their trades.
-const SCANNERS = [
-    { id: 'nova', label: 'Nova', position: styles.posBottomRight, glow: styles.glowViolet },
-    { id: 'pulse', label: 'Pulse', position: styles.posBottomLeft, glow: styles.glowTeal },
-    { id: 'vantage', label: 'Vantage', position: styles.posMidRight, glow: styles.glowGold },
-] as const;
+// A single entry point into the real, rule-based market scanner Apex Bot
+// already uses (tick/digit pattern analysis — no external AI API or key
+// involved). This used to be three differently-branded buttons (Nova/Pulse/
+// Vantage) scattered across the screen, all triggering the exact same
+// action — that read as clutter and overlapped in-page content (analysis
+// circles, tab bars) rather than as three distinct features. One button,
+// tucked in a single corner, does the same job without the noise.
+// Deliberately NOT named after a real AI product/company (Gemini, Groq,
+// Claude are actual third-party brands) — this button doesn't call those
+// services, so labeling it that way would mislead traders about what's
+// actually analyzing their trades.
+const SCANNERS = [{ id: 'scanner', label: 'AI', position: styles.posBottomRight, glow: styles.glowViolet }] as const;
 
 type TScanner = (typeof SCANNERS)[number];
 

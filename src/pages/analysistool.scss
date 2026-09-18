@@ -1,0 +1,19 @@
+// The iframe used to be hardcoded to height: 100vh, which ignores the
+// header and community banner sitting above it. Since every ancestor up
+// the tree clips overflow (.layout, .main-body), that extra height wasn't
+// scrollable — it was just cut off the bottom of the screen, hiding
+// whatever the embedded tool renders near its bottom edge (run bars, the
+// last row of a scrollable panel, etc.) on both desktop and mobile.
+// --tab-content-height / --tab-content-height-mobile already account for
+// the real chrome height (see src/app/app.scss) and are what every other
+// tab's content pane uses, so this iframe now sizes the same way they do.
+.analysistool-frame {
+    display: block;
+    width: 100%;
+    height: var(--tab-content-height);
+    border: none;
+
+    @media (max-width: 767px) {
+        height: var(--tab-content-height-mobile);
+    }
+}

@@ -1,11 +1,6 @@
 import React from 'react';
+import './analysistool.scss';
 
-const Analysistool = () => (
-    <iframe
-        src='https://api.binarytool.site'
-        style={{ width: '100%', height: '100vh', border: 'none' }}
-        title='Analysis Tool'
-    />
-);
+const Analysistool = () => <iframe className='analysistool-frame' src='https://api.binarytool.site' title='Analysis Tool' />;
 
 export default Analysistool;

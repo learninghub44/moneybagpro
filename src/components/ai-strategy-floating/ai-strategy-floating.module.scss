@@ -26,6 +26,14 @@
     &:active {
         transform: translateY(0) scale(0.97);
     }
+
+    // Smaller on phones so it reads as a corner accent, not a competing
+    // block of screen real estate next to compact mobile controls.
+    @media (max-width: 37.5em) {
+        width: 5.6rem;
+        height: 5.6rem;
+        font-size: 1.2rem;
+    }
 }
 
 .draggable {
@@ -37,23 +45,13 @@
     }
 }
 
-// Spread across three separate areas of the screen, not clustered together.
+// Single fixed corner, clear of the bottom Run/execution bar on both
+// desktop and mobile.
 .posBottomRight {
     right: 1.6rem;
     bottom: 8.8rem;
 }
 
-.posBottomLeft {
-    left: 1.6rem;
-    bottom: 8.8rem;
-}
-
-.posMidRight {
-    right: 1.6rem;
-    top: 42%;
-}
-
-// Distinct glow color per button
 .glowViolet {
     background: linear-gradient(135deg, #8b5cf6, #6d28d9);
     box-shadow:
@@ -61,24 +59,6 @@
         0 0 3.2rem 0.8rem rgba(139, 92, 246, 0.3),
         var(--shadow-lg, 0 12px 32px rgba(0, 0, 0, 0.4));
     animation: pulse-violet 2.4s ease-in-out infinite;
-}
-
-.glowTeal {
-    background: linear-gradient(135deg, #2dd4bf, #0d9488);
-    box-shadow:
-        0 0 1.4rem 0.4rem rgba(45, 212, 191, 0.55),
-        0 0 3.2rem 0.8rem rgba(45, 212, 191, 0.3),
-        var(--shadow-lg, 0 12px 32px rgba(0, 0, 0, 0.4));
-    animation: pulse-teal 2.4s ease-in-out infinite;
-}
-
-.glowGold {
-    background: linear-gradient(135deg, #fbbf24, #d97706);
-    box-shadow:
-        0 0 1.4rem 0.4rem rgba(251, 191, 36, 0.55),
-        0 0 3.2rem 0.8rem rgba(251, 191, 36, 0.3),
-        var(--shadow-lg, 0 12px 32px rgba(0, 0, 0, 0.4));
-    animation: pulse-gold 2.4s ease-in-out infinite;
 }
 
 @keyframes pulse-violet {
@@ -93,38 +73,6 @@
         box-shadow:
             0 0 2rem 0.7rem rgba(139, 92, 246, 0.75),
             0 0 4.2rem 1.2rem rgba(139, 92, 246, 0.4),
-            var(--shadow-lg, 0 12px 32px rgba(0, 0, 0, 0.4));
-    }
-}
-
-@keyframes pulse-teal {
-    0%,
-    100% {
-        box-shadow:
-            0 0 1.4rem 0.4rem rgba(45, 212, 191, 0.55),
-            0 0 3.2rem 0.8rem rgba(45, 212, 191, 0.3),
-            var(--shadow-lg, 0 12px 32px rgba(0, 0, 0, 0.4));
-    }
-    50% {
-        box-shadow:
-            0 0 2rem 0.7rem rgba(45, 212, 191, 0.75),
-            0 0 4.2rem 1.2rem rgba(45, 212, 191, 0.4),
-            var(--shadow-lg, 0 12px 32px rgba(0, 0, 0, 0.4));
-    }
-}
-
-@keyframes pulse-gold {
-    0%,
-    100% {
-        box-shadow:
-            0 0 1.4rem 0.4rem rgba(251, 191, 36, 0.55),
-            0 0 3.2rem 0.8rem rgba(251, 191, 36, 0.3),
-            var(--shadow-lg, 0 12px 32px rgba(0, 0, 0, 0.4));
-    }
-    50% {
-        box-shadow:
-            0 0 2rem 0.7rem rgba(251, 191, 36, 0.75),
-            0 0 4.2rem 1.2rem rgba(251, 191, 36, 0.4),
             var(--shadow-lg, 0 12px 32px rgba(0, 0, 0, 0.4));
     }
 }
