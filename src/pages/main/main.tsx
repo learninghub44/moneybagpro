@@ -28,6 +28,7 @@ import MobileWrapper from '@/components/shared_ui/mobile-wrapper';
 import Tabs from '@/components/shared_ui/tabs/tabs';
 import TradeTypeConfirmationModal from '@/components/trade-type-confirmation-modal';
 import { DBOT_TABS, TAB_IDS } from '@/constants/bot-contents';
+import { run_panel as RUN_PANEL_TABS } from '@/constants/run-panel';
 import { api_base, updateWorkspaceName } from '@/external/bot-skeleton';
 import { CONNECTION_STATUS } from '@/external/bot-skeleton/services/api/observables/connection-status-stream';
 import { isDbotRTL } from '@/external/bot-skeleton/utils/workspace';
@@ -93,6 +94,7 @@ const AppWrapper = observer(() => {
     } = dashboard;
     const { dashboard_strategies } = load_modal;
     const {
+        active_index: run_panel_active_index,
         is_dialog_open,
         is_drawer_open,
         dialog_options,
@@ -236,6 +238,21 @@ const AppWrapper = observer(() => {
     };
     const active_hash_tab = GetHashedValue(active_tab);
     const should_show_run_panel = active_tab !== UP_AND_DOWN;
+    // Mirrors the exact condition RunPanel itself uses to render its closed/open
+    // stats strip (StatisticsSummary in run-panel.tsx): shown on every tab when
+    // the drawer is open on desktop, and on every tab but Journal when open on
+    // mobile. Several tab pages (Best Bots, Apex Bot, Bulk Trading, Copy Trading,
+    // Market Hacker, Reports, Voice Trade, AI Hub) reserve bottom padding sized
+    // for that strip so their own content never sits underneath it — but they
+    // used to reserve that space permanently, even while the drawer was closed
+    // and the strip didn't exist in the DOM at all. That left a large empty gap
+    // between a tab's content and the Summary/Transactions/Journal bar by
+    // default, on first load, before anyone had touched the drawer. Exposing
+    // the real visibility here lets those pages' CSS drop the reservation when
+    // it isn't needed, so content runs down to the bar until the drawer is
+    // actually opened.
+    const is_run_panel_stat_strip_visible =
+        is_drawer_open && (isDesktop || run_panel_active_index !== RUN_PANEL_TABS.JOURNAL);
 
     // Set up modal state change listener
     React.useEffect(() => {
@@ -528,6 +545,8 @@ const AppWrapper = observer(() => {
                         'main__container--with-open-run-panel': should_show_run_panel && isDesktop && is_drawer_open,
                         'main__container--with-open-mobile-run-panel':
                             should_show_run_panel && !isDesktop && is_drawer_open,
+                        'main__container--with-run-panel-stat-strip':
+                            should_show_run_panel && is_run_panel_stat_strip_visible,
                     })}
                 >
                     <div>

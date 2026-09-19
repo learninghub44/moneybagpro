@@ -3,13 +3,22 @@
     flex-direction: column;
     gap: 1.6rem;
     padding: 1.6rem;
-    padding-bottom: calc(
-        var(--run-panel-mobile-controls-height, 7.6rem) + var(--run-panel-mobile-stat-height, 12.8rem) + 2rem +
-            env(safe-area-inset-bottom, 0px)
-    );
+    // The fixed controls bar is always reserved; the stat strip above it only
+    // exists while the run-panel drawer is open, so its extra space is added
+    // back below via .main__container--with-run-panel-stat-strip instead of
+    // being reserved unconditionally (that used to leave a permanent empty
+    // gap under this page's content even when the drawer was closed).
+    padding-bottom: calc(var(--run-panel-mobile-controls-height, 7.6rem) + 2rem + env(safe-area-inset-bottom, 0px));
     max-width: 76rem;
     margin: 0 auto;
     color: var(--text-general, #10213f);
+
+    .main__container--with-run-panel-stat-strip & {
+        padding-bottom: calc(
+            var(--run-panel-mobile-controls-height, 7.6rem) + var(--run-panel-mobile-stat-height, 12.8rem) + 2rem +
+                env(safe-area-inset-bottom, 0px)
+        );
+    }
 }
 
 .voice-trade__card {

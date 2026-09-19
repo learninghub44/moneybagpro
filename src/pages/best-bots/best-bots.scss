@@ -5,7 +5,13 @@
     min-height: 100%;
     height: auto;
     padding: 1.6rem;
-    padding-bottom: calc(var(--run-panel-mobile-controls-height, 7.6rem) + var(--run-panel-mobile-stat-height, 12.8rem) + 2rem + env(safe-area-inset-bottom, 0px));
+    // The fixed Execution/Run controls bar is always present at the bottom on
+    // mobile, so its height is always reserved. The stats strip above it only
+    // exists in the DOM while the run-panel drawer is open (see StatisticsSummary
+    // in run-panel.tsx) — reserving space for it unconditionally left a large
+    // empty gap under this page's content by default. That extra space is added
+    // back below, only while `--with-run-panel-stat-strip` is present.
+    padding-bottom: calc(var(--run-panel-mobile-controls-height, 7.6rem) + 2rem + env(safe-area-inset-bottom, 0px));
     overflow-y: auto;
     overflow-x: hidden;
     background:
@@ -15,7 +21,21 @@
     @include mobile-or-tablet-screen {
         min-height: 100%;
         padding: 1.2rem;
-        padding-bottom: calc(var(--run-panel-mobile-controls-height, 7.6rem) + var(--run-panel-mobile-stat-height, 12.8rem) + 2rem + env(safe-area-inset-bottom, 0px));
+        padding-bottom: calc(var(--run-panel-mobile-controls-height, 7.6rem) + 2rem + env(safe-area-inset-bottom, 0px));
+    }
+
+    .main__container--with-run-panel-stat-strip & {
+        padding-bottom: calc(
+            var(--run-panel-mobile-controls-height, 7.6rem) + var(--run-panel-mobile-stat-height, 12.8rem) + 2rem +
+                env(safe-area-inset-bottom, 0px)
+        );
+
+        @include mobile-or-tablet-screen {
+            padding-bottom: calc(
+                var(--run-panel-mobile-controls-height, 7.6rem) + var(--run-panel-mobile-stat-height, 12.8rem) +
+                    2rem + env(safe-area-inset-bottom, 0px)
+            );
+        }
     }
 
     &__grid {
