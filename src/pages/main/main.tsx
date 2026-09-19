@@ -49,6 +49,7 @@ import {
 } from '@/utils/trade-type-modal-handler';
 import { Localize, localize } from '@deriv-com/translations';
 import { useDevice } from '@deriv-com/ui';
+import { isDesktop as isDesktopScreen } from '@/components/shared/utils/screen';
 import RunPanel from '../../components/run-panel';
 import Accumilatoirs from '../accumilatoirs';
 import Analysistool from '../analysistool';
@@ -236,6 +237,15 @@ const AppWrapper = observer(() => {
     };
     const active_hash_tab = GetHashedValue(active_tab);
     const should_show_run_panel = active_tab !== UP_AND_DOWN;
+    // RunPanel itself now decides desktop-vs-mobile layout using this same
+    // isDesktopScreen() (>600px), not the higher-threshold useDevice().isDesktop
+    // used everywhere else in this file. The classes below reserve horizontal
+    // space for RunPanel's side panel (or don't, for its bottom sheet), so they
+    // need to agree with RunPanel's own choice — otherwise, in the gap between
+    // the two thresholds, the side panel renders while this file still applies
+    // the no-space-reserved mobile class, and the panel overlaps page content
+    // instead of pushing it over.
+    const is_run_panel_desktop = isDesktopScreen();
 
     // Set up modal state change listener
     React.useEffect(() => {
@@ -525,9 +535,10 @@ const AppWrapper = observer(() => {
                 <div
                     className={classNames('main__container', {
                         'main__container--active': active_tour && active_tab === DASHBOARD && !isDesktop,
-                        'main__container--with-open-run-panel': should_show_run_panel && isDesktop && is_drawer_open,
+                        'main__container--with-open-run-panel':
+                            should_show_run_panel && is_run_panel_desktop && is_drawer_open,
                         'main__container--with-open-mobile-run-panel':
-                            should_show_run_panel && !isDesktop && is_drawer_open,
+                            should_show_run_panel && !is_run_panel_desktop && is_drawer_open,
                     })}
                 >
                     <div>

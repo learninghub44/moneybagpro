@@ -15,8 +15,8 @@ import { DBOT_TABS } from '@/constants/bot-contents';
 import { run_panel as RUN_PANEL_TABS } from '@/constants/run-panel';
 import { popover_zindex } from '@/constants/z-indexes';
 import { useStore } from '@/hooks/useStore';
+import { isDesktop as isDesktopScreen } from '@/components/shared/utils/screen';
 import { Localize, localize } from '@deriv-com/translations';
-import { useDevice } from '@deriv-com/ui';
 import ThemedScrollbars from '../shared_ui/themed-scrollbars';
 
 type TStatisticsTile = {
@@ -135,7 +135,15 @@ const DrawerHeader = ({
     );
 
 const DrawerContent = ({ active_index, is_drawer_open, active_tour, setActiveTabIndex, ...props }: TDrawerContent) => {
-    const { isDesktop } = useDevice();
+    // Deliberately the same isDesktop() used to gate DesktopWrapper/MobileWrapper
+    // in main.tsx (>600px counts as desktop there), not @deriv-com/ui's own
+    // useDevice() hook, whose breakpoint is higher and doesn't match. Using two
+    // different thresholds meant a real desktop browser at, say, 900px wide got
+    // mounted via <DesktopWrapper> but then rendered its OWN mobile bottom-sheet
+    // layout internally — the drawer docking at the bottom, overlapping the
+    // floating AI button and the OS taskbar, instead of the intended right-side
+    // panel. Matching the mount-gate's own threshold here closes that gap.
+    const isDesktop = isDesktopScreen();
     // Use the useBlockScroll hook to prevent body scrolling when drawer is open on mobile
 
     React.useEffect(() => {
@@ -271,7 +279,9 @@ const StatisticsInfoModal = ({
 const RunPanel = observer(() => {
     const { run_panel, dashboard, transactions } = useStore();
     const { client } = useStore();
-    const { isDesktop } = useDevice();
+    // See the matching comment on DrawerContent above: same isDesktop() as the
+    // DesktopWrapper/MobileWrapper mount gate, not @deriv-com/ui's useDevice().
+    const isDesktop = isDesktopScreen();
     const { currency } = client;
     const {
         active_index,
