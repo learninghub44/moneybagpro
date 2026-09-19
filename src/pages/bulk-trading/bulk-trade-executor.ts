@@ -19,6 +19,13 @@ export type TBulkTradeParameters = {
     duration_unit: string;
     stake: number;
     barrier?: string;
+    /**
+     * Required by Deriv's proposal/buy API ("currency: Missing property" if
+     * omitted). Mode 1 (executeTradeOnAccount) gets this from the linked
+     * account's own record; Mode 2 (runBulkTradesOnActiveAccount) needs it
+     * passed in from the caller's active-account currency.
+     */
+    currency: string;
 };
 
 export type TBulkTradeResult = {
@@ -196,6 +203,7 @@ const buildTradeRequestParameters = (trade: TBulkTradeParameters, webSocketURL?:
         {
             ...symbol_field,
             contract_type: trade.contract_type,
+            currency: trade.currency,
             duration: trade.duration,
             duration_unit: trade.duration_unit,
             amount: trade.stake,
@@ -225,7 +233,10 @@ export const executeTradeOnAccount = async (
             return { loginid: account.loginid, ok: false, message: auth_response.error.message || 'Authorization failed.' };
         }
 
-        const parameters = buildTradeRequestParameters(trade, LEGACY_WS_SERVER);
+        const parameters = buildTradeRequestParameters(
+            { ...trade, currency: account.currency || trade.currency },
+            LEGACY_WS_SERVER
+        );
         const proposal_response = await sendOnSocket(socket, { proposal: 1, ...parameters });
         if (proposal_response.error) {
             return { loginid: account.loginid, ok: false, message: proposal_response.error.message || 'Could not get a price.' };

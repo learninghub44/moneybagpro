@@ -126,6 +126,34 @@ const clampCount = (value: number, min: number, max: number) => {
     return Math.min(max, Math.max(min, Math.round(value)));
 };
 
+/**
+ * The "recent outcomes" strip under the digit dial reflects whichever trade
+ * type is currently selected, not always Even/Odd — otherwise it looks stuck
+ * on Even/Odd after switching to Over/Under or Matches/Differs, when really
+ * it just hadn't been taught the other trade types yet.
+ */
+const getStripOutcome = (
+    digit: number,
+    tradeGroup: TTradeGroup,
+    barrier: string
+): { label: string; isPrimary: boolean } => {
+    if (tradeGroup === 'even_odd') {
+        const isEven = digit % 2 === 0;
+        return { label: isEven ? 'E' : 'O', isPrimary: isEven };
+    }
+
+    const barrierDigit = Number(barrier);
+
+    if (tradeGroup === 'over_under') {
+        if (digit === barrierDigit) return { label: '=', isPrimary: false };
+        const isOver = digit > barrierDigit;
+        return { label: isOver ? 'O' : 'U', isPrimary: isOver };
+    }
+
+    const isMatch = digit === barrierDigit;
+    return { label: isMatch ? 'M' : 'D', isPrimary: isMatch };
+};
+
 const initials = (loginid: string) =>
     loginid.replace(/[0-9]/g, '').slice(0, 2).toUpperCase() || loginid.slice(0, 2).toUpperCase();
 
@@ -350,6 +378,7 @@ const BulkTrading = observer(() => {
     const buildTrade = (contractType: TTradeVariant['contractType']): TBulkTradeParameters => ({
         symbol,
         contract_type: contractType,
+        currency,
         duration: clampCount(Number(durationInput), 1, 10),
         duration_unit: 't',
         stake: Number(stakeInput) || 0.5,
@@ -450,6 +479,7 @@ const BulkTrading = observer(() => {
     const [accountsTrade, setAccountsTrade] = useState<TBulkTradeParameters>({
         symbol,
         contract_type: 'DIGITEVEN',
+        currency,
         duration: 1,
         duration_unit: 't',
         stake: 0.5,
@@ -617,16 +647,16 @@ const BulkTrading = observer(() => {
 
                             <div className='bt-eo-strip'>
                                 {recentDigits.map((digit, index) => {
-                                    const isEven = digit % 2 === 0;
+                                    const outcome = getStripOutcome(digit, tradeGroup, barrier);
                                     return (
                                         <div className='bt-eo-strip__item' key={`${digit}-${index}`}>
                                             <span
                                                 className={classNames('bt-eo-strip__chip', {
-                                                    'bt-eo-strip__chip--even': isEven,
-                                                    'bt-eo-strip__chip--odd': !isEven,
+                                                    'bt-eo-strip__chip--even': outcome.isPrimary,
+                                                    'bt-eo-strip__chip--odd': !outcome.isPrimary,
                                                 })}
                                             >
-                                                {isEven ? 'E' : 'O'}
+                                                {outcome.label}
                                             </span>
                                         </div>
                                     );
