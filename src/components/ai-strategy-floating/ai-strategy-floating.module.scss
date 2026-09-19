@@ -45,11 +45,15 @@
     }
 }
 
-// Single fixed corner, clear of the bottom Run/execution bar on both
-// desktop and mobile.
+// Single fixed corner, grounded in the run-panel's own height variables
+// (the execution bar plus the Summary/Transactions/Journal drawer peek
+// strip that can stack above it) rather than a static guess, so this
+// clears that stack instead of sitting on top of it.
 .posBottomRight {
     right: 1.6rem;
-    bottom: 8.8rem;
+    bottom: calc(
+        var(--run-panel-mobile-controls-height, 7.6rem) + var(--run-panel-mobile-stat-height, 12.8rem) + 1rem
+    );
 }
 
 .glowViolet {

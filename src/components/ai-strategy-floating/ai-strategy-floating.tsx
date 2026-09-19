@@ -29,6 +29,20 @@ type TPoint = { x: number; y: number };
 
 const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), Math.max(min, max));
 
+// Mirrors the --run-panel-mobile-controls-height (7.6rem) /
+// --run-panel-mobile-stat-height (12.8rem) reservation the default CSS
+// position now uses, so this button can't be dragged into the same zone
+// it's kept out of by default. Those variables are scoped to .run-panel in
+// run-panel.scss, not :root, so they can't be read live from here — using
+// the same static values directly instead of pretending otherwise.
+const RESERVED_BOTTOM_REM = 7.6 + 12.8 + 1; // controls height + drawer peek height + small buffer
+
+const getReservedBottomPx = (): number => {
+    if (typeof document === 'undefined') return RESERVED_BOTTOM_REM * 10;
+    const rootFontSizePx = parseFloat(getComputedStyle(document.documentElement).fontSize) || 10;
+    return RESERVED_BOTTOM_REM * rootFontSizePx;
+};
+
 const loadSavedPosition = (id: string): TPoint | null => {
     try {
         const raw = localStorage.getItem(`${POSITION_STORAGE_PREFIX}${id}`);
@@ -72,21 +86,26 @@ const DraggableScannerButton = ({ scanner, onActivate }: { scanner: TScanner; on
     );
 
     // Re-clamp into view on resize (e.g. rotating a phone) so a saved
-    // position can never end up off-screen.
+    // position can never end up off-screen — and run it once immediately on
+    // mount too, since an already-saved position from before this reserved
+    // zone existed needs correcting the moment the page loads, not only
+    // when the user happens to resize or rotate afterwards.
     useEffect(() => {
-        const handleResize = () => {
+        const reclampIntoView = () => {
             const el = buttonRef.current;
             if (!el || !pos) return;
             const rect = el.getBoundingClientRect();
+            const reservedBottomPx = getReservedBottomPx();
             const nextX = clamp(pos.x, 0, window.innerWidth - rect.width);
-            const nextY = clamp(pos.y, 0, window.innerHeight - rect.height);
+            const nextY = clamp(pos.y, 0, window.innerHeight - reservedBottomPx - rect.height);
             if (nextX !== pos.x || nextY !== pos.y) {
                 setPos({ x: nextX, y: nextY });
                 savePosition(scanner.id, { x: nextX, y: nextY });
             }
         };
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
+        reclampIntoView();
+        window.addEventListener('resize', reclampIntoView);
+        return () => window.removeEventListener('resize', reclampIntoView);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [pos?.x, pos?.y]);
 
@@ -114,8 +133,9 @@ const DraggableScannerButton = ({ scanner, onActivate }: { scanner: TScanner; on
         drag.moved = true;
 
         const rect = el.getBoundingClientRect();
+        const reservedBottomPx = getReservedBottomPx();
         const nextX = clamp(drag.originLeft + deltaX, 0, window.innerWidth - rect.width);
-        const nextY = clamp(drag.originTop + deltaY, 0, window.innerHeight - rect.height);
+        const nextY = clamp(drag.originTop + deltaY, 0, window.innerHeight - reservedBottomPx - rect.height);
         setPos({ x: nextX, y: nextY });
     }, []);
 
