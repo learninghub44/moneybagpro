@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import './community-banner.scss';
 
 type CommunityBannerProps = {
@@ -10,7 +11,42 @@ type CommunityBannerProps = {
      *  never get confused with each other. */
     variant?: 'bar' | 'card' | 'ticker';
     className?: string;
+    /** When true, shows a close control that collapses the banner down to a
+     *  thin strip with a re-expand affordance, and remembers that choice per
+     *  device (localStorage) across reloads. Off by default so existing
+     *  placements (e.g. the landing page) are unaffected unless explicitly
+     *  opted in. The parent's chrome height is measured live, so collapsing
+     *  this automatically reclaims the space it took on every screen size. */
+    dismissible?: boolean;
 };
+
+const COLLAPSE_STORAGE_KEY = 'community_banner_collapsed';
+
+const readStoredCollapsed = () => {
+    try {
+        return localStorage.getItem(COLLAPSE_STORAGE_KEY) === '1';
+    } catch {
+        return false;
+    }
+};
+
+const ChevronIcon = ({ direction }: { direction: 'up' | 'down' }) => (
+    <svg
+        viewBox='0 0 24 24'
+        width='14'
+        height='14'
+        aria-hidden='true'
+        style={{ transform: direction === 'up' ? 'rotate(180deg)' : undefined }}
+    >
+        <path fill='currentColor' d='M12 15.5 5.5 9l1.4-1.4L12 12.7l5.1-5.1L18.5 9z' />
+    </svg>
+);
+
+const CloseIcon = () => (
+    <svg viewBox='0 0 24 24' width='14' height='14' aria-hidden='true'>
+        <path fill='currentColor' d='M6.4 5 5 6.4 10.6 12 5 17.6 6.4 19 12 13.4 17.6 19 19 17.6 13.4 12 19 6.4 17.6 5 12 10.6z' />
+    </svg>
+);
 
 const WhatsAppIcon = () => (
     <svg viewBox='0 0 24 24' width='18' height='18' aria-hidden='true'>
@@ -41,8 +77,66 @@ const TelegramIcon = () => (
  * set — so it's safe to drop into every white-label site right away and
  * fill in each domain's real invite link later, one at a time.
  */
-const CommunityBanner = ({ whatsapp, telegram, brandName, variant = 'bar', className }: CommunityBannerProps) => {
+const CommunityBanner = ({
+    whatsapp,
+    telegram,
+    brandName,
+    variant = 'bar',
+    className,
+    dismissible = false,
+}: CommunityBannerProps) => {
+    const [isCollapsed, setIsCollapsed] = useState(() => (dismissible ? readStoredCollapsed() : false));
+
     if (!whatsapp && !telegram) return null;
+
+    const collapse = () => {
+        setIsCollapsed(true);
+        try {
+            localStorage.setItem(COLLAPSE_STORAGE_KEY, '1');
+        } catch {
+            // Private browsing / storage quota — collapsing still works for
+            // this session even if it can't be remembered for next time.
+        }
+    };
+
+    const expand = () => {
+        setIsCollapsed(false);
+        try {
+            localStorage.removeItem(COLLAPSE_STORAGE_KEY);
+        } catch {
+            // Nothing to clean up if it was never stored.
+        }
+    };
+
+    if (dismissible && isCollapsed) {
+        return (
+            <div className={`community-banner community-banner--${variant} community-banner--collapsed${className ? ` ${className}` : ''}`}>
+                <button
+                    type='button'
+                    className='community-banner__expand'
+                    onClick={expand}
+                    aria-label={`Show ${brandName ? `${brandName} ` : ''}community links`}
+                >
+                    <span className='community-banner__badge' aria-hidden='true'>
+                        ⚡
+                    </span>
+                    Join our community
+                    <ChevronIcon direction='down' />
+                </button>
+            </div>
+        );
+    }
+
+    const closeButton = dismissible && (
+        <button
+            type='button'
+            className='community-banner__close'
+            onClick={collapse}
+            aria-label='Minimize community banner'
+        >
+            <CloseIcon />
+        </button>
+    );
 
     const links = (
         <span className='community-banner__links'>
@@ -91,7 +185,7 @@ const CommunityBanner = ({ whatsapp, telegram, brandName, variant = 'bar', class
         );
         return (
             <div
-                className={`community-banner community-banner--ticker${className ? ` ${className}` : ''}`}
+                className={`community-banner community-banner--ticker${dismissible ? ' community-banner--dismissible' : ''}${className ? ` ${className}` : ''}`}
                 role='note'
                 aria-label='Community links'
             >
@@ -99,6 +193,7 @@ const CommunityBanner = ({ whatsapp, telegram, brandName, variant = 'bar', class
                     {item}
                     {item}
                 </div>
+                {closeButton}
             </div>
         );
     }
@@ -107,6 +202,7 @@ const CommunityBanner = ({ whatsapp, telegram, brandName, variant = 'bar', class
         <div className={`community-banner community-banner--${variant}${className ? ` ${className}` : ''}`}>
             {text}
             {links}
+            {closeButton}
         </div>
     );
 };

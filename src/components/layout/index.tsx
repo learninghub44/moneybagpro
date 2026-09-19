@@ -185,6 +185,7 @@ const Layout = observer(() => {
                         telegram={domain_config.ui.socialLinks?.telegram}
                         brandName={domain_config.ui.brandName}
                         variant='ticker'
+                        dismissible
                     />
                 )}
                 {!isCallbackPage && <AppHeader isAuthenticating={isAuthenticating || !isInitialAuthCheckComplete} />}
