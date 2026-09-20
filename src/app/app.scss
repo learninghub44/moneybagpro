@@ -56,7 +56,21 @@ body {
     --drawer-scroll-height: calc(100vh - 365px);
     --drawer-content-height-mobile: calc(100% - 23.3rem);
     --drawer-content-height-mobile-no-stat: calc(100% - 10.8rem);
-    --tab-content-height: calc(100vh - 16.6rem);
+    // Desktop default header height is 4rem (see layout.scss), so this was
+    // originally header(4rem) + 12.6rem of other reserved space. 9c2d296
+    // introduced --app-chrome-height (live-measured header+ticker-banner
+    // combined, via ResizeObserver) and swapped it into every OTHER
+    // fixed-position consumer of the header height (run-panel.scss,
+    // main.scss's mobile sidebar offset, --tab-content-height-mobile below) —
+    // but missed this one. So on any screen at or above the 1280px
+    // desktop-screen breakpoint, this stayed hardcoded to a pre-banner guess
+    // of the header's height alone, undercounting real chrome height by the
+    // ticker banner's height whenever it's shown (and, since the banner
+    // became collapsible, by a shifting amount depending on that state).
+    // Since .layout/.main-body clip overflow, a tab-content container sized
+    // too short for the real chrome above it means the bottom of the page's
+    // content silently gets clipped instead of just leaving a gap.
+    --tab-content-height: calc(100vh - var(--app-chrome-height, var(--app-header-height, 4rem)) - 12.6rem);
     --tab-content-height-mobile: calc(100vh - var(--app-chrome-height, var(--app-header-height, 5rem)) - 4.8rem);
     --zindex-drawer: 5;
     --zindex-modal: 6;
