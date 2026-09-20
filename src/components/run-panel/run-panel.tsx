@@ -15,7 +15,7 @@ import { DBOT_TABS } from '@/constants/bot-contents';
 import { run_panel as RUN_PANEL_TABS } from '@/constants/run-panel';
 import { popover_zindex } from '@/constants/z-indexes';
 import { useStore } from '@/hooks/useStore';
-import { isDesktop as isDesktopScreen } from '@/components/shared/utils/screen';
+import { MAX_TABLET_WIDTH } from '@/components/shared/utils/screen';
 import { Localize, localize } from '@deriv-com/translations';
 import ThemedScrollbars from '../shared_ui/themed-scrollbars';
 
@@ -135,15 +135,17 @@ const DrawerHeader = ({
     );
 
 const DrawerContent = ({ active_index, is_drawer_open, active_tour, setActiveTabIndex, ...props }: TDrawerContent) => {
-    // Deliberately the same isDesktop() used to gate DesktopWrapper/MobileWrapper
-    // in main.tsx (>600px counts as desktop there), not @deriv-com/ui's own
-    // useDevice() hook, whose breakpoint is higher and doesn't match. Using two
-    // different thresholds meant a real desktop browser at, say, 900px wide got
-    // mounted via <DesktopWrapper> but then rendered its OWN mobile bottom-sheet
-    // layout internally — the drawer docking at the bottom, overlapping the
-    // floating AI button and the OS taskbar, instead of the intended right-side
-    // panel. Matching the mount-gate's own threshold here closes that gap.
-    const isDesktop = isDesktopScreen();
+    // Must match drawer.scss's own desktop-screen/mobile-or-tablet-screen media
+    // queries (min-width: 1280px, i.e. width > MAX_TABLET_WIDTH) exactly — those
+    // plain CSS media queries are what actually position this drawer (bottom
+    // sheet vs. right-side panel), independent of any JS state. A JS isDesktop
+    // that disagreed with that CSS threshold (as @deriv-com/ui's useDevice(), or
+    // the lower 600px bar DesktopWrapper/MobileWrapper use to decide whether to
+    // mount this component at all, both did) meant that in the gap between the
+    // two numbers, this file would apply desktop classes and reserve side-panel
+    // space while the CSS still forced bottom-sheet positioning underneath it —
+    // the two fighting each other, rendering nothing visible in that gap at all.
+    const isDesktop = window.innerWidth > MAX_TABLET_WIDTH;
     // Use the useBlockScroll hook to prevent body scrolling when drawer is open on mobile
 
     React.useEffect(() => {
@@ -279,9 +281,10 @@ const StatisticsInfoModal = ({
 const RunPanel = observer(() => {
     const { run_panel, dashboard, transactions } = useStore();
     const { client } = useStore();
-    // See the matching comment on DrawerContent above: same isDesktop() as the
-    // DesktopWrapper/MobileWrapper mount gate, not @deriv-com/ui's useDevice().
-    const isDesktop = isDesktopScreen();
+    // See the matching comment on DrawerContent above: must match the drawer's
+    // own CSS breakpoint (1280px), not @deriv-com/ui's useDevice() or the lower
+    // 600px bar used only to decide whether this component mounts at all.
+    const isDesktop = window.innerWidth > MAX_TABLET_WIDTH;
     const { currency } = client;
     const {
         active_index,
