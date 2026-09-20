@@ -613,7 +613,14 @@
         top: 5.6rem;
         inset-inline-start: 0;
         width: 100vw;
-        height: calc(var(--tab-content-height-mobile) - var(--app-header-height, 4rem));
+        // Was `calc(var(--tab-content-height-mobile) - var(--app-header-height, 4rem))`
+        // (added in c25e86b, back when --tab-content-height-mobile didn't yet
+        // subtract the header/chrome height itself). 9c2d296 later made that
+        // variable subtract the real chrome height internally, but this manual
+        // extra subtraction was never removed - double-counting the header and
+        // making this element ~4rem shorter than it should be, on every mobile
+        // and tablet screen, regardless of the community banner's state.
+        height: var(--tab-content-height-mobile);
     }
 }
 
