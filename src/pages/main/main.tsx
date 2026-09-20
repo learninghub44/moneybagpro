@@ -25,6 +25,7 @@ import MobileWrapper from '@/components/shared_ui/mobile-wrapper';
 import Tabs from '@/components/shared_ui/tabs/tabs';
 import TradeTypeConfirmationModal from '@/components/trade-type-confirmation-modal';
 import { DBOT_TABS, TAB_IDS } from '@/constants/bot-contents';
+import { run_panel as RUN_PANEL_TABS } from '@/constants/run-panel';
 import { api_base, updateWorkspaceName } from '@/external/bot-skeleton';
 import { CONNECTION_STATUS } from '@/external/bot-skeleton/services/api/observables/connection-status-stream';
 import { isDbotRTL } from '@/external/bot-skeleton/utils/workspace';
@@ -88,6 +89,7 @@ const AppWrapper = observer(() => {
     } = dashboard;
     const { dashboard_strategies } = load_modal;
     const {
+        active_index: run_panel_active_index,
         is_dialog_open,
         is_drawer_open,
         dialog_options,
@@ -229,6 +231,23 @@ const AppWrapper = observer(() => {
     // reserves side-panel space (or doesn't) while the CSS renders the
     // opposite layout underneath it, and the two fight each other.
     const is_run_panel_desktop = window.innerWidth > MAX_TABLET_WIDTH;
+    // Mirrors the exact condition RunPanel itself uses to render its closed/open
+    // stats strip (StatisticsSummary in run-panel.tsx): shown on every tab when
+    // the drawer is open on desktop, and on every tab but Journal when open on
+    // mobile. Several tab pages (Best Bots, Apex Bot, Bulk Trading, Market
+    // Hacker, AI Hub) reserve bottom padding sized for that strip so their own
+    // content never sits underneath it — but they used to reserve that space
+    // permanently, even while the drawer was closed and the strip didn't exist
+    // in the DOM at all. That left a large empty gap between a tab's content
+    // and the Summary/Transactions/Journal bar by default, on first load,
+    // before anyone had touched the drawer. Exposing the real visibility here
+    // lets those pages' CSS drop the reservation when it isn't needed.
+    // Uses is_run_panel_desktop (not the plain isDesktop above) so this stays
+    // consistent with RunPanel's own internal desktop/mobile decision — RunPanel
+    // computes its stat-strip visibility off that same 1280px line, not the
+    // higher one isDesktop is based on.
+    const is_run_panel_stat_strip_visible =
+        is_drawer_open && (is_run_panel_desktop || run_panel_active_index !== RUN_PANEL_TABS.JOURNAL);
 
     // Set up modal state change listener
     React.useEffect(() => {
@@ -522,6 +541,8 @@ const AppWrapper = observer(() => {
                             should_show_run_panel && is_run_panel_desktop && is_drawer_open,
                         'main__container--with-open-mobile-run-panel':
                             should_show_run_panel && !is_run_panel_desktop && is_drawer_open,
+                        'main__container--with-run-panel-stat-strip':
+                            should_show_run_panel && is_run_panel_stat_strip_visible,
                     })}
                 >
                     <div>
