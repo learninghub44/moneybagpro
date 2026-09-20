@@ -49,7 +49,14 @@ body {
 }
 
 .bot {
-    --bot-content-height: calc(100vh - 140px);
+    // Same bug class as --tab-content-height below: a static, pre-banner
+    // guess (100vh - 140px) that never accounted for real chrome height.
+    // Still used by Bot Builder's workspace canvas (#scratch_div) — the run
+    // panel's own former use of this variable was replaced with its own
+    // correctly-derived calc directly in run-panel.scss. 140px = 8.75rem;
+    // preserves the 4.75rem (8.75rem - assumed 4rem header) non-chrome
+    // portion, correcting only the header/chrome term.
+    --bot-content-height: calc(100vh - var(--app-chrome-height, var(--app-header-height, 4rem)) - 4.75rem);
     --bot-content-width: calc(100vw - 366px);
     --drawer-content-height: calc(100vh - 394px);
     --drawer-content-height-no-stat: calc(100vh - 233px);

@@ -21,8 +21,16 @@
 
     &__container {
         box-sizing: border-box;
-        height: var(--bot-content-height) !important;
-        top: 10.4rem !important;
+        // Same bug class as --tab-content-height (see app.scss): both top and
+        // height were static guesses (10.4rem / --bot-content-height) that
+        // predate the community banner and never accounted for it, so this
+        // panel could start too high (overlapping the header/banner) or leave
+        // a gap, and could run short of or past the real viewport bottom.
+        // Deriving both directly from the real, live-measured chrome height
+        // is unambiguously correct regardless of what those old constants
+        // were originally trying to approximate.
+        top: var(--app-chrome-height, var(--app-header-height, 4rem)) !important;
+        height: calc(100vh - var(--app-chrome-height, var(--app-header-height, 4rem))) !important;
         width: 36.6rem !important;
         right: 0;
         background: var(--run-panel-frame-bg);
@@ -338,18 +346,33 @@
 
     &-tab {
         &__content {
-            height: calc(100vh - 42rem);
+            // Same fix as .run-panel__container above: this was independently
+            // calibrated against 100vh assuming a static, pre-banner top
+            // offset (the panel's own old 10.4rem top value), rather than
+            // being sized relative to its now-correctly-computed parent.
+            // Preserves the original 31.6rem (42rem - 10.4rem) non-chrome
+            // portion exactly, only correcting the chrome/header term.
+            height: calc(100vh - var(--app-chrome-height, var(--app-header-height, 4rem)) - 31.6rem);
             overflow: hidden;
 
             &--no-stat {
-                height: var(--drawer-content-height-no-stat);
+                // Same correction; preserves the original 4.1625rem
+                // (233px - 10.4rem) non-chrome portion.
+                height: calc(100vh - var(--app-chrome-height, var(--app-header-height, 4rem)) - 4.1625rem);
             }
 
             &--mobile {
                 display: flex;
                 flex-direction: column;
-                height: var(--drawer-content-height-mobile);
+                // Was a static height guess (--drawer-content-height-mobile)
+                // that implied the top chrome was only ~2.9rem tall — already
+                // wrong even before the community banner existed, since the
+                // real mobile header alone defaults to 5rem+. Setting top to
+                // the real, live chrome height and dropping the fixed height
+                // lets the browser derive the correct height from top+bottom
+                // directly, with no guessing involved.
                 position: fixed;
+                top: var(--app-chrome-height, var(--app-header-height, 5rem));
                 bottom: calc(var(--run-panel-mobile-controls-height) + var(--run-panel-mobile-stat-height));
                 width: 100%;
                 padding: 0.4rem 0;
@@ -367,8 +390,8 @@
             &--mobile-no-stat {
                 display: flex;
                 flex-direction: column;
-                height: var(--drawer-content-height-mobile-no-stat);
                 position: fixed;
+                top: var(--app-chrome-height, var(--app-header-height, 5rem));
                 bottom: var(--run-panel-mobile-controls-height);
                 width: 100%;
                 padding: 0.4rem 0;
