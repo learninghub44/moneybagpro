@@ -1,1 +1,8 @@
-[]
+[
+    {
+        "id": "profit-mainer",
+        "name": "Profit Mainer",
+        "file": "Profit_mainer.xml",
+        "description": "Even/Odd digit strategy on Volatility 25 (1s) Index with stake multiplier progression and automatic profit/loss target checks."
+    }
+]

@@ -4,6 +4,12 @@
         "file": "$DollarprinterbotOrignal$ (1).xml"
     },
     {
+        "id": "profit-mainer",
+        "name": "Profit Mainer",
+        "file": "Profit_mainer.xml",
+        "description": "Even/Odd digit strategy on Volatility 25 (1s) Index with stake multiplier progression and automatic profit/loss target checks."
+    },
+    {
         "name": "1 2025 $Orginal DollarPrinterBot  2025 Version $ (1)",
         "file": "1 2025 $Orginal DollarPrinterBot  2025 Version $ (1).xml"
     },

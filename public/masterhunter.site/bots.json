@@ -7,6 +7,12 @@
         "emoji": "MH"
     },
     {
+        "id": "profit-mainer",
+        "name": "Profit Mainer",
+        "file": "Profit_mainer.xml",
+        "description": "Even/Odd digit strategy on Volatility 25 (1s) Index with stake multiplier progression and automatic profit/loss target checks."
+    },
+    {
         "id": "masterhunter-v2",
         "name": "MASTERHUNTER V2",
         "file": "MASTERHUNTER V2.xml",

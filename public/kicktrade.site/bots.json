@@ -2,9 +2,15 @@
     {
         "id": "hunter-bot-switcher",
         "name": "HUNTER BOT SWITCHER",
-        "file": "HUNTER BOT SWITCHER \ud83d\udd25\ud83d\udd25\ud83d\udd25 (1).xml",
+        "file": "HUNTER BOT SWITCHER 🔥🔥🔥 (1).xml",
         "description": "Hunter Bot Switcher strategy ready to load into Bot Builder.",
         "emoji": "KT"
+    },
+    {
+        "id": "profit-mainer",
+        "name": "Profit Mainer",
+        "file": "Profit_mainer.xml",
+        "description": "Even/Odd digit strategy on Volatility 25 (1s) Index with stake multiplier progression and automatic profit/loss target checks."
     },
     {
         "id": "mrzetuzetu-even-odd-switcher",

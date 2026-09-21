@@ -314,5 +314,12 @@
         "file": "Under Market AI Bot (without a Martingale).xml.xml",
         "description": "Under Market AI strategy ready to load into Bot Builder.",
         "emoji": "KT"
+    },
+    {
+        "id": "profit-mainer",
+        "name": "Profit Mainer",
+        "file": "Profit_mainer.xml",
+        "description": "Even/Odd digit strategy on Volatility 25 (1s) Index with stake multiplier progression and automatic profit/loss target checks.",
+        "priority": 0.5
     }
 ]
